@@ -11,6 +11,12 @@
 - [`content/weekly/`](content/weekly/)：可选的公开精选周刊，不强制周更
 - [`archive/weekly/`](archive/weekly/)：历史周总结，只归档，不再沿用这种写作方式
 
+
+## 分支与发布
+
+- `dev`：日常整理；`main`：稳定公开内容。
+- 合并到 `main` 后把 `main` 回灌 `dev`；可选打版本标签（**不加** `v` 前缀）。完整步骤见 [`RELEASING.md`](RELEASING.md)。
+
 ## 文档类型
 
 - **专题手册**：围绕一条知识主线长期维护，包含学习地图、原理、实验和参考资料。
