@@ -4,3 +4,14 @@
 # 编辑器临时文件
 *.swp
 *.tmp
+
+# 站点构建与本地工具
+.idea/
+node_modules/
+dist/
+.astro/
+.wrangler/
+.env
+.env.*
+!.env.example
+.claude/settings.local.json

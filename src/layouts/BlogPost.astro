@@ -1,0 +1,860 @@
+---
+import { Image } from 'astro:assets';
+import type { MarkdownHeading } from 'astro';
+import type { CollectionEntry } from 'astro:content';
+import BaseHead from '../components/BaseHead.astro';
+import Footer from '../components/Footer.astro';
+import FormattedDate from '../components/FormattedDate.astro';
+import Header from '../components/Header.astro';
+import { GITHUB_REPO } from '../consts';
+import { STATUS_META } from '../lib/posts';
+
+type Props = CollectionEntry<'blog'>['data'] & {
+	id: string;
+	headings: MarkdownHeading[];
+};
+
+const { title, description, date, updated, tags, status, heroImage, id, headings } = Astro.props;
+
+// 目录只收 h2/h3; 少于 2 节的短文不出目录, 版面回到单栏。
+const toc = headings.filter((h) => h.depth === 2 || h.depth === 3);
+const meta = STATUS_META[status];
+const updatedDate = updated ?? date;
+const primaryTag = tags[0];
+const sourceUrl = `${GITHUB_REPO}/blob/main/content/${id}.md`;
+
+// 「x 天前」在构建期计算, 静态站下次发布时会刷新。
+const days = Math.max(0, Math.floor((Date.now() - updatedDate.getTime()) / 86400000));
+const relative = days === 0 ? '今天' : days === 1 ? '昨天' : `${days} 天前`;
+---
+
+<html lang="zh-CN">
+	<head>
+		<BaseHead title={title} description={description} image={heroImage} />
+	</head>
+
+	<body>
+		<Header />
+		{/* 阅读进度: 纯 CSS 滚动驱动动画, 不支持时整条隐藏 */}
+		<div class="reading-progress" aria-hidden="true"></div>
+		<main id="main" class="shell article-main">
+			<div class="article-layout">
+				{
+					toc.length >= 2 && (
+						<nav class="toc-rail" aria-label="本文目录" data-pagefind-ignore>
+							<p class="eyebrow toc-title">本文目录</p>
+							<ul class="toc-list">
+								{toc.map((h) => (
+									<li class={h.depth === 3 ? 'lv3' : ''}>
+										<a href={`#${h.slug}`}>{h.text}</a>
+									</li>
+								))}
+							</ul>
+						</nav>
+					)
+				}
+
+				<article>
+					<header class="article-head" data-pagefind-ignore>
+						<p class="breadcrumb">
+							<a href="/blog/">文章</a>
+							{
+								primaryTag && (
+									<>
+										<span aria-hidden="true">/</span>
+										<a href={`/tags/${primaryTag}/`}>{primaryTag}</a>
+									</>
+								)
+							}
+						</p>
+						<h1 class="article-title">{title}</h1>
+						<p class="article-lede">{description}</p>
+						<div class="article-tags">
+							{tags.map((tag) => <a class="tag" href={`/tags/${tag}/`}>{tag}</a>)}
+						</div>
+
+						{/* 维护状态条: 时效性信息的正式位置 */}
+						<aside
+							class:list={['maintenance', status !== 'evergreen' && `maintenance--${status}`]}
+							aria-label="内容维护状态"
+						>
+							<p class="maintenance-state">
+								<span class:list={['dot', meta.dot]} aria-hidden="true"></span>
+								<b>{meta.label}</b>
+								<em>{meta.note}</em>
+							</p>
+							<dl>
+								<div>
+									<dt>最后更新</dt>
+									<dd>
+										<FormattedDate date={updatedDate} />
+										<small>{relative}</small>
+									</dd>
+								</div>
+								<div>
+									<dt>首次发布</dt>
+									<dd>
+										<FormattedDate date={date} />
+									</dd>
+								</div>
+							</dl>
+							{meta.staleness && <p class="staleness">{meta.staleness}</p>}
+						</aside>
+					</header>
+
+					{
+						toc.length >= 2 && (
+							<details class="toc-inline" data-pagefind-ignore>
+								<summary>
+									<b>本文目录</b>
+									<span>{toc.filter((h) => h.depth === 2).length} 节</span>
+								</summary>
+								<ul class="toc-list">
+									{toc.map((h) => (
+										<li class={h.depth === 3 ? 'lv3' : ''}>
+											<a href={`#${h.slug}`}>{h.text}</a>
+										</li>
+									))}
+								</ul>
+							</details>
+						)
+					}
+
+					{
+						heroImage && (
+							<div class="hero-image">
+								<Image width={1020} height={510} src={heroImage} alt="" />
+							</div>
+						)
+					}
+
+					{/* data-pagefind-body 让 Pagefind 只索引正文, 摘要里不会混进导航和页脚 */}
+					<div class="prose" data-pagefind-body>
+						<slot />
+					</div>
+
+					<footer class="article-foot" data-pagefind-ignore>
+						<div class="revision">
+							<p>{meta.revision}</p>
+							<a class="btn" href={sourceUrl} target="_blank" rel="noopener noreferrer">
+								在 GitHub 上查看源文件
+							</a>
+						</div>
+						<nav class="article-nav" aria-label="文章导航">
+							<a class="btn" href="/blog/">← 全部文章</a>
+							{primaryTag && <a class="btn" href={`/tags/${primaryTag}/`}>更多 {primaryTag} 笔记</a>}
+						</nav>
+					</footer>
+				</article>
+			</div>
+		</main>
+		<Footer />
+
+		<script is:inline>
+			// 目录滚动跟随 (scrollspy): 替代设计稿里写死的 :has(#…:target) 选择器,
+			// 对任意文章的标题都生效。滚动经过哪个小节, 就高亮对应目录项。
+			(function () {
+				var links = document.querySelectorAll('.toc-rail .toc-list a[href^="#"]');
+				if (!links.length) return;
+				var byHeading = new Map();
+				links.forEach(function (a) {
+					var h = document.getElementById(decodeURIComponent(a.getAttribute('href').slice(1)));
+					if (!h) return;
+					if (!byHeading.has(h)) byHeading.set(h, []);
+					byHeading.get(h).push(a);
+				});
+				var heads = Array.from(byHeading.keys());
+				if (!heads.length) return;
+				var current = null;
+				function top(h) {
+					return h.getBoundingClientRect().top + window.scrollY;
+				}
+				function setActive(h) {
+					if (h === current) return;
+					current = h;
+					links.forEach(function (a) {
+						a.classList.remove('is-active');
+					});
+					if (h)
+						byHeading.get(h).forEach(function (a) {
+							a.classList.add('is-active');
+						});
+				}
+				function onScroll() {
+					var pos = window.scrollY + 120; // 粘性头部 + 一点余量
+					var active = null;
+					for (var i = 0; i < heads.length; i++) {
+						if (top(heads[i]) <= pos) active = heads[i];
+						else break;
+					}
+					// 滚到页尾时高亮最后一节
+					if (window.innerHeight + window.scrollY >= document.body.scrollHeight - 4) {
+						active = heads[heads.length - 1];
+					}
+					setActive(active);
+				}
+				heads.sort(function (a, b) {
+					return top(a) - top(b);
+				});
+				window.addEventListener('scroll', onScroll, { passive: true });
+				onScroll();
+			})();
+		</script>
+	</body>
+</html>
+
+<style>
+	main.article-main {
+		padding: 0;
+	}
+
+	/* ---- 阅读进度: 纯 CSS 滚动驱动动画, 不支持时整条隐藏而不是卡在 0% ---- */
+	.reading-progress {
+		position: fixed;
+		inset: 0 0 auto 0;
+		height: 2px;
+		z-index: 20;
+		background: var(--accent);
+		transform-origin: 0 50%;
+		transform: scaleX(0);
+		display: none;
+	}
+	@supports (animation-timeline: scroll()) {
+		.reading-progress {
+			display: block;
+			animation-name: read-through;
+			animation-duration: auto; /* 滚动时间轴下必须显式声明, 简写会把它重置成 0s */
+			animation-timing-function: linear;
+			animation-fill-mode: both;
+			animation-timeline: scroll(root block);
+		}
+	}
+	@keyframes read-through {
+		from {
+			transform: scaleX(0);
+		}
+		to {
+			transform: scaleX(1);
+		}
+	}
+
+	/* ---- 版面: 目录活在左侧留白里, 一寸正文宽度都不占 ---- */
+	.article-layout {
+		display: grid;
+		grid-template-columns: minmax(0, var(--measure));
+		justify-content: center;
+		padding: 2.75rem 0 1rem;
+	}
+	@media (min-width: 1040px) {
+		.article-layout {
+			grid-template-columns: var(--rail) minmax(0, var(--measure));
+			column-gap: 40px;
+		}
+	}
+
+	/* ---- 目录 (宽屏侧栏) ---- */
+	.toc-rail {
+		display: none;
+	}
+	@media (min-width: 1040px) {
+		.toc-rail {
+			display: block;
+			position: sticky;
+			top: calc(var(--header-h) + 1.5rem);
+			max-height: calc(100dvh - var(--header-h) - 4rem);
+			overflow-y: auto;
+			padding-right: 0.5rem;
+			scrollbar-width: thin;
+		}
+	}
+	.toc-title {
+		margin-bottom: 0.75rem;
+	}
+	.toc-list {
+		list-style: none;
+		margin: 0;
+		padding: 0;
+		border-left: 1px solid var(--border);
+	}
+	.toc-list a {
+		display: block;
+		padding: 0.3rem 0 0.3rem 0.8rem;
+		margin-left: -1px;
+		border-left: 2px solid transparent;
+		color: var(--fg-2);
+		font-size: 0.8rem;
+		line-height: 1.55;
+		transition:
+			color 0.16s ease,
+			border-color 0.16s ease,
+			background-color 0.16s ease;
+	}
+	.toc-list a:hover {
+		color: var(--fg);
+		border-left-color: var(--border-2);
+		text-decoration: none;
+	}
+	.toc-list .lv3 a {
+		padding-left: 1.6rem;
+		font-size: 0.765rem;
+	}
+	/* 当前小节: scrollspy 脚本切换, 高亮不会变淡只会加深 */
+	.toc-list a.is-active {
+		color: var(--fg);
+		font-weight: 600;
+		border-left-color: var(--fg);
+	}
+
+	/* ---- 目录 (窄屏折叠, 零 JS) ---- */
+	.toc-inline {
+		display: block;
+		max-width: 24rem;
+		margin: 0 0 2.25rem;
+		border: 1px solid var(--border);
+		border-radius: 8px;
+		background: var(--bg-subtle);
+	}
+	@media (min-width: 1040px) {
+		.toc-inline {
+			display: none;
+		}
+	}
+	.toc-inline summary {
+		display: flex;
+		align-items: center;
+		gap: 0.6rem;
+		cursor: pointer;
+		list-style: none;
+		padding: 0.8rem 1rem;
+		font-size: 0.85rem;
+		color: var(--fg);
+		min-height: 44px;
+	}
+	.toc-inline summary::-webkit-details-marker {
+		display: none;
+	}
+	.toc-inline summary::after {
+		content: '+';
+		margin-left: auto;
+		font-family: var(--font-mono);
+		font-size: 1.05rem;
+		color: var(--fg-3);
+		line-height: 1;
+	}
+	.toc-inline[open] summary::after {
+		content: '–';
+	}
+	.toc-inline summary:hover {
+		background: color-mix(in oklab, var(--bg-subtle) 90%, var(--fg));
+	}
+	.toc-inline summary b {
+		font-weight: 600;
+	}
+	.toc-inline summary span {
+		color: var(--fg-2);
+		font-family: var(--font-mono);
+		font-size: 0.76rem;
+		letter-spacing: 0.04em;
+	}
+	.toc-inline .toc-list {
+		margin: 0 1rem 1rem;
+	}
+	/* 行高按指针类型区分: 触屏 44px 可点目标, 鼠标指针下收紧 */
+	.toc-inline .toc-list a {
+		min-height: 38px;
+		display: flex;
+		align-items: center;
+	}
+	@media (pointer: coarse) {
+		.toc-inline .toc-list a {
+			min-height: 44px;
+		}
+	}
+
+	/* ---- 标题区 ---- */
+	.article-head {
+		margin-bottom: 2rem;
+	}
+	.breadcrumb {
+		display: flex;
+		flex-wrap: wrap;
+		align-items: center;
+		gap: 0.45rem;
+		margin: 0 0 1rem;
+		font-family: var(--font-mono);
+		font-size: 0.76rem;
+		letter-spacing: 0.04em;
+		color: var(--fg-3);
+	}
+	.breadcrumb a {
+		color: var(--fg-2);
+	}
+	.breadcrumb a:hover {
+		color: var(--fg);
+	}
+	.article-title {
+		font-family: var(--font-kai);
+		font-size: 2rem;
+		font-weight: 700;
+		line-height: 1.4;
+		margin: 0 0 0.8rem;
+		text-wrap: pretty;
+	}
+	@media (max-width: 620px) {
+		.article-title {
+			font-size: 1.6rem;
+		}
+	}
+	.article-lede {
+		font-family: var(--font-kai);
+		margin: 0 0 1.5rem;
+		color: var(--fg-2);
+		font-size: 1.05rem;
+		line-height: 1.85;
+		text-wrap: pretty;
+	}
+	.article-tags {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 0.5rem;
+		margin-bottom: 1.75rem;
+	}
+	.hero-image {
+		width: 100%;
+		margin-bottom: 2em;
+	}
+	.hero-image img {
+		display: block;
+		margin: 0 auto;
+		border-radius: 8px;
+		border: 1px solid var(--border);
+	}
+
+	/* ---- 维护状态条 ---- */
+	.maintenance {
+		border-block: 1px solid var(--border-2);
+		padding: 1rem 0 1.05rem;
+	}
+	.maintenance-state {
+		display: flex;
+		flex-wrap: wrap;
+		align-items: baseline;
+		gap: 0.5rem 0.7rem;
+		margin: 0 0 0.85rem;
+	}
+	.maintenance-state .dot {
+		align-self: center;
+	}
+	.maintenance-state b {
+		font-size: 0.95rem;
+		font-weight: 600;
+		color: var(--fg);
+	}
+	.maintenance-state em {
+		font-style: normal;
+		color: var(--fg-2);
+		font-size: 0.86rem;
+	}
+	.maintenance dl {
+		display: grid;
+		grid-template-columns: repeat(3, minmax(0, 1fr));
+		gap: 0.9rem 1.5rem;
+		margin: 0;
+	}
+	.maintenance dt {
+		font-family: var(--font-mono);
+		font-size: 0.71rem;
+		letter-spacing: 0.1em;
+		text-transform: uppercase;
+		color: var(--fg-2);
+		margin-bottom: 0.15rem;
+	}
+	.maintenance dd {
+		margin: 0;
+		font-size: 0.88rem;
+		line-height: 1.6;
+		color: var(--fg);
+		font-weight: 500;
+		font-variant-numeric: tabular-nums;
+	}
+	.maintenance dd small {
+		display: block;
+		color: var(--fg-2);
+		font-size: 0.86em;
+		font-weight: 400;
+	}
+	@media (max-width: 620px) {
+		.maintenance dl {
+			grid-template-columns: repeat(2, minmax(0, 1fr));
+		}
+	}
+	.maintenance--versioned .staleness {
+		color: var(--warn);
+		background: color-mix(in oklab, var(--warn) 10%, var(--bg));
+	}
+	.maintenance--archived .maintenance-state b {
+		color: var(--fg-2);
+	}
+	.staleness {
+		margin-top: 0.9rem;
+		padding: 0.65rem 0.85rem;
+		border-radius: 6px;
+		background: var(--bg-subtle);
+		color: var(--fg-2);
+		font-size: 0.82rem;
+		line-height: 1.65;
+	}
+
+	/* ---- 正文 ---- */
+	.prose {
+		line-height: 1.85;
+		padding-top: 2.5rem;
+	}
+	.prose > :first-child {
+		margin-top: 0;
+	}
+	/* 首个 h2 紧跟维护状态条, 去掉分隔线, 避免两条横线叠在一起 */
+	.prose > h2:first-child {
+		border-top: none;
+		padding-top: 0;
+	}
+	.prose p {
+		margin: 0 0 1.25em;
+		text-wrap: pretty;
+	}
+	.prose h2,
+	.prose h3 {
+		scroll-margin-top: calc(var(--header-h) + 1.5rem);
+		position: relative;
+	}
+	/* 标题阶梯: h2 提到 ~24px (长文分节的骨架), h3 与正文拉开到 ~20px */
+	.prose h2 {
+		margin: 3rem 0 1rem;
+		padding-top: 1.25rem;
+		border-top: 1px solid var(--border);
+		font-size: 1.45em;
+		font-weight: 600;
+		line-height: 1.4;
+	}
+	.prose h3 {
+		margin: 2.25rem 0 0.7rem;
+		font-size: 1.18em;
+		font-weight: 600;
+	}
+	/* 命中锚点时给标题一个位置确认标记 */
+	.prose :is(h2, h3):target::before {
+		content: '';
+		position: absolute;
+		margin-left: -0.85rem;
+		margin-top: 0.55em;
+		width: 3px;
+		height: 1.1em;
+		border-radius: 2px;
+		background: var(--fg-3);
+	}
+
+	/* 长文里的链接默认带下划线: 不靠颜色单独承担语义 */
+	.prose a {
+		color: var(--accent-text);
+		text-decoration: underline;
+		text-decoration-thickness: 1px;
+		text-underline-offset: 3px;
+		text-decoration-color: color-mix(in oklab, var(--accent-text) 40%, transparent);
+	}
+	.prose a:hover {
+		text-decoration-color: currentColor;
+	}
+	.prose strong {
+		font-weight: 700;
+	}
+	.prose ul,
+	.prose ol {
+		margin: 1.15em 0;
+		padding-left: 1.6em;
+	}
+	.prose ul {
+		list-style: disc;
+	}
+	.prose ol {
+		list-style: decimal;
+	}
+	.prose li {
+		margin: 0.45em 0;
+	}
+	.prose li::marker {
+		color: var(--fg-3);
+	}
+	.prose li > p {
+		margin-bottom: 0.5em;
+	}
+	.prose blockquote {
+		font-family: var(--font-kai);
+		margin: 1.5em 0;
+		padding: 0.1em 0 0.1em 1em;
+		border-left: 3px solid var(--border-2);
+		color: var(--fg-2);
+	}
+	.prose blockquote p {
+		margin-bottom: 0.5em;
+	}
+	.prose hr {
+		border: none;
+		border-top: 1px solid var(--border);
+		margin: 2.5em 0;
+	}
+	.prose img {
+		border-radius: 6px;
+		max-width: 100%;
+		height: auto;
+	}
+
+	/* 中西混排: 行内代码给出侧边距, 否则会紧贴汉字 */
+	.prose code {
+		font-family: var(--font-mono);
+		font-size: 0.85em;
+		background: var(--code-bg);
+		color: var(--code-fg);
+		padding: 0.12em 0.4em;
+		border-radius: 3px;
+		margin: 0 0.12em;
+		word-break: break-word;
+	}
+	/* 中文标点挤压 (渐进增强, 不支持的浏览器无副作用) */
+	@supports (text-spacing-trim: trim-start) {
+		.prose {
+			text-spacing-trim: trim-start;
+		}
+	}
+
+	/* ---- 代码块 ----
+	   Shiki 双主题变量原样使用; 但背景改绑 --bg-subtle,
+	   避免浅色下代码块底色与页面同为白、只靠一条边框存在。 */
+	.prose pre {
+		position: relative;
+		/* padding-top 用 rem, 与语言标签的 height 同单位; 用 em 会因两者字号不同而错位 */
+		margin: 1.5em 0;
+		padding: 2.2rem 0 0;
+		border: 1px solid var(--border);
+		border-radius: 8px;
+		font-size: 0.84em;
+		line-height: 1.7;
+		overflow: visible !important; /* 覆盖 Shiki 内联的 overflow-x:auto, 滚动交给内层 code */
+	}
+	.prose pre > code {
+		all: unset;
+		display: block;
+		overflow-x: auto;
+		padding: 0 1.15em 1.15em;
+		tab-size: 2;
+		overscroll-behavior-x: contain; /* 横向滑到底不外泄成页面级滑动/返回手势 */
+		/* 左右两侧的滚动提示: 内容溢出时才出现, 纯 background-attachment 实现 */
+		background-image:
+			linear-gradient(to right, var(--bg-subtle), transparent),
+			linear-gradient(to left, var(--bg-subtle), transparent),
+			linear-gradient(to right, var(--edge), transparent),
+			linear-gradient(to left, var(--edge), transparent);
+		background-repeat: no-repeat;
+		background-size:
+			28px 100%,
+			28px 100%,
+			12px 100%,
+			12px 100%;
+		background-position:
+			0 0,
+			100% 0,
+			0 0,
+			100% 0;
+		background-attachment: local, local, scroll, scroll;
+	}
+	.prose pre > code .line {
+		display: block;
+		min-height: 1.7em;
+	}
+	/* 语言标签: 固定在代码块左上角, 不随横向滚动漂移 */
+	.prose pre[data-language]::before {
+		content: attr(data-language);
+		position: absolute;
+		inset: 0 0 auto 0;
+		height: 2.2rem;
+		display: flex;
+		align-items: center;
+		padding: 0 1.15em;
+		border-bottom: 1px solid var(--border);
+		font-family: var(--font-mono);
+		font-size: 0.78rem;
+		letter-spacing: 0.1em;
+		text-transform: uppercase;
+		color: var(--fg-2);
+	}
+	.astro-code {
+		background-color: var(--bg-subtle) !important;
+		color: var(--shiki-light) !important;
+	}
+	.astro-code span {
+		color: var(--shiki-light) !important;
+		background-color: transparent !important;
+	}
+	html[data-theme='dark'] .astro-code,
+	html[data-theme='dark'] .astro-code span {
+		color: var(--shiki-dark) !important;
+	}
+	@media (prefers-color-scheme: dark) {
+		html:not([data-theme]) .astro-code,
+		html:not([data-theme]) .astro-code span {
+			color: var(--shiki-dark) !important;
+		}
+	}
+
+	/* ---- 表格 ---- */
+	.prose table {
+		width: 100%;
+		margin: 1.75em 0;
+		border-collapse: collapse;
+		font-size: 0.88em;
+		line-height: 1.6;
+	}
+	.prose caption {
+		caption-side: top;
+		text-align: left;
+		padding-bottom: 0.6em;
+		color: var(--fg-2);
+		font-family: var(--font-mono);
+		font-size: 0.8em;
+		letter-spacing: 0.02em;
+	}
+	.prose th {
+		text-align: left;
+		padding: 0.55em 0.7em;
+		border-bottom: 1px solid var(--border-2);
+		font-weight: 600;
+		color: var(--fg);
+		white-space: nowrap;
+	}
+	.prose td {
+		padding: 0.6em 0.7em;
+		border-bottom: 1px solid var(--border);
+		color: var(--fg-2);
+		vertical-align: top;
+		font-variant-numeric: tabular-nums;
+	}
+	.prose tbody tr:hover td {
+		background: var(--bg-subtle);
+	}
+	.prose td code {
+		white-space: nowrap;
+	}
+
+	/* 窄屏: 表格自己变成横向滚动容器, 首列吸附, 不做无意义的挤压 */
+	@media (max-width: 860px) {
+		.prose table {
+			display: block;
+			width: max-content;
+			min-width: 100%;
+			max-width: 100%;
+			overflow-x: auto;
+			overscroll-behavior-x: contain;
+			background-image:
+				linear-gradient(to right, var(--bg), transparent),
+				linear-gradient(to left, var(--bg), transparent),
+				linear-gradient(to right, var(--edge), transparent),
+				linear-gradient(to left, var(--edge), transparent);
+			background-repeat: no-repeat;
+			background-size:
+				24px 100%,
+				24px 100%,
+				12px 100%,
+				12px 100%;
+			background-position:
+				0 0,
+				100% 0,
+				0 0,
+				100% 0;
+			background-attachment: local, local, scroll, scroll;
+		}
+		.prose thead th:first-child,
+		.prose tbody td:first-child {
+			position: sticky;
+			left: 0;
+			z-index: 1;
+			background: var(--bg);
+			border-right: 1px solid var(--border);
+		}
+		.prose tbody tr:hover td:first-child {
+			background: var(--bg-subtle);
+		}
+		.prose td,
+		.prose th {
+			white-space: nowrap;
+		}
+		.prose td:not(:first-child) {
+			white-space: normal;
+			min-width: 15em;
+		}
+	}
+
+	/* ---- 文末 ---- */
+	.article-foot {
+		margin-top: 3.5rem;
+		padding-top: 1.75rem;
+		border-top: 1px solid var(--border);
+	}
+	.revision {
+		display: flex;
+		flex-wrap: wrap;
+		align-items: center;
+		gap: 0.6rem 1rem;
+		padding: 1rem 1.15rem;
+		border: 1px solid var(--border);
+		border-radius: 8px;
+		color: var(--fg-2);
+		font-size: 0.86rem;
+		line-height: 1.7;
+	}
+	.revision p {
+		margin: 0;
+		flex: 1 1 20rem;
+		text-wrap: pretty;
+	}
+	.article-nav {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 0.75rem;
+		margin-top: 1.5rem;
+	}
+
+	/* ---- 手机阅读: 代码块与表格出血到屏幕边缘 ---- */
+	@media (max-width: 620px) {
+		.article-layout {
+			padding-top: 2rem;
+		}
+		/* 窄屏头部折成两行, 锚点跳转要多让出一行的高度 */
+		.prose h2,
+		.prose h3 {
+			scroll-margin-top: calc(var(--header-h) + 3.75rem);
+		}
+		.prose pre {
+			margin-inline: calc(-1 * var(--gutter));
+			border-inline: none;
+			border-radius: 0;
+			font-size: 0.8em;
+		}
+		.prose pre > code {
+			padding-inline: var(--gutter);
+		}
+		.prose pre[data-language]::before {
+			padding-inline: var(--gutter);
+		}
+		.prose table {
+			margin-inline: calc(-1 * var(--gutter));
+			min-width: calc(100% + 2 * var(--gutter));
+			max-width: calc(100% + 2 * var(--gutter));
+		}
+		.prose caption {
+			padding-left: var(--gutter);
+		}
+		.prose thead th:first-child,
+		.prose tbody td:first-child {
+			padding-left: var(--gutter);
+		}
+	}
+</style>

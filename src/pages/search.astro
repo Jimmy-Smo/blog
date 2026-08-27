@@ -1,0 +1,62 @@
+---
+import BaseHead from '../components/BaseHead.astro';
+import Footer from '../components/Footer.astro';
+import Header from '../components/Header.astro';
+import { SITE_TITLE } from '../consts';
+
+// astro-pagefind v2 只提供集成 (构建期生成索引 + dev 期代理 /pagefind/),
+// 不再导出 <Search /> 组件, 所以这里直接用 Pagefind 自带的 UI bundle。
+// /pagefind/* 是 build 产物, 用 is:inline 防止 Vite 在构建期去解析这些路径。
+---
+
+<!doctype html>
+<html lang="zh-CN">
+	<head>
+		<BaseHead title={`搜索 · ${SITE_TITLE}`} description="全站搜索" />
+		<link rel="stylesheet" href="/pagefind/pagefind-ui.css" />
+		<style>
+			#search {
+				--pagefind-ui-scale: 0.9;
+				--pagefind-ui-primary: var(--accent);
+				--pagefind-ui-border-radius: 8px;
+				--pagefind-ui-font: inherit;
+				--pagefind-ui-text: var(--fg);
+				--pagefind-ui-background: var(--bg);
+				--pagefind-ui-border: var(--border-2);
+				--pagefind-ui-tag: var(--bg-subtle);
+			}
+		</style>
+	</head>
+	<body>
+		<Header />
+		<main data-pagefind-ignore>
+			<h1>搜索</h1>
+			<div id="search"></div>
+			<noscript>搜索功能需要启用 JavaScript。</noscript>
+		</main>
+		<Footer />
+
+		<script is:inline src="/pagefind/pagefind-ui.js"></script>
+		<script is:inline>
+			window.addEventListener('DOMContentLoaded', () => {
+				// 索引是 build 产物: `astro dev` 下先跑一次 npm run build 才搜得到东西。
+				if (typeof PagefindUI === 'undefined') return;
+				new PagefindUI({
+					element: '#search',
+					showImages: false,
+					showSubResults: true,
+					translations: {
+						placeholder: '搜索文章',
+						clear_search: '清除',
+						load_more: '加载更多结果',
+						search_label: '搜索本站',
+						zero_results: '没有找到与 [SEARCH_TERM] 相关的结果',
+						many_results: '找到 [COUNT] 条与 [SEARCH_TERM] 相关的结果',
+						one_result: '找到 [COUNT] 条与 [SEARCH_TERM] 相关的结果',
+						searching: '正在搜索 [SEARCH_TERM] ...',
+					},
+				});
+			});
+		</script>
+	</body>
+</html>

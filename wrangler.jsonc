@@ -1,0 +1,30 @@
+{
+	"$schema": "node_modules/wrangler/config-schema.json",
+	"name": "jimmy42x-blog",
+
+	// 冻结 Workers 运行时行为版本, 保证构建可重复。设成首次部署当天, 之后不要随手改。
+	"compatibility_date": "2026-08-27",
+
+	// 纯静态站不需要 @astrojs/cloudflare 适配器: 没有 main 入口,
+	// Workers 直接从边缘存储读 dist/ 里的文件返回, 不执行用户代码。
+	// 等 V2 要写 /api/* 时再装适配器并补 main 字段, 这一段不用动。
+	"assets": {
+		"directory": "./dist",
+		// 找不到资源时回落到 dist/404.html, 并且真的返回 404 状态码 (不是 200)
+		"not_found_handling": "404-page"
+	},
+
+	// workers.dev 默认域已在绑好 jimmy42x.com 后关闭, 避免两个域名重复被索引。
+	// 需要临时预览时可改回 true 部署一次。
+	"workers_dev": false,
+
+	// PR 预览地址
+	"preview_urls": true,
+
+	"observability": {
+		"enabled": true
+	},
+
+	// 绑定自定义域名: deploy 时 Cloudflare 会自动建 DNS 记录并签发证书
+	"routes": [{ "pattern": "jimmy42x.com", "custom_domain": true }]
+}

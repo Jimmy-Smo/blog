@@ -8,7 +8,7 @@ tags:
   - kubernetes
   - troubleshooting
 status: evergreen
-draft: true
+draft: false
 ---
 
 # JVM OOM 排查：Metaspace 泄漏定位与 K8s 环境 HeapDump 采集

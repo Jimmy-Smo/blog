@@ -1,0 +1,104 @@
+---
+import BaseHead from '../../components/BaseHead.astro';
+import Footer from '../../components/Footer.astro';
+import Header from '../../components/Header.astro';
+import { SITE_TITLE } from '../../consts';
+import { collectTags, getPublishedPosts } from '../../lib/posts';
+
+const tags = collectTags(await getPublishedPosts());
+---
+
+<!doctype html>
+<html lang="zh-CN">
+	<head>
+		<BaseHead title={`标签 · ${SITE_TITLE}`} description="按标签浏览全部文章。" />
+	</head>
+	<body>
+		<Header />
+		<main id="main">
+			<h1 class="page-title">标签</h1>
+			<p class="count">{tags.length} 个标签</p>
+			<div class="topics">
+				{
+					tags.map(({ tag, count }) => (
+						<a class="topic" href={`/tags/${tag}/`}>
+							<span class="topic-name">{tag}</span>
+							<span class="topic-count">{count} 篇</span>
+							<span class="topic-arrow" aria-hidden="true">
+								→
+							</span>
+						</a>
+					))
+				}
+			</div>
+		</main>
+		<Footer />
+	</body>
+</html>
+
+<style>
+	.page-title {
+		font-family: var(--font-kai);
+		font-size: 1.75rem;
+		font-weight: 700;
+		margin: 0 0 0.2rem;
+	}
+	.count {
+		margin: 0 0 2rem;
+		color: var(--fg-2);
+		font-size: 0.85rem;
+		font-family: var(--font-mono);
+	}
+
+	/* 与首页一致的标签入口卡片 */
+	.topics {
+		display: grid;
+		grid-template-columns: repeat(auto-fill, minmax(12rem, 1fr));
+		gap: 0 2.5rem;
+	}
+	.topic {
+		display: grid;
+		grid-template-columns: auto 1fr auto;
+		align-items: baseline;
+		gap: 0 0.7rem;
+		padding: 0.95rem 0.75rem;
+		margin-inline: -0.75rem;
+		border-bottom: 1px solid var(--border);
+		border-radius: 6px;
+		color: inherit;
+		transition: background-color 0.18s ease;
+	}
+	.topic:hover {
+		background: var(--bg-subtle);
+		text-decoration: none;
+	}
+	.topic:hover .topic-name {
+		text-decoration: underline;
+		text-underline-offset: 4px;
+		text-decoration-color: var(--border-2);
+	}
+	.topic:hover .topic-arrow {
+		color: var(--fg);
+		transform: translateX(3px);
+	}
+	.topic-name {
+		font-family: var(--font-mono);
+		font-size: 0.92rem;
+		font-weight: 500;
+		color: var(--fg);
+	}
+	.topic-count {
+		font-family: var(--font-mono);
+		font-size: 0.76rem;
+		color: var(--fg-2);
+		font-variant-numeric: tabular-nums;
+		justify-self: end;
+	}
+	.topic-arrow {
+		color: var(--fg-3);
+		font-size: 0.8rem;
+		transition:
+			color 0.18s ease,
+			transform 0.18s ease;
+	}
+</style>

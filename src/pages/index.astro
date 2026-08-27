@@ -1,0 +1,285 @@
+---
+import { Image } from 'astro:assets';
+import avatar from '../assets/avatar.webp';
+import BaseHead from '../components/BaseHead.astro';
+import Footer from '../components/Footer.astro';
+import Header from '../components/Header.astro';
+import { GITHUB_REPO, SITE_DESCRIPTION, SITE_TITLE } from '../consts';
+import { collectTags, getPublishedPosts, STATUS_META } from '../lib/posts';
+
+const posts = await getPublishedPosts();
+const recent = posts.slice(0, 8);
+const tags = collectTags(posts).slice(0, 16);
+
+const iso = (d: Date) => d.toISOString().slice(0, 10);
+
+/**
+ * 头条条目附一段真实正文摘录, 让读者判断文风。
+ * 取第一个普通段落 (跳过标题/列表/代码块/引用/图片), 剥掉行内标记后截断。
+ */
+function excerptOf(body: string | undefined, max = 110): string {
+	if (!body) return '';
+	for (const block of body.split(/\n\s*\n/)) {
+		const t = block.trim();
+		if (!t || /^[#>\-`|*!]/.test(t) || /^\d+\./.test(t)) continue;
+		const text = t
+			.replace(/!\[[^\]]*\]\([^)]*\)/g, '')
+			.replace(/\[([^\]]*)\]\([^)]*\)/g, '$1')
+			.replace(/[`*_~]/g, '')
+			.replace(/\s+/g, ' ')
+			.trim();
+		if (text.length < 20) continue;
+		return text.length > max ? text.slice(0, max) + '…' : text;
+	}
+	return '';
+}
+---
+
+<!doctype html>
+<html lang="zh-CN">
+	<head>
+		<BaseHead title={SITE_TITLE} description={SITE_DESCRIPTION} />
+	</head>
+	<body>
+		<Header />
+		<main id="main" class="home shell">
+			{/* 身份区: 头像全站只在这里和关于页出现 */}
+			<section class="identity">
+				<Image
+					class="identity-avatar"
+					src={avatar}
+					alt="Jimmy42X 的头像"
+					width={128}
+					height={128}
+					loading="eager"
+					decoding="async"
+				/>
+				<div class="identity-body">
+					<h1 class="identity-name">{SITE_TITLE}</h1>
+					<p class="identity-lede">
+						一个公开、持续维护的知识库：写技术，也写学习本身，偶尔写些人文与生活的感触。把真正搞懂、认真想过的东西写成长文，主题随涉猎变化。
+					</p>
+				</div>
+			</section>
+
+			<section class="section">
+				<div class="section-head">
+					<h2 class="eyebrow">最新文章</h2>
+					<a class="link-quiet" href="/blog/">全部文章 →</a>
+				</div>
+
+				<ul class="entries">
+					{
+						recent.map((post, i) => {
+							const meta = STATUS_META[post.data.status];
+							const excerpt = i === 0 ? excerptOf(post.body) : '';
+							return (
+								<li>
+									<a class:list={['entry', { 'entry--lead': i === 0 }]} href={`/blog/${post.id}/`}>
+										<div class="entry-stamp">
+											<b>{iso(post.data.date)}</b>
+											<span class="entry-status">
+												<span class:list={['dot', meta.dot]} aria-hidden="true" />
+												{meta.label}
+											</span>
+										</div>
+										<div class="entry-body">
+											<h3 class="entry-title">{post.data.title}</h3>
+											<p class="entry-desc">{post.data.description}</p>
+											{excerpt && <p class="entry-excerpt">{excerpt}</p>}
+											<div class="entry-tags">
+												{post.data.tags.map((tag) => (
+													<span>{tag}</span>
+												))}
+											</div>
+										</div>
+									</a>
+								</li>
+							);
+						})
+					}
+				</ul>
+
+				{/* 诚实的列表尾部: 篇数少是事实, 不用假条目填满版面 */}
+				<div class="tail">
+					<p>
+						目前公开 {posts.length} 篇。更多笔记还在
+						<a href={GITHUB_REPO} target="_blank" rel="noopener noreferrer">til 仓库</a>
+						里以 Markdown 形式积累，写到能自洽了再迁过来。
+					</p>
+					<p>
+						订阅 <a href="/rss.xml">RSS</a> 会在新文章发布和旧文章重大修订时收到更新。
+					</p>
+				</div>
+			</section>
+
+			{
+				tags.length > 0 && (
+					<section class="section">
+						<div class="section-head">
+							<h2 class="eyebrow">按标签浏览</h2>
+						</div>
+						<div class="topics">
+							{tags.map(({ tag, count }) => (
+								<a class="topic" href={`/tags/${tag}/`}>
+									<span class="topic-name">{tag}</span>
+									<span class="topic-count">{count} 篇</span>
+									<span class="topic-arrow" aria-hidden="true">
+										→
+									</span>
+								</a>
+							))}
+						</div>
+					</section>
+				)
+			}
+		</main>
+		<Footer />
+	</body>
+</html>
+
+<style>
+	.home {
+		padding: 3.5rem 0 1rem;
+	}
+
+	/* ---- 身份区: 头像 + 一句定位。层级靠字号与字重拉开, 不靠把次要文字调淡 ---- */
+	.identity {
+		display: flex;
+		gap: 1.25rem;
+		align-items: flex-start;
+		padding-bottom: 3rem;
+		border-bottom: 1px solid var(--border);
+	}
+	.identity-avatar {
+		width: 64px;
+		height: 64px;
+		flex-shrink: 0;
+		border-radius: 10px;
+		border: 1px solid var(--border);
+		background: var(--bg-subtle);
+		object-fit: cover;
+	}
+	.identity-body {
+		min-width: 0;
+	}
+	.identity-name {
+		font-size: 1.5rem;
+		font-weight: 700;
+		line-height: 1.3;
+		margin: 0.1rem 0 0.7rem;
+		letter-spacing: 0;
+	}
+	.identity-lede {
+		font-family: var(--font-kai);
+		color: var(--fg);
+		font-size: 1.15rem;
+		line-height: 1.8;
+		max-width: 28em;
+		margin: 0;
+		text-wrap: pretty;
+	}
+
+	/* ---- 区块标题 ---- */
+	.section {
+		padding-top: 3.25rem;
+	}
+	.section-head {
+		display: flex;
+		align-items: baseline;
+		justify-content: space-between;
+		gap: 1.5rem;
+		margin-bottom: 1.25rem;
+	}
+	.section-head h2 {
+		margin: 0;
+	}
+
+	/* ---- 列表尾部的诚实空状态 ---- */
+	.tail {
+		margin-top: 1.75rem;
+		padding: 1.25rem 1.35rem;
+		border: 1px dashed var(--border-2);
+		border-radius: 8px;
+		color: var(--fg-2);
+		font-size: 0.88rem;
+		line-height: 1.75;
+	}
+	.tail p {
+		margin: 0;
+		text-wrap: pretty;
+	}
+	.tail p + p {
+		margin-top: 0.5rem;
+		font-size: 0.95em;
+	}
+
+	/* ---- 标签入口: 只渲染真实存在的标签和篇数 ---- */
+	.topics {
+		display: grid;
+		grid-template-columns: repeat(auto-fill, minmax(12rem, 1fr));
+		gap: 0 2.5rem;
+	}
+	.topic {
+		display: grid;
+		grid-template-columns: auto 1fr auto;
+		align-items: baseline;
+		gap: 0 0.7rem;
+		padding: 0.95rem 0.75rem;
+		margin-inline: -0.75rem;
+		border-bottom: 1px solid var(--border);
+		border-radius: 6px;
+		color: inherit;
+		transition: background-color 0.18s ease;
+	}
+	.topic:hover {
+		background: var(--bg-subtle);
+		text-decoration: none;
+	}
+	/* 小号 mono 标签不着强调色 (会掉到 3.7:1), 改用下划线 + 箭头位移 */
+	.topic:hover .topic-name {
+		text-decoration: underline;
+		text-underline-offset: 4px;
+		text-decoration-color: var(--border-2);
+	}
+	.topic:hover .topic-arrow {
+		color: var(--fg);
+		transform: translateX(3px);
+	}
+	.topic-name {
+		font-family: var(--font-mono);
+		font-size: 0.92rem;
+		font-weight: 500;
+		color: var(--fg);
+	}
+	.topic-count {
+		font-family: var(--font-mono);
+		font-size: 0.76rem;
+		color: var(--fg-2);
+		font-variant-numeric: tabular-nums;
+		justify-self: end;
+	}
+	.topic-arrow {
+		color: var(--fg-3);
+		font-size: 0.8rem;
+		transition:
+			color 0.18s ease,
+			transform 0.18s ease;
+	}
+
+	@media (max-width: 620px) {
+		.home {
+			padding-top: 2.5rem;
+		}
+		.identity {
+			gap: 1rem;
+		}
+		.identity-avatar {
+			width: 52px;
+			height: 52px;
+		}
+		.identity-name {
+			font-size: 1.32rem;
+		}
+	}
+</style>

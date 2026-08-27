@@ -1,0 +1,118 @@
+---
+import { Image } from 'astro:assets';
+import BaseHead from '../components/BaseHead.astro';
+import Footer from '../components/Footer.astro';
+import Header from '../components/Header.astro';
+import { GITHUB_REPO, GITHUB_URL, SITE_TITLE, X_URL } from '../consts';
+import avatar from '../assets/avatar.webp';
+---
+
+<!doctype html>
+<html lang="zh-CN">
+	<head>
+		<BaseHead title={`关于 · ${SITE_TITLE}`} description="关于 Jimmy42X Blog：写什么、怎么写、边界在哪。" />
+	</head>
+	<body>
+		<Header />
+		<main class="about">
+			<div class="profile">
+				<Image src={avatar} alt="Jimmy42X 的头像" width={192} height={192} class="avatar" />
+				<h1>Jimmy42X</h1>
+				<p class="bio">
+					后端工程师。主要关注 JVM、Kubernetes、网络与工程效率，
+					业余折腾各种工具链。相信「写下来才算学会」。
+				</p>
+				<div class="actions">
+					<a class="btn" href={GITHUB_URL} target="_blank" rel="noopener noreferrer">GitHub</a>
+					<a class="btn" href={X_URL} target="_blank" rel="noopener noreferrer">X (Twitter)</a>
+					<a class="btn" href="/rss.xml">RSS</a>
+				</div>
+			</div>
+
+			<h2>关于博客</h2>
+			<p>
+				这里是公开、持续维护的学习知识库。文章围绕一个主题组织，便于检索和复习；
+				未经整理的草稿和原始材料保存在独立的私有仓库，只有成稿才会出现在这里。
+			</p>
+
+			<h2>写什么</h2>
+			<ul>
+				<li><strong>专题手册</strong>：围绕一条知识主线长期维护，包含学习地图、原理、实验和参考资料。</li>
+				<li><strong>技术笔记</strong>：解决一个明确问题，记录结论、原理、验证过程和适用边界。</li>
+				<li><strong>研究总结</strong>：对会议、文章或资料做二次整理，明确事实、观点、来源和时间范围。</li>
+			</ul>
+
+			<h2>写作约定</h2>
+			<p>
+				正文优先使用「问题—结论—原理—实践与验证—边界—参考资料」的结构。涉及框架、产品、价格或政策时，
+				一律标明版本或核验日期——技术内容会过期，不标注等于误导。
+			</p>
+
+			<h2>边界</h2>
+			<p>
+				本站只发布适合公开的成稿，不包含工作项目的内部信息、真实账号、密钥或未脱敏数据。
+			</p>
+
+			<div class="contact">
+				<span>发现错误或有建议？欢迎联系。</span>
+				<a class="btn primary" href={`${GITHUB_REPO}/issues`} target="_blank" rel="noopener noreferrer">提 Issue</a>
+			</div>
+		</main>
+		<Footer />
+	</body>
+</html>
+
+<style>
+	.about {
+		max-width: 640px;
+	}
+	.profile {
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		text-align: center;
+		margin-bottom: 3.5em;
+	}
+	.profile :global(img.avatar) {
+		width: 96px;
+		height: 96px;
+		border-radius: 999px;
+		display: block;
+	}
+	.profile h1 {
+		margin: 0.7em 0 0.2em;
+		font-size: 1.6em;
+	}
+	.bio {
+		margin: 0 0 1.4em;
+		color: var(--fg-2);
+		max-width: 30em;
+	}
+	.actions {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 0.6em;
+		justify-content: center;
+	}
+	.contact {
+		display: flex;
+		flex-wrap: wrap;
+		align-items: center;
+		justify-content: space-between;
+		gap: 1em;
+		margin-top: 3em;
+		padding: 1.1em 1.4em;
+		border-radius: 10px;
+		background: var(--bg-subtle);
+		color: var(--fg-2);
+		font-size: 0.92em;
+	}
+	.contact .primary {
+		background: var(--accent);
+		color: #fff;
+	}
+	.contact .primary:hover {
+		opacity: 0.85;
+		border-color: transparent;
+	}
+</style>

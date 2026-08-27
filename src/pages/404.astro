@@ -1,0 +1,38 @@
+---
+import BaseHead from '../components/BaseHead.astro';
+import Footer from '../components/Footer.astro';
+import Header from '../components/Header.astro';
+import { SITE_TITLE } from '../consts';
+---
+
+<!doctype html>
+<html lang="zh-CN">
+	<head>
+		<BaseHead title={`页面不存在 · ${SITE_TITLE}`} description="404" />
+	</head>
+	<body>
+		<Header />
+		<main data-pagefind-ignore>
+			<p class="code">404</p>
+			<p>这个地址没有对应的页面。</p>
+			<p>
+				<a href="/blog/">看看全部文章</a> 或 <a href="/search">搜索一下</a>
+			</p>
+		</main>
+		<Footer />
+	</body>
+</html>
+
+<style>
+	main {
+		text-align: center;
+		padding-top: 5em;
+	}
+	.code {
+		font-family: var(--font-mono);
+		font-size: 4em;
+		color: var(--fg-3);
+		margin: 0 0 0.2em;
+		line-height: 1;
+	}
+</style>

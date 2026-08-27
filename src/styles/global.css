@@ -1,0 +1,733 @@
+/*
+  Tailwind 放在最前面: preflight 选择器优先级很低,
+  下面手写的排版规则可以覆盖重置, 工具类在新组件里仍可用。
+ */
+@import 'tailwindcss';
+
+/* ---------------------------------------------------------------------------
+   设计令牌: 冷调中性灰 (GitHub 系蓝灰), 取代原 Notion 暖灰。
+   --shell 是页面外壳, --measure 是正文阅读宽度, --rail 是文章页目录栏。
+  ------------------------------------------------------------------------- */
+:root {
+	--shell: 960px;
+	--measure: 720px;
+	--rail: 200px;
+	--gutter: 1.25rem;
+	--header-h: 3.6rem;
+
+	--bg: #ffffff;
+	--bg-subtle: #f6f8fa;
+	--fg: #2d3138;
+	/* 派生的次级前景色, 收紧到 b3/80 (~5.2:1 / 3.3:1), 小号元信息才可读 */
+	--fg-2: #2d3138b3;
+	--fg-3: #2d313880;
+	--border: #2d313817;
+	--border-2: #2d31382b;
+	--accent: #2383e2;
+	--code-bg: #46505e1f;
+	/* 行内代码用冷绯红, 与蓝灰底同族 */
+	--code-fg: #c7254e;
+
+	/* 语义色: 只用于「时效性」这一件事 */
+	--ok: #2f7d51;
+	--warn: #966a12;
+	--edge: #2d31381f;
+
+	/* 正文链接专用: --accent 原值在 17px 正文上只有 3.7:1。
+	   不换强调色, 而是派生一档压向 --fg 的文本变体, 升到 4.5:1 以上。
+	   填充、进度条、focus ring 仍用原始 --accent。 */
+	--accent-text: color-mix(in oklab, var(--accent) 82%, var(--fg));
+
+	/* Atkinson 只覆盖拉丁字符, 中文回落到系统字体 */
+	--font-sans:
+		var(--font-atkinson), -apple-system, BlinkMacSystemFont, 'Segoe UI',
+		'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif;
+	--font-mono:
+		ui-monospace, 'SF Mono', 'JetBrains Mono', Menlo, Consolas, monospace;
+	/* 楷体栈用于标题/导语/引用: 霞鹜文楷 (SIL OFL) 由 BaseHead 引入, 分块加载;
+	   缺字/未加载时回落系统楷体。 */
+	--font-kai: 'LXGW WenKai', 'Kaiti SC', 'KaiTi', 'STKaiti', serif;
+}
+
+html[data-theme='dark'] {
+	--bg: #15171d;
+	--bg-subtle: #1d212a;
+	--fg: #e8ebf0;
+	--fg-2: #e8ebf099;
+	--fg-3: #e8ebf073;
+	--border: #e8ebf018;
+	--border-2: #e8ebf025;
+	--accent: #529cca;
+	--code-bg: #e8ebf01a;
+	--code-fg: #f09aac;
+	--ok: #6cbb8b;
+	--warn: #d4a343;
+	--edge: #00000059;
+}
+@media (prefers-color-scheme: dark) {
+	html:not([data-theme]) {
+		--bg: #15171d;
+		--bg-subtle: #1d212a;
+		--fg: #e8ebf0;
+		--fg-2: #e8ebf099;
+		--fg-3: #e8ebf073;
+		--border: #e8ebf018;
+		--border-2: #e8ebf025;
+		--accent: #529cca;
+		--code-bg: #e8ebf01a;
+		--code-fg: #f09aac;
+		--ok: #6cbb8b;
+		--warn: #d4a343;
+		--edge: #00000059;
+	}
+}
+
+/* ---------------------------------------------------------------------------
+   基础排版
+  ------------------------------------------------------------------------- */
+html {
+	color-scheme: light;
+	scrollbar-color: var(--fg-3) transparent;
+	scroll-behavior: smooth;
+}
+html[data-theme='dark'] {
+	color-scheme: dark;
+}
+@media (prefers-color-scheme: dark) {
+	html:not([data-theme]) {
+		color-scheme: dark;
+	}
+}
+@media (prefers-reduced-motion: reduce) {
+	html {
+		scroll-behavior: auto;
+	}
+	*,
+	*::before,
+	*::after {
+		transition-duration: 0.01ms !important;
+		animation-duration: 0.01ms !important;
+	}
+}
+
+body {
+	margin: 0;
+	background: var(--bg);
+	color: var(--fg);
+	font-family: var(--font-sans);
+	font-size: 17px;
+	line-height: 1.8;
+	letter-spacing: 0.01em;
+	overflow-wrap: break-word;
+	-webkit-font-smoothing: antialiased;
+}
+@media (max-width: 720px) {
+	body {
+		font-size: 16px;
+	}
+}
+
+::selection {
+	background: #2383e238;
+}
+/* 深色下换用深色主题的强调色, 浅色蓝在暗底上太闷 */
+html[data-theme='dark'] ::selection {
+	background: #529cca3d;
+}
+@media (prefers-color-scheme: dark) {
+	html:not([data-theme]) ::selection {
+		background: #529cca3d;
+	}
+}
+
+/* 中西混排: CJK 标题一律 1.35 行高、零字距——负字距会挤压方块字 */
+h1,
+h2,
+h3,
+h4 {
+	margin: 1.8em 0 0.5em;
+	color: var(--fg);
+	font-weight: 600;
+	line-height: 1.35;
+	letter-spacing: 0;
+}
+h1:first-child,
+h2:first-child,
+h3:first-child {
+	margin-top: 0;
+}
+h1 {
+	font-size: 2em;
+	font-weight: 700;
+}
+h2 {
+	font-size: 1.35em;
+	margin-top: 2.2em;
+}
+h3 {
+	font-size: 1.15em;
+	margin-top: 1.8em;
+}
+h4 {
+	font-size: 1em;
+}
+
+strong,
+b {
+	font-weight: 700;
+}
+
+a {
+	color: var(--accent);
+	text-decoration: none;
+}
+a:hover {
+	text-decoration: underline;
+	text-underline-offset: 3px;
+}
+:focus-visible {
+	outline: 2px solid var(--accent);
+	outline-offset: 3px;
+	border-radius: 3px;
+}
+
+p {
+	margin-bottom: 1em;
+}
+
+ul,
+ol {
+	padding-left: 1.5em;
+	margin: 1em 0;
+}
+li {
+	margin: 0.35em 0;
+}
+li::marker {
+	color: var(--fg-3);
+}
+
+textarea,
+input {
+	font-size: 16px;
+	font-family: inherit;
+}
+
+table {
+	width: 100%;
+	border-collapse: collapse;
+	font-size: 0.9em;
+	margin: 1.5em 0;
+}
+th {
+	text-align: left;
+	border-bottom: 1px solid var(--border-2);
+	padding: 0.45em 0.6em;
+}
+td {
+	border-bottom: 1px solid var(--border);
+	padding: 0.45em 0.6em;
+}
+
+img {
+	max-width: 100%;
+	height: auto;
+	border-radius: 4px;
+}
+
+/* 中西混排: 行内代码给出侧边距, 否则会紧贴汉字 */
+code {
+	font-family: var(--font-mono);
+	font-size: 0.85em;
+	padding: 0.12em 0.4em;
+	margin: 0 0.12em;
+	background-color: var(--code-bg);
+	color: var(--code-fg);
+	border-radius: 3px;
+}
+
+pre {
+	padding: 1em 1.25em;
+	border-radius: 6px;
+	border: 1px solid var(--border);
+	font-size: 0.85em;
+	line-height: 1.6;
+	overflow-x: auto;
+}
+pre > code {
+	all: unset;
+}
+
+blockquote {
+	border-left: 3px solid var(--border-2);
+	padding: 0.1em 0 0.1em 1em;
+	margin: 1.5em 0;
+	color: var(--fg-2);
+}
+blockquote p {
+	margin-bottom: 0.5em;
+}
+
+hr {
+	border: none;
+	border-top: 1px solid var(--border);
+	margin: 2em 0;
+}
+
+/* 外壳: 导航 / 页脚 / 各页 main 共用一条对齐基线 */
+.shell {
+	width: var(--shell);
+	max-width: calc(100% - 2 * var(--gutter));
+	margin-inline: auto;
+}
+main {
+	width: var(--shell);
+	max-width: calc(100% - 2 * var(--gutter));
+	margin-inline: auto;
+	padding: 2.75rem 0 1rem;
+}
+
+.sr-only {
+	position: absolute !important;
+	width: 1px;
+	height: 1px;
+	padding: 0;
+	margin: 0;
+	overflow: hidden;
+	clip-path: inset(50%);
+	white-space: nowrap;
+	border: 0;
+}
+.skip-link {
+	position: absolute;
+	left: var(--gutter);
+	top: -100%;
+	z-index: 40;
+	background: var(--fg);
+	color: var(--bg);
+	padding: 0.5em 1em;
+	border-radius: 6px;
+	font-size: 0.85em;
+}
+.skip-link:focus {
+	top: 0.5rem;
+	text-decoration: none;
+}
+
+/* ---------------------------------------------------------------------------
+   通用小组件
+  ------------------------------------------------------------------------- */
+.mono {
+	font-family: var(--font-mono);
+	font-variant-numeric: tabular-nums;
+}
+
+/* 小号全大写标签: 0.12em 字距, 低于 0.06em 会挤成一团 */
+.eyebrow {
+	font-family: var(--font-mono);
+	font-size: 0.72rem;
+	letter-spacing: 0.12em;
+	text-transform: uppercase;
+	color: var(--fg-2);
+	font-weight: 500;
+}
+
+.pill {
+	display: inline-flex;
+	align-items: center;
+	gap: 0.35em;
+	padding: 0.1em 0.6em;
+	border-radius: 999px;
+	background: var(--bg-subtle);
+	color: var(--fg-2);
+	font-size: 0.78em;
+	line-height: 1.7;
+	white-space: nowrap;
+}
+
+/* 按钮: hover 只动背景, 前景色永不变淡 */
+.btn {
+	display: inline-flex;
+	align-items: center;
+	gap: 0.45em;
+	padding: 0.5em 1.1em;
+	border-radius: 6px;
+	border: 1px solid var(--border-2);
+	background: var(--bg);
+	color: var(--fg);
+	font-size: 0.88em;
+	line-height: 1.4;
+	transition:
+		background-color 0.18s ease,
+		border-color 0.18s ease,
+		transform 0.12s ease;
+}
+.btn:hover {
+	background: var(--bg-subtle);
+	border-color: var(--fg-3);
+	text-decoration: none;
+}
+.btn:active {
+	transform: translateY(1px);
+}
+/* 唯一的实心 CTA: 用 --fg 而非 --accent, 把强调色留给正文链接 */
+.btn--primary {
+	background: var(--fg);
+	color: var(--bg);
+	border-color: var(--fg);
+}
+.btn--primary:hover {
+	background: color-mix(in oklab, var(--fg) 86%, var(--bg));
+	border-color: color-mix(in oklab, var(--fg) 86%, var(--bg));
+	color: var(--bg);
+}
+
+.link-quiet {
+	color: var(--fg-2);
+	font-size: 0.88em;
+}
+.link-quiet:hover {
+	color: var(--fg);
+	text-decoration: underline;
+	text-underline-offset: 3px;
+}
+
+/* 状态点: 时效性在列表层就要可见 */
+.dot {
+	display: inline-block;
+	width: 6px;
+	height: 6px;
+	border-radius: 50%;
+	background: var(--ok);
+	flex-shrink: 0;
+}
+.dot--warn {
+	background: var(--warn);
+}
+.dot--archived {
+	background: var(--fg-3);
+}
+
+.tag {
+	display: inline-flex;
+	align-items: center;
+	padding: 0.2em 0.65em;
+	border-radius: 5px;
+	border: 1px solid var(--border-2);
+	background: var(--bg);
+	font-family: var(--font-mono);
+	font-size: 0.76rem;
+	color: var(--fg-2);
+	transition:
+		background-color 0.16s ease,
+		border-color 0.16s ease,
+		color 0.16s ease;
+}
+.tag:hover {
+	background: var(--bg-subtle);
+	border-color: var(--fg-3);
+	color: var(--fg);
+	text-decoration: none;
+}
+
+/* ---------------------------------------------------------------------------
+   文章条目列表: 首页与标签页共用。日期是一列独立的时间轴。
+  ------------------------------------------------------------------------- */
+.entries {
+	list-style: none;
+	margin: 0;
+	padding: 0;
+}
+.entries > li + li {
+	border-top: 1px solid var(--border);
+}
+.entry {
+	display: grid;
+	grid-template-columns: 6.5rem minmax(0, 1fr);
+	gap: 0 1.75rem;
+	align-items: start;
+	padding: 1.4rem 0.75rem 1.5rem;
+	margin-inline: -0.75rem;
+	border-radius: 8px;
+	color: inherit;
+	transition: background-color 0.18s ease;
+}
+.entry:hover {
+	background: var(--bg-subtle);
+	text-decoration: none;
+}
+/* 标题 1.19rem/600 属于「大号文本」, 强调色在此处仍满足 3:1;
+   更小的字号上一律不用强调色着色, 改用下划线。 */
+.entry:hover .entry-title {
+	color: var(--accent);
+}
+.entry-stamp {
+	font-family: var(--font-mono);
+	font-variant-numeric: tabular-nums;
+	font-size: 0.76rem;
+	color: var(--fg-2);
+	line-height: 1.9;
+	padding-top: 0.15rem;
+}
+.entry-stamp b {
+	display: block;
+	font-weight: 500;
+	color: var(--fg);
+	letter-spacing: 0.02em;
+}
+.entry-body {
+	min-width: 0;
+}
+.entry-title {
+	font-size: 1.19rem;
+	font-weight: 600;
+	line-height: 1.55;
+	color: var(--fg);
+	margin: 0 0 0.4rem;
+	text-wrap: pretty;
+	transition: color 0.18s ease;
+}
+.entry-desc {
+	color: var(--fg-2);
+	font-size: 0.92rem;
+	line-height: 1.75;
+	margin: 0;
+	text-wrap: pretty;
+}
+.entry-tags {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 0.5rem;
+	margin-top: 0.85rem;
+	font-family: var(--font-mono);
+	font-size: 0.76rem;
+	color: var(--fg-2);
+	letter-spacing: 0.02em;
+}
+/* 头条: 多给一段真实正文摘录, 让读者判断文风 */
+.entry--lead {
+	padding-top: 1.6rem;
+}
+.entry--lead .entry-title {
+	font-size: 1.38rem;
+	line-height: 1.45;
+}
+.entry-excerpt {
+	margin: 1rem 0 0;
+	padding: 0.1em 0 0.1em 1rem;
+	border-left: 2px solid var(--border-2);
+	color: var(--fg-2);
+	font-size: 0.9rem;
+	line-height: 1.8;
+}
+.entry-status {
+	display: inline-flex;
+	align-items: center;
+	gap: 0.4em;
+	color: var(--fg-2);
+}
+@media (max-width: 620px) {
+	.entry {
+		grid-template-columns: minmax(0, 1fr);
+		gap: 0.5rem;
+	}
+	.entry-stamp {
+		display: flex;
+		gap: 0.75rem;
+		padding-top: 0;
+		line-height: 1.6;
+	}
+	.entry-stamp b {
+		display: inline;
+	}
+}
+
+/* ---------------------------------------------------------------------------
+   站点头: 默认是完整磨砂栏 (无 JS 的兜底形态)。
+   有 JS 时页首透明, 滚动后才弹开成栏, 下滑退开、上滑召回。
+  ------------------------------------------------------------------------- */
+.site-header {
+	position: sticky;
+	top: 0;
+	z-index: 10;
+	background: color-mix(in srgb, var(--bg) 82%, transparent);
+	-webkit-backdrop-filter: blur(10px);
+	backdrop-filter: blur(10px);
+	border-bottom: 1px solid var(--border);
+	transition:
+		transform 0.28s ease,
+		background-color 0.28s ease,
+		border-color 0.28s ease;
+}
+html.js .site-header {
+	background: transparent;
+	border-bottom-color: transparent;
+	-webkit-backdrop-filter: none;
+	backdrop-filter: none;
+}
+html.js .site-header.is-stuck {
+	background: color-mix(in srgb, var(--bg) 82%, transparent);
+	-webkit-backdrop-filter: blur(10px);
+	backdrop-filter: blur(10px);
+	border-bottom-color: var(--border);
+}
+.site-header.is-hidden {
+	transform: translateY(-100%);
+}
+/* 键盘焦点进入时强制显示 */
+.site-header.is-hidden:focus-within {
+	transform: none;
+}
+.site-header nav {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	gap: 1.25em;
+	padding: 0.8em 0;
+}
+.site-title {
+	display: flex;
+	align-items: center;
+	gap: 0.55em;
+	color: var(--fg);
+	font-weight: 700;
+	font-size: 1em;
+	letter-spacing: 0.01em;
+}
+.site-title:hover {
+	text-decoration: none;
+}
+.internal-links {
+	display: flex;
+	gap: 0.15em;
+	margin-left: auto;
+}
+.internal-links a {
+	padding: 0.28em 0.62em;
+	border-radius: 5px;
+	color: var(--fg-2);
+	font-size: 0.92em;
+	transition:
+		background-color 0.16s ease,
+		color 0.16s ease;
+}
+.internal-links a:hover {
+	color: var(--fg);
+	background: var(--bg-subtle);
+	text-decoration: none;
+}
+.internal-links a[aria-current='page'] {
+	color: var(--fg);
+	font-weight: 600;
+}
+.icon-links {
+	display: flex;
+	align-items: center;
+	gap: 0.1em;
+}
+.icon-links a,
+.theme-toggle {
+	display: flex;
+	padding: 0.35em;
+	border-radius: 5px;
+	color: var(--fg-3);
+	background: none;
+	border: none;
+	cursor: pointer;
+	transition:
+		color 0.16s ease,
+		background-color 0.16s ease;
+}
+.icon-links a:hover,
+.theme-toggle:hover {
+	color: var(--fg);
+	background: var(--bg-subtle);
+	text-decoration: none;
+}
+.theme-toggle svg {
+	display: none;
+}
+/* 亮色显示月亮 (点击进入深色), 深色显示太阳 */
+.theme-toggle .icon-moon {
+	display: block;
+}
+html[data-theme='dark'] .theme-toggle .icon-moon {
+	display: none;
+}
+html[data-theme='dark'] .theme-toggle .icon-sun {
+	display: block;
+}
+@media (prefers-color-scheme: dark) {
+	html:not([data-theme]) .theme-toggle .icon-moon {
+		display: none;
+	}
+	html:not([data-theme]) .theme-toggle .icon-sun {
+		display: block;
+	}
+}
+
+/* 触屏: 可点目标垫到 44px (桌面指针下保持紧凑) */
+@media (pointer: coarse) {
+	.btn {
+		min-height: 44px;
+	}
+	.internal-links a {
+		display: inline-flex;
+		align-items: center;
+		min-height: 44px;
+	}
+	.icon-links a,
+	.theme-toggle {
+		min-width: 44px;
+		min-height: 44px;
+		align-items: center;
+		justify-content: center;
+	}
+}
+/* 窄屏头部允许折行, 收紧间距让它折得整齐 */
+@media (max-width: 620px) {
+	.site-header nav {
+		gap: 0.4rem 0.8rem;
+		padding: 0.7em 0;
+	}
+}
+
+/* ---------------------------------------------------------------------------
+   页脚
+  ------------------------------------------------------------------------- */
+.site-footer {
+	border-top: 1px solid var(--border);
+	margin-top: 5rem;
+	padding: 2.5em 0 3.5em;
+	color: var(--fg-2);
+	font-size: 0.84em;
+}
+.site-footer .shell {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	gap: 1em 1.5em;
+}
+.site-footer p {
+	margin: 0;
+}
+.site-footer a {
+	color: var(--fg-2);
+}
+.site-footer a:hover {
+	color: var(--fg);
+}
+.footer-legal {
+	margin-left: auto;
+	display: flex;
+	gap: 1.1em;
+}
+@media (max-width: 620px) {
+	.site-footer .shell {
+		flex-direction: column;
+		align-items: flex-start;
+	}
+	.footer-legal {
+		margin-left: 0;
+	}
+}

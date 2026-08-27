@@ -1,0 +1,131 @@
+---
+import BaseHead from '../../components/BaseHead.astro';
+import Footer from '../../components/Footer.astro';
+import Header from '../../components/Header.astro';
+import { SITE_TITLE } from '../../consts';
+import { getPublishedPosts, topicOf } from '../../lib/posts';
+
+const posts = await getPublishedPosts();
+
+// 按主题目录分组, 组内仍是日期倒序 (getPublishedPosts 已排好)。
+const grouped = new Map<string, typeof posts>();
+for (const post of posts) {
+	const topic = topicOf(post);
+	grouped.set(topic, [...(grouped.get(topic) ?? []), post]);
+}
+const topics = [...grouped.entries()].sort((a, b) => a[0].localeCompare(b[0]));
+
+const ym = (d: Date) => `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`;
+---
+
+<!doctype html>
+<html lang="zh-CN">
+	<head>
+		<BaseHead title={`全部文章 · ${SITE_TITLE}`} description="按主题维护的技术笔记、专题手册与研究总结。" />
+	</head>
+	<body>
+		<Header />
+		<main>
+			<h1>全部文章</h1>
+			<p class="count">{posts.length} 篇 · 按主题分组</p>
+			{posts.length === 0 && <p class="empty">还没有已发布的文章。</p>}
+			{
+				topics.map(([topic, items]) => (
+					<section class="topic">
+						<h2>{topic}</h2>
+						<ul class="post-list">
+							{items.map((post) => (
+								<li>
+									<a class="row" href={`/blog/${post.id}/`}>
+										<span class="row-main">
+											<span class="title">{post.data.title}</span>
+											<span class="desc">{post.data.description}</span>
+										</span>
+										<time class="row-date" datetime={post.data.date.toISOString()}>
+											{ym(post.data.date)}
+										</time>
+									</a>
+								</li>
+							))}
+						</ul>
+					</section>
+				))
+			}
+		</main>
+		<Footer />
+	</body>
+</html>
+
+<style>
+	h1 {
+		margin-bottom: 0.15em;
+	}
+	.count {
+		margin: 0 0 2.5em;
+		color: var(--fg-3);
+		font-size: 0.85em;
+	}
+	.topic {
+		margin-bottom: 2.8em;
+	}
+	.topic h2 {
+		margin: 0 0 0.3em;
+		font-size: 0.8em;
+		font-weight: 600;
+		letter-spacing: 0.08em;
+		text-transform: uppercase;
+		color: var(--fg-3);
+		font-family: var(--font-mono);
+	}
+	.post-list {
+		list-style: none;
+		margin: 0;
+		padding: 0;
+	}
+	.post-list li {
+		border-bottom: 1px solid var(--border);
+	}
+	.post-list li:last-child {
+		border-bottom: none;
+	}
+	.row {
+		display: flex;
+		justify-content: space-between;
+		align-items: baseline;
+		gap: 1.5em;
+		padding: 0.9em 0.25em;
+		text-decoration: none;
+	}
+	.row-main {
+		display: flex;
+		flex-direction: column;
+		min-width: 0;
+	}
+	.title {
+		color: var(--fg);
+		font-weight: 500;
+		line-height: 1.5;
+	}
+	.desc {
+		color: var(--fg-3);
+		font-size: 0.85em;
+		line-height: 1.6;
+		margin-top: 0.1em;
+		display: -webkit-box;
+		-webkit-line-clamp: 1;
+		-webkit-box-orient: vertical;
+		overflow: hidden;
+	}
+	.row-date {
+		flex-shrink: 0;
+		font-family: var(--font-mono);
+		font-size: 0.8em;
+		color: var(--fg-3);
+	}
+	.row:hover .title {
+		color: var(--accent);
+	}
+	.empty {
+		color: var(--fg-3);
+	}
+</style>
