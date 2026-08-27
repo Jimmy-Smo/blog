@@ -1,17 +1,28 @@
 # macOS
 .DS_Store
 
-# 编辑器临时文件
+# 编辑器
+.idea/
+.vscode/
 *.swp
 *.tmp
 
-# 站点构建与本地工具
-.idea/
+# 依赖与构建产物
 node_modules/
 dist/
 .astro/
+
+# Wrangler 本地状态与本地密钥
 .wrangler/
+.dev.vars
+
+# 环境变量
 .env
 .env.*
 !.env.example
+
+# 日志
+*.log
+
+# Claude Code 本地配置
 .claude/settings.local.json
