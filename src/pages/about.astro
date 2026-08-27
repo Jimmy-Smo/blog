@@ -3,7 +3,7 @@ import { Image } from 'astro:assets';
 import BaseHead from '../components/BaseHead.astro';
 import Footer from '../components/Footer.astro';
 import Header from '../components/Header.astro';
-import { GITHUB_REPO, GITHUB_URL, SITE_TITLE, X_URL } from '../consts';
+import { GITHUB_REPO, SITE_TITLE } from '../consts';
 import avatar from '../assets/avatar.webp';
 ---
 
@@ -22,17 +22,12 @@ import avatar from '../assets/avatar.webp';
 					后端工程师，工作和兴趣都挺杂，业余爱折腾各种工具链。
 					相信写下来，才算真的学会。
 				</p>
-				<div class="actions">
-					<a class="btn" href={GITHUB_URL} target="_blank" rel="noopener noreferrer">GitHub</a>
-					<a class="btn" href={X_URL} target="_blank" rel="noopener noreferrer">X (Twitter)</a>
-					<a class="btn" href="/rss.xml">RSS</a>
-				</div>
 			</div>
 
 			<h2>关于博客</h2>
 			<p>
-				这里叫拾雾，是我的个人博客。写搞懂了的技术，也写看到的、想到的和被触动的。
-				没写完的草稿放在别处，发出来的都是想清楚的。
+				这里叫拾雾，我的个人博客。写搞懂了的技术，也写看到的、想到的和被触动的。
+				发出来的都是想清楚的，没写完的就先躺着。
 			</p>
 
 			<h2>写什么</h2>
@@ -85,15 +80,9 @@ import avatar from '../assets/avatar.webp';
 		font-size: 1.6em;
 	}
 	.bio {
-		margin: 0 0 1.4em;
+		margin: 0;
 		color: var(--fg-2);
 		max-width: 30em;
-	}
-	.actions {
-		display: flex;
-		flex-wrap: wrap;
-		gap: 0.6em;
-		justify-content: center;
 	}
 	.contact {
 		display: flex;
