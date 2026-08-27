@@ -11,6 +11,46 @@
 - [`content/weekly/`](content/weekly/)：可选的公开精选周刊，不强制周更
 - [`archive/weekly/`](archive/weekly/)：历史周总结，只归档，不再沿用这种写作方式
 
+
+## 站点
+
+内容由 [Astro](https://astro.build/) 构建成纯静态站，托管在 Cloudflare Workers Static Assets 上，
+线上地址 <https://jimmy42x.com>。纯静态站不需要 `@astrojs/cloudflare` 适配器 —— Workers 直接从边缘
+读 `dist/` 返回，不执行用户代码。
+
+```bash
+npm install
+npm run dev        # http://localhost:4321，dev 下草稿也可预览
+npm run build      # 产出 dist/，并生成 dist/pagefind/ 搜索索引
+npm run cf:dev     # 按线上语义预览（不是 astro dev）；搜索需要先 build 一次
+```
+
+> `cf:*` 脚本前面的 `env -u all_proxy` 不能删：wrangler 的 undici 不认 `socks5://` 代理，
+> 带着 `all_proxy` 会直接 `fetch failed`。
+
+### 写作与发布
+
+```bash
+npm run post:list                              # 全部文章与发布状态一览
+npm run post:new -- <topic/slug> "标题"         # 从 content/_template.md 新建
+npm run post:publish -- <topic/slug>           # draft: false + updated 改为今天
+npm run img -- <topic/slug> <图片...>           # 压成 WebP 上传 R2，输出 Markdown
+```
+
+文章的 frontmatter 由 `src/content.config.ts` 里的 zod schema 在构建期校验，**字段写错会直接构建失败**，
+而不是悄悄渲染出一个空白页。`draft: true` 的文章只在 `npm run dev` 下可见，生产构建会跳过。
+
+图片走 R2 图床 `img.jimmy42x.com`：`npm run img` 会缩到 1600px 以内、转 WebP、
+在文件名里加内容哈希后上传。哈希是刻意的 —— 图片带一年期 `immutable` 缓存头，
+换图自动变成新 key，不会被 CDN 缓存挡住，同一张图重传也天然幂等。
+
+## 分支与发布
+
+- `dev`：日常整理；`main`：稳定公开内容。
+- 合并到 `main` 后把 `main` 回灌 `dev`；可选打版本标签（**不加** `v` 前缀）。完整步骤见 [`RELEASING.md`](RELEASING.md)。
+- **推送到 `main` 会触发 Cloudflare Workers Builds 自动构建并部署**，PR 会生成预览地址。
+  本地 `npm run cf:deploy` 仅用于应急，日常不要用，避免和 CI 互相覆盖。
+
 ## 文档类型
 
 - **专题手册**：围绕一条知识主线长期维护，包含学习地图、原理、实验和参考资料。
@@ -40,6 +80,12 @@
 - 仅用于备份的 PDF、音视频和其他大文件
 
 原始材料和草稿放在独立的私有资料库；二进制原件由 iCloud 保存。
+
+## 许可
+
+- 站点代码（`src/`、`public/`、配置文件）：[MIT](LICENSE)
+- 文章内容（`content/`、`archive/`）：[CC BY-NC 4.0](https://creativecommons.org/licenses/by-nc/4.0/deed.zh-hans)，转载需署名并注明出处，禁止商用
+- 标题/引用字体：[霞鹜文楷](https://github.com/lxgw/LxgwWenKai)（SIL OFL，经 npm 包 `lxgw-wenkai-webfont` 分块自托管）
 
 ## 历史说明
 

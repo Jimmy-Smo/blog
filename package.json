@@ -1,0 +1,37 @@
+{
+	"name": "jimmy42x-blog",
+	"type": "module",
+	"version": "0.0.1",
+	"private": true,
+	"scripts": {
+		"dev": "astro dev",
+		"build": "astro build",
+		"preview": "astro preview",
+		"astro": "astro",
+		"img": "node scripts/image-to-r2.mjs",
+		"post:list": "node scripts/posts.mjs list",
+		"post:new": "node scripts/posts.mjs new",
+		"post:publish": "node scripts/posts.mjs publish",
+		"cf:dev": "env -u all_proxy wrangler dev",
+		"cf:deploy": "astro build && env -u all_proxy wrangler deploy"
+	},
+	"allowScripts": {
+		"esbuild": true,
+		"workerd": true,
+		"fsevents": true
+	},
+	"dependencies": {
+		"@astrojs/mdx": "^7.0.8",
+		"@astrojs/rss": "^4.0.19",
+		"@astrojs/sitemap": "^3.7.3",
+		"@tailwindcss/vite": "^4.3.3",
+		"astro": "^7.2.8",
+		"astro-pagefind": "^2.0.1",
+		"sharp": "^0.35.0",
+		"tailwindcss": "^4.3.3"
+	},
+	"devDependencies": {
+		"lxgw-wenkai-webfont": "^1.7.0",
+		"wrangler": "^4.125.0"
+	}
+}

@@ -1,0 +1,96 @@
+---
+import BaseHead from '../../components/BaseHead.astro';
+import Footer from '../../components/Footer.astro';
+import Header from '../../components/Header.astro';
+import { SITE_TITLE } from '../../consts';
+import { collectTags, getPublishedPosts, STATUS_META } from '../../lib/posts';
+
+export async function getStaticPaths() {
+	const posts = await getPublishedPosts();
+	return collectTags(posts).map(({ tag }) => ({
+		params: { tag },
+		props: { tag, posts: posts.filter((p) => p.data.tags.includes(tag)) },
+	}));
+}
+
+const { tag, posts } = Astro.props;
+const iso = (d: Date) => d.toISOString().slice(0, 10);
+---
+
+<!doctype html>
+<html lang="zh-CN">
+	<head>
+		<BaseHead title={`#${tag} · ${SITE_TITLE}`} description={`标签「${tag}」下的 ${posts.length} 篇文章。`} />
+	</head>
+	<body>
+		<Header />
+		<main id="main">
+			<p class="breadcrumb"><a href="/tags/">标签</a><span aria-hidden="true">/</span>{tag}</p>
+			<h1 class="tag-title">#{tag}</h1>
+			<p class="count">{posts.length} 篇</p>
+
+			<ul class="entries">
+				{
+					posts.map((post) => {
+						const meta = STATUS_META[post.data.status];
+						return (
+							<li>
+								<a class="entry" href={`/blog/${post.id}/`}>
+									<div class="entry-stamp">
+										<b>{iso(post.data.date)}</b>
+										<span class="entry-status">
+											<span class:list={['dot', meta.dot]} aria-hidden="true" />
+											{meta.label}
+										</span>
+									</div>
+									<div class="entry-body">
+										<h3 class="entry-title">{post.data.title}</h3>
+										<p class="entry-desc">{post.data.description}</p>
+										<div class="entry-tags">
+											{post.data.tags.map((t) => (
+												<span>{t}</span>
+											))}
+										</div>
+									</div>
+								</a>
+							</li>
+						);
+					})
+				}
+			</ul>
+		</main>
+		<Footer />
+	</body>
+</html>
+
+<style>
+	.breadcrumb {
+		display: flex;
+		flex-wrap: wrap;
+		align-items: center;
+		gap: 0.45rem;
+		margin: 0 0 1rem;
+		font-family: var(--font-mono);
+		font-size: 0.76rem;
+		letter-spacing: 0.04em;
+		color: var(--fg-3);
+	}
+	.breadcrumb a {
+		color: var(--fg-2);
+	}
+	.breadcrumb a:hover {
+		color: var(--fg);
+	}
+	.tag-title {
+		font-family: var(--font-kai);
+		font-size: 1.75rem;
+		font-weight: 700;
+		margin: 0 0 0.2rem;
+	}
+	.count {
+		margin: 0 0 2rem;
+		color: var(--fg-2);
+		font-size: 0.85rem;
+		font-family: var(--font-mono);
+	}
+</style>

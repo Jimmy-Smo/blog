@@ -1,0 +1,73 @@
+---
+// Import the global.css file here so that it is included on
+// all pages through the use of the <BaseHead /> component.
+import '../styles/global.css';
+// 霞鹜文楷 (SIL OFL 免费商用): 分块 webfont, 浏览器只下载页面实际用到的字符块。
+// Vite 会把引用的 woff2 全部指纹化发到 /_astro/, 不经 public/。
+import 'lxgw-wenkai-webfont/lxgwwenkai-regular.css';
+import type { ImageMetadata } from 'astro';
+import FallbackImage from '../assets/blog-placeholder-1.jpg';
+import { SITE_TITLE } from '../consts';
+import { Font } from 'astro:assets';
+
+interface Props {
+	title: string;
+	description: string;
+	image?: ImageMetadata;
+}
+
+const canonicalURL = new URL(Astro.url.pathname, Astro.site);
+
+const { title, description, image = FallbackImage } = Astro.props;
+---
+
+<!-- Global Metadata -->
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<meta name="color-scheme" content="light dark" />
+<meta name="theme-color" content="#ffffff" />
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png" />
+<link rel="icon" type="image/png" sizes="192x192" href="/favicon.png" />
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
+<link rel="sitemap" href="/sitemap-index.xml" />
+<link
+	rel="alternate"
+	type="application/rss+xml"
+	title={SITE_TITLE}
+	href={new URL('rss.xml', Astro.site)}
+/>
+<meta name="generator" content={Astro.generator} />
+
+<Font cssVariable="--font-atkinson" preload />
+
+<!-- Canonical URL -->
+<link rel="canonical" href={canonicalURL} />
+
+<!-- Primary Meta Tags -->
+<title>{title}</title>
+<meta name="description" content={description} />
+
+<!-- Open Graph / Facebook -->
+<meta property="og:type" content="website" />
+<meta property="og:url" content={Astro.url} />
+<meta property="og:title" content={title} />
+<meta property="og:description" content={description} />
+<meta property="og:image" content={new URL(image.src, Astro.url)} />
+
+<!-- Twitter -->
+<meta name="twitter:card" content="summary_large_image" />
+
+<!-- 首帧前应用手动主题选择, 避免闪烁; 未选择时跟随系统。js 类供头部三态等渐进增强使用 -->
+<script is:inline>
+	(function () {
+		document.documentElement.classList.add('js');
+		try {
+			var t = localStorage.getItem('theme');
+			if (t === 'light' || t === 'dark') {
+				document.documentElement.dataset.theme = t;
+				var m = document.querySelector('meta[name="theme-color"]');
+				if (m) m.setAttribute('content', t === 'dark' ? '#15171d' : '#ffffff');
+			}
+		} catch (e) {}
+	})();
+</script>
