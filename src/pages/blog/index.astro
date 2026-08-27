@@ -25,7 +25,7 @@ const ym = (d: Date) => `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(
 	</head>
 	<body>
 		<Header />
-		<main>
+		<main id="main">
 			<h1>全部文章</h1>
 			<p class="count">{posts.length} 篇 · 按主题分组</p>
 			{posts.length === 0 && <p class="empty">还没有已发布的文章。</p>}

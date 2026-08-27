@@ -684,11 +684,14 @@ html[data-theme='dark'] .theme-toggle .icon-sun {
 		justify-content: center;
 	}
 }
-/* 窄屏头部允许折行, 收紧间距让它折得整齐 */
+/* 窄屏头部允许折行。取消 ml:auto, 避免第二行导航被挤到右侧。 */
 @media (max-width: 620px) {
 	.site-header nav {
 		gap: 0.4rem 0.8rem;
 		padding: 0.7em 0;
+	}
+	.internal-links {
+		margin-left: 0;
 	}
 }
 
