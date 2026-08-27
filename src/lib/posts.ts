@@ -44,7 +44,7 @@ export const STATUS_META: Record<
 		dot: '',
 		note: '内容持续修订，命令与结论会随工具链更新',
 		revision:
-			'这篇处于长期维护状态，源文件以 Markdown 存放在 til 仓库。命令失效、版本对不上或结论有出入，欢迎直接提 Issue。',
+			'这篇处于长期维护状态，源文件放在 GitHub 仓库里。命令失效、版本对不上或结论有出入，欢迎直接提 Issue。',
 	},
 	versioned: {
 		label: '版本相关',
@@ -58,6 +58,6 @@ export const STATUS_META: Record<
 		dot: 'dot--archived',
 		note: '仅作历史参考，不再更新',
 		staleness: '这篇已停止维护，内容可能已过时，请谨慎参考。',
-		revision: '这篇已归档，源文件仍保存在 til 仓库，仅作历史参考。',
+		revision: '这篇已归档，源文件还留在 GitHub 仓库里，仅作历史参考。',
 	},
 };
