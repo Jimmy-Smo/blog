@@ -1,11 +1,13 @@
 // @ts-check
 
 import mdx from '@astrojs/mdx';
+import { unified } from '@astrojs/markdown-remark';
 import sitemap from '@astrojs/sitemap';
 import { defineConfig, fontProviders } from 'astro/config';
 import pagefind from 'astro-pagefind';
 
 import tailwindcss from '@tailwindcss/vite';
+import rehypeCodeFold from './src/plugins/rehype-code-fold.mjs';
 
 // https://astro.build/config
 export default defineConfig({
@@ -22,6 +24,7 @@ export default defineConfig({
   // 代码块双主题: 输出 --shiki-light/--shiki-dark 两组 CSS 变量,
   // global.css 里按 prefers-color-scheme 切换。
   markdown: {
+    processor: unified({ rehypePlugins: [rehypeCodeFold] }),
     shikiConfig: {
       themes: { light: 'github-light', dark: 'github-dark' },
       defaultColor: false,
