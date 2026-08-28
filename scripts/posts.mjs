@@ -4,16 +4,42 @@
 //
 //   npm run post:list                              查看全部文章及发布状态
 //   npm run post:new -- <topic/slug> "标题"         从模板新建
-//   npm run post:publish -- <topic/slug>           draft:false + updated 改为今天
+//   npm run post:publish -- <topic/slug>           只改 draft:false, 保留文章日期
 import { readFileSync, writeFileSync, mkdirSync, existsSync, readdirSync, statSync } from 'node:fs';
-import { join, dirname, relative } from 'node:path';
+import { join, dirname, relative, resolve, isAbsolute } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 const ROOT = fileURLToPath(new URL('..', import.meta.url));
 const CONTENT = join(ROOT, 'content');
 const TEMPLATE = join(CONTENT, '_template.md');
 
-const today = () => new Date().toISOString().slice(0, 10);
+const ARTICLE_ID = /^[a-z0-9]+(?:-[a-z0-9]+)*(?:\/[a-z0-9]+(?:-[a-z0-9]+)*)+$/;
+
+const today = () => {
+	const parts = new Intl.DateTimeFormat('en-US', {
+		timeZone: 'Asia/Taipei',
+		year: 'numeric',
+		month: '2-digit',
+		day: '2-digit',
+	}).formatToParts(new Date());
+	const value = Object.fromEntries(parts.map(({ type, value }) => [type, value]));
+	return `${value.year}-${value.month}-${value.day}`;
+};
+
+function articlePath(id) {
+	if (!ARTICLE_ID.test(id)) {
+		console.error(`文章 ID 格式错误: ${id}`);
+		console.error('应为小写 topic/slug, 只使用字母、数字和短横线。');
+		process.exit(1);
+	}
+	const dest = resolve(CONTENT, `${id}.md`);
+	const rel = relative(CONTENT, dest);
+	if (rel.startsWith('..') || isAbsolute(rel)) {
+		console.error(`文章路径超出 content/: ${id}`);
+		process.exit(1);
+	}
+	return dest;
+}
 
 /** 递归收集 content/ 下的正式文章, 跳过 weekly、README 和下划线开头的模板。 */
 function collect(dir = CONTENT, out = []) {
@@ -61,7 +87,7 @@ function create(id, title) {
 		console.error('用法: npm run post:new -- <topic/slug> "标题"');
 		process.exit(1);
 	}
-	const dest = join(CONTENT, `${id}.md`);
+	const dest = articlePath(id);
 	if (existsSync(dest)) {
 		console.error(`已存在: ${relative(ROOT, dest)}`);
 		process.exit(1);
@@ -72,8 +98,7 @@ function create(id, title) {
 	const src = readFileSync(TEMPLATE, 'utf8')
 		.replace(/^title:.*$/m, `title: ${title}`)
 		.replace(/^date:.*$/m, `date: ${d}`)
-		.replace(/^updated:.*$/m, `updated: ${d}`)
-		.replace(/^# 文档标题$/m, `# ${title}`);
+		.replace(/^updated:.*$/m, `updated: ${d}`);
 
 	writeFileSync(dest, src);
 	console.log(`已创建 ${relative(ROOT, dest)}`);
@@ -85,7 +110,7 @@ function publish(id) {
 		console.error('用法: npm run post:publish -- <topic/slug>');
 		process.exit(1);
 	}
-	const dest = join(CONTENT, `${id}.md`);
+	const dest = articlePath(id);
 	if (!existsSync(dest)) {
 		console.error(`找不到: ${relative(ROOT, dest)}`);
 		process.exit(1);
@@ -98,10 +123,10 @@ function publish(id) {
 
 	writeFileSync(
 		dest,
-		src.replace(/^draft:.*$/m, 'draft: false').replace(/^updated:.*$/m, `updated: ${today()}`),
+		src.replace(/^draft:.*$/m, 'draft: false'),
 	);
 
-	console.log(`${id} → draft: false, updated: ${today()}\n`);
+	console.log(`${id} → draft: false, date/updated 保持不变\n`);
 	console.log('发布前请自检:');
 	console.log('  [ ] 无密钥、内部信息、未脱敏数据');
 	console.log('  [ ] 版本敏感内容已标注版本与核验日期');

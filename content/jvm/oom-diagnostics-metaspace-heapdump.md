@@ -11,16 +11,14 @@ status: evergreen
 draft: false
 ---
 
-# JVM OOM 排查：Metaspace 泄漏定位与 K8s 环境 HeapDump 采集
-
 > 整理自 2025-07 至 2025-10 的生产排障笔记。
 
 ## 问题
 
 K8s 上的 Java 服务出现两类内存问题：
 
-1. `OutOfMemoryError: Metaspace`——调大参数只能止血，需要定位谁在泄漏类；
-2. 堆 OOM 后容器被重启，现场丢失——需要保证 dump 文件能落盘并被取走。
+1. `OutOfMemoryError: Metaspace`，调大参数只能止血，需要定位谁在泄漏类；
+2. 堆 OOM 后容器被重启，现场丢失，需要保证 dump 文件能落盘并被取走。
 
 前置知识：JVM 内存分区（堆 / Metaspace）、K8s Volume 基本概念。
 

@@ -12,8 +12,6 @@ status: versioned
 draft: true
 ---
 
-# macOS 代理工具栈：Surge + AdGuard 组合与网络排错
-
 > 整理自 2025-06 至 2025-10 的笔记，验证环境为 macOS 15.5–26、Surge 5、AdGuard for macOS。
 
 ## 问题

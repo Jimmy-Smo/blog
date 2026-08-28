@@ -11,8 +11,6 @@ status: evergreen
 draft: true
 ---
 
-# Kotlin + Spring Boot 后端工程实践清单
-
 > 整理自 2025-06 至 2025-10 在 Kotlin 2.0 + JDK 21 + Spring Boot 3 + MyBatis Plus 3.5.9 项目中的实战笔记。
 
 ## 问题

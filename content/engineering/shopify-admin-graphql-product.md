@@ -1,114 +1,129 @@
 ---
-title: Shopify Admin GraphQL 商品接入主路径
-description: 用 Admin GraphQL API 完成商品建改、价格库存、媒体上传与渠道发布的完整链路，含媒体状态轮询与文件格式校验
+title: Shopify Admin GraphQL 商品接入：商品、库存、媒体与发布
+description: 按 Shopify Admin GraphQL API 2026-07 串起商品同步、变体价格、库存、媒体处理与渠道发布
 date: 2026-07-16
-updated: 2026-07-16
+updated: 2026-08-28
 tags:
   - engineering
   - shopify
   - graphql
   - ecommerce
 status: versioned
-draft: true
+draft: false
 ---
 
-# Shopify Admin GraphQL 商品接入主路径
+> 整理自 2025-09 的商品接入记录，并在 2026-08-28 按 Admin GraphQL API 2026-07 重新核对。Shopify 每季度发布 API 版本，接入时应固定版本，不要依赖 `latest`。
 
-> 整理自 2025-09 两周的对接实战笔记。Shopify Admin API 按季度发版，mutation 名称与字段以对接时的 API 版本文档为准（本文核验于 2025-09）。
+把自有商品系统接到 Shopify，真正容易混乱的是几个对象各自负责什么：商品与变体描述卖什么，库存挂在库存项和地点上，文件先独立上传，商品媒体和变体媒体再引用文件，最后还要单独处理销售渠道发布。
 
-## 问题
+## 商品、选项和变体
 
-把自有商品系统对接到 Shopify，需要覆盖：建商品、改价格、调库存、传图片、控制上下架。REST API 存在过取/欠取问题，Shopify 已把 Admin API 重心放在 GraphQL 上。要理清：
+Option 是变体维度，比如颜色和尺码；Variant 是具体组合，比如红色 M 码。SKU、价格和库存相关标识都跟着 Variant 走。
 
-1. 商品、选项、变体的模型关系；
-2. 每类操作用哪个 mutation；
-3. 媒体上传的异步状态怎么处理；
-4. 常见报错（如"扩展名与实际格式不匹配"）怎么防。
+外部商品系统要把完整状态同步进 Shopify 时，`productSet` 是主入口。它适合按外部标识创建或更新商品、选项和变体，也支持同步与异步模式。
 
-## 核心结论
+`productSet` 对列表字段采用完整状态语义。传入 `variants`、`collections` 等列表时，没有出现在输入里的旧项可能被删除，不能把它当成普通的局部补丁。只改少量商品字段时，`productUpdate` 更容易控制影响范围。
 
-各操作的主路径 mutation：
+## 每类操作走哪条入口
 
-| 操作 | 入口 |
-|------|------|
-| 建/改商品（标题、选项、变体、状态、部分 metafields） | `productSet` |
-| 批量改价 | `productVariantsBulkUpdate` |
-| 库存调整（按 location） | `inventoryAdjustQuantities` |
-| 媒体上传 | `fileCreate` 上传 → `productVariantAppendMedia` 挂载 |
-| 渠道级上/下架 | `publishablePublish` / `publishableUnpublish` |
-| 自定义属性/类目映射 | metafields（自定 namespace/key） |
+| 操作 | Admin GraphQL 入口 |
+|------|--------------------|
+| 同步商品、选项和变体的完整状态 | `productSet` |
+| 更新少量商品字段 | `productUpdate` |
+| 批量更新变体价格等字段 | `productVariantsBulkUpdate` |
+| 按地点调整库存数量 | `inventoryAdjustQuantities` |
+| 从公开 URL 创建文件 | `fileCreate` |
+| 上传本地文件或大文件 | `stagedUploadsCreate`，上传后再调用 `fileCreate` |
+| 把文件关联到商品 | `productSet`、`productCreate` 或 `productUpdate` |
+| 把商品已有媒体关联到变体 | `productVariantAppendMedia` |
+| 渠道发布与下架 | `publishablePublish`、`publishableUnpublish` |
 
-- **媒体处理是异步的**：上传后按 `id` 轮询 `media.status`（`PROCESSING/READY/FAILED`），用**指数退避**，批量用 `nodes(ids: [...])`。
-- **上传前校验文件头（Magic Number）与扩展名一致**，否则触发"扩展名与实际格式不匹配"类失败。
-- 建议把"构建/更新/价格/库存/媒体/发布/扩展属性"各封装成可复用的 GraphQL 片段脚手架。
+价格和库存最好分开处理。价格属于 Variant，库存调整需要库存项与 Location；把两者塞进同一套重试逻辑，失败后很难判断应该重放哪一段。
 
-## 原理
+## 媒体要分成上传、处理和关联
 
-### Option 与 Variant 的关系
+Shopify 的文件系统与商品是分开的。一个文件可以被多个商品引用，更新文件后，引用它的地方也会跟着变化。
 
-- **Option** 是变体的**维度**（如 Color、Size）；
-- **Variant** 是维度取值的**具体组合**（如 "Red, M"），价格、库存、SKU 都挂在 Variant 上。
-
-建模时先定义 Options，Variants 是其笛卡尔积的子集。
-
-### GraphQL 按需取字段
-
-查询按商品 ID 取信息时自选字段，避免 REST 的整包返回：
+公开可访问的图片可以直接交给 `fileCreate`：
 
 ```graphql
-query {
-  product(id: "gid://shopify/Product/1234567890") {
-    id
-    title
-    variants(first: 50) { nodes { id sku price } }
+mutation CreateFiles($files: [FileCreateInput!]!) {
+  fileCreate(files: $files) {
+    files {
+      id
+      fileStatus
+      alt
+    }
+    userErrors {
+      field
+      message
+      code
+    }
   }
 }
 ```
 
-### 为什么要校验 Magic Number
+本地文件、视频、3D 模型或需要更稳定上传过程的资源，先调用 `stagedUploadsCreate` 获取临时上传地址，把文件传到该地址，再用返回的 `resourceUrl` 调用 `fileCreate` 注册。
 
-Shopify 侧按文件真实内容审核格式。JPEG 文件头为 `FF D8 FF E0`（或 `FF D8 FF E1` 等变体），文件尾 `FF D9`；扩展名是 `.jpg` 但内容不是 JPEG 时上传/审核失败。**以文件头为准**判定真实格式，Content-Type、扩展名三者对齐后再上传。
-
-### 发布是渠道级的
-
-商品"上架"不是布尔开关，而是发布到具体渠道（Online Store、Shop、Markets 等）；`publishablePublish` 控制的是"商品 × 渠道"关系。GraphiQL 只是调试工具，不是流程环节。
-
-## 实践与验证
-
-### 媒体状态轮询
+`fileCreate` 返回成功不代表媒体已经可用。文件会经历 `UPLOADED`、`PROCESSING`、`READY` 或 `FAILED`，关联商品前应轮询 `fileStatus`：
 
 ```graphql
-query pollMedia($ids: [ID!]!) {
-  nodes(ids: $ids) {
-    ... on MediaImage { id status mimeType }
+query CheckFileStatus($id: ID!) {
+  node(id: $id) {
+    ... on File {
+      fileStatus
+      preview {
+        image {
+          url
+        }
+      }
+    }
   }
 }
 ```
 
-- 退避节奏：`1s → 2s → 4s …`，设最大间隔与总超时兜底；
-- 也可从 `files`/`media` 入口分页拉取后按状态过滤；
-- `FAILED` 的媒体记录原因并进重试/人工队列。
+轮询使用指数退避，并设置最大间隔和总超时。批量任务可以用 `nodes(ids: [...])` 一次查询多个文件，`FAILED` 进入重试或人工处理队列，不要无限轮询。
 
-### 多语言与自定义类目
+文件到 `READY` 后，再把文件 ID 关联到商品。需要给某个变体指定图片时，先确认媒体已经属于该商品，再调用 `productVariantAppendMedia`。这个 mutation 只负责建立商品已有媒体与变体之间的关系，不负责上传文件。
 
-类目映射走 metafields（如自定义"袖长"）；多语言可用多命名空间或翻译表承载。
+## 上传前先检查真实格式
 
-### 对接检查清单
+扩展名、Content-Type 和文件真实内容应保持一致。业务系统里常见的失败是文件名写着 `.jpg`，实际内容却是 PNG 或损坏文件。
 
-- [ ] Options/Variants 结构先在测试店验证，再批量灌数
-- [ ] 上传前：文件头 ↔ Content-Type ↔ 扩展名三者一致
-- [ ] 媒体轮询有退避、上限与失败兜底
-- [ ] 价格、库存分别走批量接口，不逐个 Variant 调用
-- [ ] 发布渠道显式指定，不依赖默认行为
+接入侧可以在上传前读取文件签名，确认格式与声明一致，同时限制单文件大小和像素。这个检查不能替代 Shopify 的处理结果，但能提前挡掉明显无效的文件，减少异步失败和无意义重试。
 
-## 适用边界
+## 发布是商品与渠道的关系
 
-- 核验于 2025-09 的 Admin GraphQL API；Shopify 按季度发版并弃用旧字段，**对接前必查目标版本的 changelog**。
-- `productSet` 承载能力有上限（变体数量等配额随商店套餐不同），超大 SKU 集需分批。
-- 本文不覆盖 Storefront API（面向前台展示，鉴权与能力集不同）。
+商品状态和销售渠道发布不是同一个开关。`publishablePublish`、`publishableUnpublish` 操作的是商品与 Publication 之间的关系。
+
+同步流程里应显式保存目标 Publication ID，并把发布动作放在商品、变体、库存和媒体完成之后。发布失败时只重试渠道关联，不要重新创建商品。
+
+## 错误处理与权限
+
+商品和媒体接入至少需要按实际操作申请 `read_products`、`write_products` 和 `write_files`。权限不足、字段不兼容和业务校验失败都会出现在 `userErrors`，HTTP 200 不能当作业务成功。
+
+每次 mutation 都要同时检查：
+
+- 顶层 GraphQL `errors`
+- mutation 返回的 `userErrors`
+- 返回对象的 ID 与状态
+- 实际响应头中的 `X-Shopify-API-Version`
+
+如果响应版本与请求的 `2026-07` 不一致，说明目标版本已经不可访问，Shopify 使用了回退版本。此时应停止批量同步，先核对版本兼容性。
+
+## 适用范围
+
+本文只讨论 Admin GraphQL API 2026-07，不覆盖 Storefront API。2026-07 的官方支持期到 2027-07-16，但 Shopify 建议每季度检查新版本和弃用项。
+
+商店套餐、变体规模、API 成本和资源型限流都会影响批量策略。上线前要在开发店验证商品结构，再用接近真实规模的数据测试限流、重试和回放。
 
 ## 参考资料
 
-- Shopify Admin GraphQL API：https://shopify.dev/docs/api/admin-graphql
-- productSet mutation：https://shopify.dev/docs/api/admin-graphql/latest/mutations/productSet
-- 文件签名列表（Magic Numbers）：https://en.wikipedia.org/wiki/List_of_file_signatures
+- [Shopify API 版本机制](https://shopify.dev/docs/api/usage/versioning)
+- [商品与集合模型](https://shopify.dev/docs/apps/build/product-merchandising/products-and-collections)
+- [商品与集合媒体管理](https://shopify.dev/docs/apps/build/product-merchandising/products-and-collections/manage-media)
+- [productSet](https://shopify.dev/docs/api/admin-graphql/2026-07/mutations/productSet)
+- [productVariantsBulkUpdate](https://shopify.dev/docs/api/admin-graphql/2026-07/mutations/productVariantsBulkUpdate)
+- [inventoryAdjustQuantities](https://shopify.dev/docs/api/admin-graphql/2026-07/mutations/inventoryAdjustQuantities)
+- [productVariantAppendMedia](https://shopify.dev/docs/api/admin-graphql/2026-07/mutations/productVariantAppendMedia)
+- [publishablePublish](https://shopify.dev/docs/api/admin-graphql/2026-07/mutations/publishablePublish)
