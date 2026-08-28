@@ -34,7 +34,7 @@ npm run img -- <topic/slug> <图片...>           # 压缩并上传图片
 
 技术文章不套固定目录，但要交代验证过程和适用边界。涉及版本、产品、价格或政策时，注明版本或核验日期。
 
-图片统一上传到 `img.jimmy42x.com`。脚本会缩放、转为 WebP，并在文件名中加入内容哈希，避免 CDN 缓存旧图。
+图片统一上传到 `img.jimmy42x.com`。脚本会缩放、转为 WebP，并在文件名中加入内容哈希，避免 CDN 缓存旧图；同时把最终尺寸记入 `src/data/image-sizes.json`，构建时由 rehype 插件给正文 `<img>` 补上 `width/height` 和懒加载属性，避免加载时跳版。
 
 ## 发布
 

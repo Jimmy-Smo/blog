@@ -609,7 +609,7 @@ const relative = days === 0 ? '今天' : days === 1 ? '昨天' : `${days} 天前
 	}
 
 	/* 中西混排: 行内代码给出侧边距, 否则会紧贴汉字 */
-	.prose code {
+	.prose :global(code) {
 		font-family: var(--font-mono);
 		font-size: 0.85em;
 		background: var(--code-bg);
@@ -629,7 +629,82 @@ const relative = days === 0 ? '今天' : days === 1 ? '昨天' : `${days} 天前
 	/* ---- 代码块 ----
 	   Shiki 双主题变量原样使用; 但背景改绑 --bg-subtle,
 	   避免浅色下代码块底色与页面同为白、只靠一条边框存在。 */
-	.prose pre {
+	.prose :global(.code-fold) {
+		margin: 1.5em 0;
+		border: 1px solid var(--border);
+		border-radius: 8px;
+		background: var(--bg-subtle);
+		overflow: hidden;
+	}
+	.prose :global(.code-fold__summary) {
+		min-height: 2.6rem;
+		padding: 0 1rem;
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+		gap: 1rem;
+		list-style: none;
+		cursor: pointer;
+		color: var(--fg-2);
+		font-family: var(--font-mono);
+		font-size: 0.78rem;
+		line-height: 1;
+		user-select: none;
+		transition: background-color 160ms ease, color 160ms ease;
+	}
+	.prose :global(.code-fold__summary::-webkit-details-marker) {
+		display: none;
+	}
+	.prose :global(.code-fold__summary:hover) {
+		background: color-mix(in oklab, var(--fg) 5%, transparent);
+		color: var(--fg);
+	}
+	.prose :global(.code-fold__summary:focus-visible) {
+		outline-offset: -3px;
+	}
+	.prose :global(.code-fold__meta) {
+		min-width: 0;
+		overflow: hidden;
+		text-overflow: ellipsis;
+		white-space: nowrap;
+	}
+	.prose :global(.code-fold__language) {
+		color: var(--fg);
+		font-weight: 600;
+		letter-spacing: 0.06em;
+	}
+	.prose :global(.code-fold__lines) {
+		color: var(--fg-3);
+	}
+	.prose :global(.code-fold__action) {
+		flex: none;
+		display: inline-flex;
+		align-items: center;
+		gap: 0.55em;
+		color: var(--accent-text);
+	}
+	.prose :global(.code-fold__action::after) {
+		content: '';
+		width: 0.5em;
+		height: 0.5em;
+		border-right: 1.5px solid currentColor;
+		border-bottom: 1.5px solid currentColor;
+		transform: translateY(-0.14em) rotate(45deg);
+		transition: transform 160ms ease;
+	}
+	.prose :global(.code-fold__when-open) {
+		display: none;
+	}
+	.prose :global(.code-fold[open] .code-fold__when-closed) {
+		display: none;
+	}
+	.prose :global(.code-fold[open] .code-fold__when-open) {
+		display: inline;
+	}
+	.prose :global(.code-fold[open] .code-fold__action::after) {
+		transform: translateY(0.14em) rotate(225deg);
+	}
+	.prose :global(pre) {
 		position: relative;
 		/* padding-top 用 rem, 与语言标签的 height 同单位; 用 em 会因两者字号不同而错位 */
 		margin: 1.5em 0;
@@ -640,7 +715,14 @@ const relative = days === 0 ? '今天' : days === 1 ? '昨天' : `${days} 天前
 		line-height: 1.7;
 		overflow: visible !important; /* 覆盖 Shiki 内联的 overflow-x:auto, 滚动交给内层 code */
 	}
-	.prose pre > code {
+	.prose :global(.code-fold > pre) {
+		margin: 0;
+		padding-top: 0;
+		border: 0;
+		border-top: 1px solid var(--border);
+		border-radius: 0;
+	}
+	.prose :global(pre > code) {
 		all: unset;
 		display: block;
 		overflow-x: auto;
@@ -666,12 +748,11 @@ const relative = days === 0 ? '今天' : days === 1 ? '昨天' : `${days} 天前
 			100% 0;
 		background-attachment: local, local, scroll, scroll;
 	}
-	.prose pre > code .line {
-		display: block;
-		min-height: 1.7em;
+	.prose :global(.code-fold > pre > code) {
+		padding-top: 1.15em;
 	}
 	/* 语言标签: 固定在代码块左上角, 不随横向滚动漂移 */
-	.prose pre[data-language]::before {
+	.prose :global(pre[data-language]::before) {
 		content: attr(data-language);
 		position: absolute;
 		inset: 0 0 auto 0;
@@ -686,21 +767,24 @@ const relative = days === 0 ? '今天' : days === 1 ? '昨天' : `${days} 天前
 		text-transform: uppercase;
 		color: var(--fg-2);
 	}
-	.astro-code {
+	.prose :global(.code-fold > pre[data-language]::before) {
+		display: none;
+	}
+	:global(.astro-code) {
 		background-color: var(--bg-subtle) !important;
 		color: var(--shiki-light) !important;
 	}
-	.astro-code span {
+	:global(.astro-code span) {
 		color: var(--shiki-light) !important;
 		background-color: transparent !important;
 	}
-	html[data-theme='dark'] .astro-code,
-	html[data-theme='dark'] .astro-code span {
+	:global(html[data-theme='dark'] .astro-code),
+	:global(html[data-theme='dark'] .astro-code span) {
 		color: var(--shiki-dark) !important;
 	}
 	@media (prefers-color-scheme: dark) {
-		html:not([data-theme]) .astro-code,
-		html:not([data-theme]) .astro-code span {
+		:global(html:not([data-theme]) .astro-code),
+		:global(html:not([data-theme]) .astro-code span) {
 			color: var(--shiki-dark) !important;
 		}
 	}
