@@ -127,3 +127,9 @@ query CheckFileStatus($id: ID!) {
 - [inventoryAdjustQuantities](https://shopify.dev/docs/api/admin-graphql/2026-07/mutations/inventoryAdjustQuantities)
 - [productVariantAppendMedia](https://shopify.dev/docs/api/admin-graphql/2026-07/mutations/productVariantAppendMedia)
 - [publishablePublish](https://shopify.dev/docs/api/admin-graphql/2026-07/mutations/publishablePublish)
+
+## 随记
+
+文末放一张一直留着的照片。2021 年学 WSL、折腾终端美化的时候，从少数派 SpencerWoo 的[《在 Windows 上用 WSL 开发的操作体验指北》](https://sspai.com/post/47719)里把它存了下来，后来做过一段时间屏保，原图的源头已经不可考。一只大鹅叼着微软 logo，理直气壮——像是一朵微光，让我对技术的学习一直保有热忱。
+
+![一只叼着微软 logo 的大鹅](https://img.jimmy42x.com/images/2026/08/engineering/shopify-admin-graphql-product/goose.7135df02.webp)
