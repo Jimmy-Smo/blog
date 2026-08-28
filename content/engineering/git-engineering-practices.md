@@ -12,8 +12,6 @@ status: evergreen
 draft: true
 ---
 
-# Git 工程实践：SSH 凭据、日常工作流与发布流程
-
 > 整理自 2025-06 至 2025-10 的实践笔记，覆盖 macOS 与 WSL 两种环境。
 
 ## 问题
@@ -53,7 +51,7 @@ tag 标记的是"对外可回溯的稳定版本"。打在 release 分支上，�
 
 `~/.ssh/config`：
 
-```ssh
+```text
 Host *
   IdentityAgent "~/Library/Group Containers/2BUA8C4S2C.com.1password/t/agent.sock"
   IdentitiesOnly yes
@@ -63,7 +61,7 @@ GitHub 侧同一公钥上传两次：Settings → SSH keys 中分别选 **Authen
 
 ### WSL 的凭据结论
 
-WSL 下走 HTTPS + libsecret helper 需要 `dbus-x11`、`libsecret` 且要手动编译 helper，实测装完仍未生效——**直接生成 SSH key 最省事**：
+WSL 下走 HTTPS + libsecret helper 需要 `dbus-x11`、`libsecret`，而且要手动编译 helper。实测装完仍未生效，**直接生成 SSH key 最省事**：
 
 ```bash
 ssh-keygen -t ed25519 -C "you@example.com"
@@ -83,7 +81,7 @@ git remote set-url origin git@github.com:<org>/<repo>.git   # 转移/改名后�
 ```
 
 - 仓库转移到组织：需目标组织先接受/邀请协作者，否则 CLI 报 422。
-- 解压覆盖项目目录可能连 `.git` 一起覆盖丢失历史——重要仓库操作前备份 `.git`，丢失后只能重新 init 并关联远程。
+- 解压覆盖项目目录可能连 `.git` 一起覆盖，导致历史丢失。重要仓库操作前应备份 `.git`，否则只能重新 init 并关联远程。
 - `.gitignore` 调整后让已跟踪文件生效：
 
   ```bash

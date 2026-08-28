@@ -12,8 +12,6 @@ status: evergreen
 draft: true
 ---
 
-# MySQL 到 Elasticsearch 的同步链路设计：CDC、消息契约与回放
-
 > 整理自 2025-07 至 2025-09 的项目实战笔记（条码/商品分页查询接入 ES 的完整链路）。
 
 ## 问题

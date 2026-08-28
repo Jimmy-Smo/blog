@@ -12,8 +12,6 @@ status: evergreen
 draft: true
 ---
 
-# EasyExcel/POI 导入含图片的 Excel：锚点归位与 OOM 防护
-
 > 整理自 2025-09 至 2025-10 的商品导入功能实战笔记（垂直表头 + 单元格内嵌图片的模板）。
 
 ## 问题
