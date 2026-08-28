@@ -9,7 +9,7 @@ tags:
   - cursor
   - workflow
 status: versioned
-draft: true
+draft: false
 ---
 
 > 整理自 2025-06 至 2025-10 的学习笔记。工具能力与价格变化极快，本文事实核验日期为笔记记录当时（2025 年下半年），使用前应重新核对官方文档。
@@ -18,7 +18,7 @@ AI 编程工具数量多、迭代快，追着每个新功能跑是跑不过来�
 
 ## 选型先看五个维度
 
-评估一个工具，我固定看五个维度：IDE/Terminal 的集成方式、团队协作能力（Code Review、子代理）、隐私与日志留存、速度与推理质量、成本。2025 年主流工具的定价大致落在 $20–100/人·月 区间；各家模型的消息条数上限等配额在年内多次调整，比较时以官方帮助页当日内容为准。
+评估一个工具，我固定看五个维度：IDE/Terminal 的集成方式、团队协作能力（Code Review、子代理）、隐私与日志留存、速度与推理质量、成本。2025 年下半年的记录里，主流工具定价大致是每人每月 $20 到 100；各家模型的消息条数上限等配额在年内多次调整，比较时以官方帮助页当日内容为准。
 
 ## 四个工具各占一个生态位
 
@@ -33,7 +33,7 @@ AI 编程工具数量多、迭代快，追着每个新功能跑是跑不过来�
 
 ## 上下文掌控力是本质差异
 
-“Copilot + ChatGPT 对话式生成”的旧工作流已经明显落后，差距就在上下文：对话式工具（网页版 ChatGPT）只能拿到你粘贴的片段；Cursor、Claude Code 这类 AI 原生工具拥有文件树导航、跨文件重写、结构化指令链，上下文掌控力和操作连贯性是本质差异。上下文工程（Context Engineering）的核心也在这里——上下文裁剪、检索与工具接入、记忆窗管理，直接决定幻觉率与任务稳定性。
+我在 2025 年使用“Copilot + ChatGPT 对话式生成”时，项目上下文主要靠手动粘贴；Cursor、Claude Code 这类工具可以直接导航文件树、跨文件修改并执行结构化指令链，操作连贯性更好。上下文工程（Context Engineering）处理的也是这些问题：怎样裁剪上下文、接入检索与工具、管理记忆窗口，这些选择会影响幻觉率与任务稳定性。
 
 ## 子代理与无头模式
 
@@ -41,35 +41,27 @@ Claude Code 的子代理把一个专业子任务（如代码审查、文档翻�
 
 无头模式解决的是非交互场景：用 `-p` 参数进入，适用于 CI、pre-commit 钩子、构建脚本；配合 `--output-format stream-json` 可获得流式 JSON 输出，便于程序消费。
 
-## 配置落地：ignore、安装与 MCP
+## 配置落地：项目规则、安装与 MCP
 
-Cursor 的私有配置不要提交进 Git：
-
-```text
-# .gitignore 追加
-.cursorignore
-.cursor/
-CLAUDE.md
-```
+Cursor 的项目规则放在 `.cursor/rules`，本来就是供团队共享和版本控制的；`CLAUDE.md` 如果记录项目命令与团队约定，也应该提交。用户级偏好留在各自的设置里，含密钥、账号或内部信息的内容不要写进规则文件。`.cursorignore` 控制哪些文件不进入 Cursor 上下文，不等同于 Git 的 `.gitignore`。
 
 Claude Code 安装：
 
 ```bash
 npm install -g @anthropic-ai/claude-code
+claude doctor
 ```
 
 Node 环境建议用 nvm 管理（`nvm install --lts`），安装路径统一在用户级 Node 下，避免权限问题。
 
-MCP 服务用 TOML 分段表写法，避免在内联表里换行：
+Codex 的 MCP 服务用 TOML 分段表写法，避免在内联表里换行：
 
 ```toml
 [mcp_servers.deepwiki]
-command = "http"
 url = "https://mcp.deepwiki.com/mcp"
-trust_level = "trusted"
 ```
 
-排错时报 "No such file or directory"，先确认 `command` 在 PATH 中，必要时改绝对路径。
+远程 HTTP 服务只配置 `url`；本地 stdio 服务才使用 `command`，并要确保启动命令在 PATH 中，必要时改用绝对路径。
 
 ## coding agents 的安全边界
 
@@ -83,4 +75,7 @@ trust_level = "trusted"
 
 - [Context Engineering for AI Agents（Manus）](https://manus.im/blog/Context-Engineering-for-AI-Agents-Lessons-from-Building-Manus)
 - [Coding Agents 安全（宝玉译）](https://baoyu.io/translations/llms-coding-agents-security-nightmare)
+- [Cursor Project Rules](https://docs.cursor.com/context/rules-for-ai)
+- [Claude Code CLI reference](https://docs.anthropic.com/en/docs/claude-code/cli-usage)
+- [Codex configuration reference](https://developers.openai.com/codex/config-file/config-reference)
 - [Using Codex with your ChatGPT plan - OpenAI Help](https://help.openai.com/en/articles/11369540-using-codex-with-your-chatgpt-plan)

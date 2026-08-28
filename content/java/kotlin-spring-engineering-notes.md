@@ -8,7 +8,7 @@ tags:
   - kotlin
   - spring-boot
 status: evergreen
-draft: true
+draft: false
 ---
 
 > 整理自 2025-06 至 2025-10 在 Kotlin 2.0 + JDK 21 + Spring Boot 3 + MyBatis Plus 3.5.9 项目中的实战笔记。
@@ -27,7 +27,7 @@ data class Req(
 )
 ```
 
-两点补充：`@DecimalMin` 不包含空校验，要与 `@NotNull` 联用；可空性也要与校验一致——Jackson 反序列化走主构造器，声明为非空类型但 JSON 缺字段，会在反序列化阶段抛错，而不是走到校验层。
+两点补充：`@DecimalMin` 不包含空校验，要与 `@NotNull` 联用；可空性也要与校验一致。Jackson 反序列化走主构造器，声明为非空类型但 JSON 缺字段，会在反序列化阶段抛错，而不是走到校验层。
 
 ## 事务与重试经不起类内自调用
 
@@ -43,19 +43,23 @@ Spring 的事务和重试都基于代理，类内部私有方法自调用不经�
 - 占位符只用 `#{}`（预编译，防注入）；`${}` 仅限动态表名等无法预编译的场景，并需白名单校验。
 - Repository 返回约定：单条返回 `Entity?`，多条返回 `List<Entity>`（空集合而非 null）。
 - 局部字段更新走专用 `updateEntity`，隔离写路径并维护审计字段（`reviser/revised_time`）。
-- 分页计数可启用 `OptimizeCountSql`（自动裁剪与计数无关的 SELECT 字段/LEFT JOIN），启用前对复杂 SQL 做 explain 验证。
+- MyBatis Plus 的 `Page.optimizeCountSql` 与 `optimizeJoinOfCountSql` 默认开启，后者可能移除不参与 WHERE 条件的 LEFT JOIN。复杂 SQL 要检查生成的 count SQL 和总数，不能只看数据查询的 explain。
 
-## 先拿锁，再重试
+## 每次重试先拿锁
 
-```text
+```kotlin
 RetryTemplate.execute {
-  lock.tryLock(waitTime, leaseTime) {   // 先锁
-    幂等检查 → 业务逻辑                    // 再干活
+  if (lock.tryLock(waitTime, leaseTime, TimeUnit.SECONDS)) {
+    try {
+      幂等检查 → 业务逻辑
+    } finally {
+      lock.unlock()
+    }
   }
 }
 ```
 
-分布式锁用 Redisson `tryLock(timeout, leaseTime)` 显式租期，配 `finally` 解锁。看门狗只在**不指定 leaseTime** 时生效，显式租期防止业务异常导致长期持锁。锁超时要按业务耗时定——曾因 3s 过短在高并发下大量获取失败，调到 10s 后恢复。MQ 消费侧用手动 ack/nack 加 Redis 锁做幂等，重试次数交给延迟队列/死信队列管理。
+分布式锁用 Redisson `tryLock(waitTime, leaseTime, unit)` 显式设置等待时间和租期，配 `finally` 解锁。看门狗只在**不指定 leaseTime** 时续期；指定租期可以限制最长持锁时间，但业务执行超过租期时，锁会提前释放，所以租期必须覆盖正常耗时和抖动。曾因 3s 过短在高并发下大量获取失败，调到 10s 后恢复。MQ 消费侧的 Redis 锁只能减少并发重复处理，不能代替持久化幂等记录；业务写入成功但 ack 前崩溃时，消息仍会再次投递。重试次数交给延迟队列或死信队列管理。
 
 ## 高频报错速查
 
@@ -71,7 +75,7 @@ RetryTemplate.execute {
 
 ## 配置外部化
 
-- 配置优先级：Nacos / `application*.yml` > 代码默认值——只含硬编码默认值的 `@Configuration` 类应删除，避免与配置中心冲突。
+- 配置优先级：Nacos / `application*.yml` > 代码默认值。只含硬编码默认值的 `@Configuration` 类应删除，避免与配置中心冲突。
 - `Duration` 字段在 YAML 中写 `500ms` / `30s` / `5m` 或 ISO-8601 `PT30S`，**不要写 `0.5s`**；Spring Boot Binder 自动绑定。
 - RabbitMQ 监听参数（`acknowledge-mode/prefetch/concurrency`）统一放 Nacos / `application*.yml`，运行时以 Environment 覆盖为准。
 - Spring Cloud Gateway 路由的服务名**用短横线不用下划线**（部分匹配器对下划线兼容差）。
@@ -83,5 +87,6 @@ RetryTemplate.execute {
 ## 参考资料
 
 - [Kotlin use-site targets](https://kotlinlang.org/docs/annotations.html#annotation-use-site-targets)
-- [Redisson 分布式锁与同步器文档](https://github.com/redisson/redisson/wiki/8.-distributed-locks-and-synchronizers)
+- [MyBatis Plus 分页插件](https://baomidou.com/plugins/pagination/)
+- [Redisson 分布式锁与同步器文档](https://redisson.pro/docs/data-and-services/locks-and-synchronizers/)
 - [Spring Boot 外部化配置](https://docs.spring.io/spring-boot/reference/features/external-config.html)

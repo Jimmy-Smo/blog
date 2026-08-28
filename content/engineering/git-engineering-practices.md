@@ -9,7 +9,7 @@ tags:
   - github
   - ssh
 status: evergreen
-draft: true
+draft: false
 ---
 
 > 整理自 2025-06 至 2025-10 的实践笔记，覆盖 macOS 与 WSL 两种环境。
@@ -18,7 +18,7 @@ draft: true
 
 ## 私钥进 1Password，不裸存磁盘
 
-私钥落盘的风险是任意进程可读、备份易泄露。1Password SSH Agent 把私钥保存在加密库中，签名操作在 Agent 内完成，终端和 IDE 通过 socket 调用，私钥永不落盘，且随 1Password 多机同步。`~/.ssh/config` 一段配置即可接入：
+私钥文件放在普通目录里，容易被其他进程、备份或同步工具读到。1Password SSH Agent 把私钥保存在加密库中，签名操作在 Agent 内完成，终端和 IDE 通过 socket 请求签名，不需要直接读取私钥文件。`~/.ssh/config` 一段配置即可接入：
 
 ```text
 Host *
@@ -55,10 +55,23 @@ git remote set-url origin git@github.com:<org>/<repo>.git   # 转移/改名后�
 
 ```bash
 git rm -r --cached .
-git add . && git commit -m "chore: refresh .gitignore"
+git add .
+git status --short
+git commit -m "chore: refresh .gitignore"
 ```
 
-顺带一提开源仓库的 License 选择：宽松型选 MIT 或 Apache-2.0（后者含专利授权），要保证衍生品开源用 GPL 系；细分场景见参考资料里的 Choose a License。
+## 开源 License 速查
+
+| 许可证 | 传播性 | 商用 | 专利授权 | 适用场景 |
+|--------|--------|------|----------|----------|
+| MIT | 宽松 | 允许 | 无 | 库、脚手架 |
+| Apache-2.0 | 宽松 | 允许 | 有 | 企业项目 |
+| GPL-3.0 | 强传播 | 允许 | 有 | 保证衍生品开源 |
+| BSD-3-Clause | 宽松 | 允许 | 无 | 学术项目 |
+| MPL-2.0 | 文件级 | 允许 | 有 | 插件类项目 |
+| CC0 | 公共领域 | 允许 | 无 | 数据集、示例 |
+
+选择前还要结合项目依赖与分发方式核对许可证条款，细分场景可参考文末的 Choose a License。
 
 ## worktree 替代 stash 切换
 
@@ -72,12 +85,13 @@ git worktree remove ./hotfix
 
 ## 发布基线：release 分支 → main 打 tag
 
-tag 标记的是“对外可回溯的稳定版本”。打在 release 分支上，合并后 commit 关系变化会导致 tag 与 main 历史脱节；统一在 **main 上打 tag**，才能与 CI 产物、回滚点严格对齐。流程写进 `RELEASING.md`：
+tag 指向一个确定的 Git 对象，发布流程需要让它指向最终进入 main 的提交。如果 PR 使用 squash 或 rebase 合并，release 分支上的提交 SHA 会在合并后变化；即使使用普通 merge，等 main 合并完成再打 tag，也更容易让 tag、CI 产物和回滚点保持一致。流程可以写进 `RELEASING.md`：
 
 ```text
 release/x.y.z 分支：提版本号 + 更新 CHANGELOG.md
   → PR 合并 main
-  → main 上：git tag vX.Y.Z && git push --tags
+  → main 上：git tag -a vX.Y.Z -m "vX.Y.Z"
+  → git push origin vX.Y.Z
   → 生成 Release Notes，记录回滚点
   → release 合回 dev（解决冲突后 push）
 ```
