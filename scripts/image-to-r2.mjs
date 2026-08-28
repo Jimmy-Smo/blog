@@ -13,7 +13,7 @@
 //   3. 上传后回读公开 URL 校验 —— 确认真的写到了线上而不是本地模拟存储。
 import { createHash } from 'node:crypto';
 import { execFileSync } from 'node:child_process';
-import { mkdtempSync, rmSync, writeFileSync, existsSync, statSync } from 'node:fs';
+import { mkdtempSync, rmSync, writeFileSync, existsSync, statSync, readFileSync } from 'node:fs';
 import { basename, extname, join } from 'node:path';
 import { tmpdir } from 'node:os';
 import sharp from 'sharp';
@@ -60,6 +60,9 @@ try {
 		const local = join(work, file);
 		writeFileSync(local, buf);
 
+		// 转码后的真实尺寸 (resize 取整后再算比例会有半像素误差), 记进清单。
+		const out = await sharp(buf).metadata();
+
 		const before = statSync(src).size;
 		const pct = before ? ` (-${Math.round((1 - buf.length / before) * 100)}%)` : '';
 		console.log(
@@ -94,9 +97,16 @@ try {
 		if (!res.ok) {
 			console.error(`    ⚠ 上传后回读失败: ${res.status} ${url}`);
 		}
-		results.push({ name, url });
+		results.push({ name, url, w: out.width, h: out.height });
 		console.log(`    ✓ ${url}`);
 	}
+
+	// 尺寸清单: rehype-prose-images 构建时读它给 <img> 补 width/height,
+	// 浏览器能预留高度, 正文不跳版。URL 带内容哈希, 旧条目留着无害。
+	const manifestPath = new URL('../src/data/image-sizes.json', import.meta.url);
+	const manifest = existsSync(manifestPath) ? JSON.parse(readFileSync(manifestPath, 'utf8')) : {};
+	for (const { url, w, h } of results) if (w && h) manifest[url] = { w, h };
+	writeFileSync(manifestPath, `${JSON.stringify(manifest, null, '\t')}\n`);
 
 	if (results.length > 0) {
 		console.log('\n==> 可直接粘贴到文章:\n');
