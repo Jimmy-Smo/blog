@@ -57,17 +57,33 @@ const { title, description, image = FallbackImage } = Astro.props;
 <!-- Twitter -->
 <meta name="twitter:card" content="summary_large_image" />
 
-<!-- 首帧前应用手动主题选择, 避免闪烁; 未选择时跟随系统。js 类供头部三态等渐进增强使用 -->
+<!-- 首帧前应用主题, 避免闪烁。data-theme 始终写入解析后的值, 因为 mermaid 的
+     autoTheme 只认这个属性, 读不到就退回浅色。CSS 两条分支选择器完全对等,
+     禁用 JS 时属性不存在, 由 prefers-color-scheme 分支接管, 表现不变。
+     js 类供头部三态等渐进增强使用 -->
 <script is:inline>
 	(function () {
-		document.documentElement.classList.add('js');
+		var root = document.documentElement;
+		root.classList.add('js');
+		var stored = null;
 		try {
-			var t = localStorage.getItem('theme');
-			if (t === 'light' || t === 'dark') {
-				document.documentElement.dataset.theme = t;
-				var m = document.querySelector('meta[name="theme-color"]');
-				if (m) m.setAttribute('content', t === 'dark' ? '#15171d' : '#ffffff');
-			}
+			stored = localStorage.getItem('theme');
 		} catch (e) {}
+		var manual = stored === 'light' || stored === 'dark';
+		var mq = matchMedia('(prefers-color-scheme: dark)');
+		function apply(t) {
+			root.dataset.theme = t;
+			var m = document.querySelector('meta[name="theme-color"]');
+			if (m) m.setAttribute('content', t === 'dark' ? '#15171d' : '#ffffff');
+		}
+		apply(manual ? stored : mq.matches ? 'dark' : 'light');
+		// 没有手动选择时, 系统主题中途变化要跟上。
+		mq.addEventListener('change', function (e) {
+			var s = null;
+			try {
+				s = localStorage.getItem('theme');
+			} catch (err) {}
+			if (s !== 'light' && s !== 'dark') apply(e.matches ? 'dark' : 'light');
+		});
 	})();
 </script>
