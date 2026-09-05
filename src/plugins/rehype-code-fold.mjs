@@ -30,38 +30,40 @@ const LANGUAGE_LABELS = {
 	zsh: 'Shell',
 };
 
+// 折叠条大约两行代码高。8 行以内的片段展开后仍能一眼看完,
+// 默认收起只会多一次点击。更长的块才默认折叠, 避免把后文顶出视口。
+const AUTO_EXPAND_MAX_LINES = 8;
+
 function isElement(node, tagName) {
 	return node?.type === 'element' && node.tagName === tagName;
+}
+
+function collectText(node) {
+	if (!node) return '';
+	if (node.type === 'text') return node.value ?? '';
+	if (!Array.isArray(node.children)) return '';
+	return node.children.map(collectText).join('');
 }
 
 function lineCount(pre) {
 	const code = pre.children.find((child) => isElement(child, 'code'));
 	if (!code) return 1;
-
-	const highlightedLines = code.children.filter(
-		(child) =>
-			child.type === 'element' &&
-			Array.isArray(child.properties?.className) &&
-			child.properties.className.includes('line'),
-	);
-	if (highlightedLines.length) return highlightedLines.length;
-
-	const text = code.children
-		.filter((child) => child.type === 'text')
-		.map((child) => child.value)
-		.join('');
-	return Math.max(1, text.replace(/\n$/, '').split('\n').length);
+	// Shiki 把每行包进 <span class="line">, 换行落在 span 之间的文本节点里。
+	// 必须递归收集, 只数顶层文本会把 "a\nb" 数成 1 行。
+	return Math.max(1, collectText(code).replace(/\n$/, '').split('\n').length);
 }
 
 function fold(pre) {
 	const rawLanguage = String(pre.properties?.dataLanguage ?? 'text').toLowerCase();
 	const language = LANGUAGE_LABELS[rawLanguage] ?? rawLanguage.toUpperCase();
 	const lines = lineCount(pre);
+	const properties = { className: ['code-fold'] };
+	if (lines <= AUTO_EXPAND_MAX_LINES) properties.open = true;
 
 	return {
 		type: 'element',
 		tagName: 'details',
-		properties: { className: ['code-fold'] },
+		properties,
 		children: [
 			{
 				type: 'element',
