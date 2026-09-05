@@ -4,11 +4,8 @@ description: 以《蔡钰·商业高手心法 20 讲》第一章的目录为索�
 date: 2026-09-05
 updated: 2026-09-05
 tags:
+  - business
   - macroeconomics
-  - business-thinking
-  - debt-cycle
-  - first-principles
-  - china-economy
 status: evergreen
 draft: false
 ---

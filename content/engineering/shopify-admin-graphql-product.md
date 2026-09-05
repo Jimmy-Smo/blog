@@ -6,8 +6,6 @@ updated: 2026-08-28
 tags:
   - engineering
   - shopify
-  - graphql
-  - ecommerce
 status: versioned
 draft: false
 ---

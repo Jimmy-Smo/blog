@@ -6,9 +6,6 @@ updated: 2026-09-05
 tags:
   - business
   - investing
-  - risk-management
-  - decision-making
-  - market-regulation
 status: evergreen
 draft: false
 ---

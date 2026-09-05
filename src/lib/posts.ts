@@ -24,9 +24,18 @@ export function collectTags(posts: Post[]): Array<{ tag: string; count: number }
 		.sort((a, b) => b.count - a.count || a.tag.localeCompare(b.tag));
 }
 
-/** 文章所属主题目录, 即 post.id 的第一段 (如 "jvm")。 */
-export function topicOf(post: Post): string {
-	return post.id.split('/')[0];
+/** 按 UTC 年份分组, 新的年份在前。跨年才需要把结果渲染成带标题的多段。 */
+export function groupByYear(posts: Post[]): Array<{ year: number; posts: Post[] }> {
+	const map = new Map<number, Post[]>();
+	for (const post of posts) {
+		const year = post.data.date.getUTCFullYear();
+		const list = map.get(year);
+		if (list) list.push(post);
+		else map.set(year, [post]);
+	}
+	return [...map.entries()]
+		.sort((a, b) => b[0] - a[0])
+		.map(([year, yearPosts]) => ({ year, posts: yearPosts }));
 }
 
 type Status = Post['data']['status'];

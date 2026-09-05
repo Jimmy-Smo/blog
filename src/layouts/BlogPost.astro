@@ -69,9 +69,17 @@ const relative = days === 0 ? '今天' : days === 1 ? '昨天' : `${days} 天前
 						</p>
 						<h1 class="article-title">{title}</h1>
 						<p class="article-lede">{description}</p>
-						<div class="article-tags">
-							{tags.map((tag) => <a class="tag" href={`/tags/${tag}/`}>{tag}</a>)}
-						</div>
+						{
+							tags.length > 0 && (
+								<div class="article-tags">
+									{tags.map((tag) => (
+										<a class="tag" href={`/tags/${tag}/`}>
+											{tag}
+										</a>
+									))}
+								</div>
+							)
+						}
 
 						{/* 维护状态条: 时效性信息的正式位置 */}
 						<aside
@@ -142,7 +150,9 @@ const relative = days === 0 ? '今天' : days === 1 ? '昨天' : `${days} 天前
 						</div>
 						<nav class="article-nav" aria-label="文章导航">
 							<a class="btn" href="/blog/">← 全部文章</a>
-							{primaryTag && <a class="btn" href={`/tags/${primaryTag}/`}>更多 {primaryTag} 文章</a>}
+							{primaryTag && (
+								<a class="btn" href={`/tags/${primaryTag}/`}>更多 {primaryTag} 文章</a>
+							)}
 						</nav>
 					</footer>
 				</article>

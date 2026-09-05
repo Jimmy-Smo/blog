@@ -7,7 +7,6 @@ tags:
   - ai-tools
   - claude-code
   - cursor
-  - workflow
 status: versioned
 draft: false
 ---

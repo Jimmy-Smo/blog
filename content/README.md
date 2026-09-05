@@ -2,17 +2,26 @@
 
 博客文章和可以公开查看的草稿都在这里，长期维护。
 
-## 主题规划
+## 本地目录
+
+`content/` 下的子目录只给写作时归类文件，站点不按目录做导航。读者从时间线和标签进文章。
+
+现有分法（有文章再开新目录，不要用空目录占位）：
 
 - `java/`：Java 语言、并发、业务开发与工程实践
-- `spring/`：Spring Framework、Spring Boot 与相关生态
 - `jvm/`：JVM 原理、GC、诊断和性能分析
 - `ai-tools/`：AI 编程工具、Agent 与开发者工作流
 - `engineering/`：数据库、消息队列、网络、构建和交付实践
 - `business/`：商业判断、战略、产品和长期生存，材料来自公开演讲与报道
-- `weekly/`：不定期发布的精选周刊，作为内容的索引和分发入口
+- `weekly/`：不定期发布的精选周刊（尚未纳入站点集合）
 
-主题目录只是大致分法，随笔类内容放在最贴近的主题下即可。只在有正式文章时创建对应目录，避免用空目录表达计划。
+公开分类用 frontmatter 的 `tags`。站点只认标签，不认目录。
+
+默认 2 个：货架 1 个，再加 1 个明年还可能再写的词。只有两件会独立再写的栈才打到 3。不确定就只打货架。不要把章节名、人名、一次性细节做成标签。
+
+货架五选一：`engineering` `business` `java` `jvm` `ai-tools`。
+
+现有具体词：`git` `mysql` `gradle` `shopify` `elasticsearch` `mq` `proxy` `kotlin` `spring-boot` `webservice` `kubernetes` `claude-code` `cursor` `agent` `product` `startup` `investing` `macroeconomics` `strategy` `delivery`。新词只在你明确会再写一篇时才加。
 
 ## 发布标准
 

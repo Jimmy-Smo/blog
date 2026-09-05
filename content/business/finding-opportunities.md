@@ -6,9 +6,6 @@ updated: 2026-09-05
 tags:
   - business
   - startup
-  - venture-capital
-  - ai
-  - product-market-fit
 status: evergreen
 draft: false
 ---

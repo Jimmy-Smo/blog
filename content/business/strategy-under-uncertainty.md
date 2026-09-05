@@ -4,11 +4,8 @@ description: 以《蔡钰·商业高手心法 20 讲》第三章的五个讲题�
 date: 2026-09-05
 updated: 2026-09-05
 tags:
-  - strategy
   - business
-  - management
-  - organization
-  - ai-strategy
+  - strategy
 status: evergreen
 draft: false
 ---
