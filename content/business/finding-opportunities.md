@@ -103,11 +103,11 @@ draft: false
 
 链接核验日期均为 2026-09-05。
 
-- 陆奇《新格局下的创业创新机会》演讲实录，2020-12-19 深圳，长江商学院创创社区刊载：<https://www.ckgsb.edu.cn/chuang/content/news_detail/832>
-- 陆奇《新范式 新时代 新机会》演讲实录（奇绩创坛授权，澎湃新闻整理），2023-05-07：<https://www.thepaper.cn/newsDetail_forward_23057456>
-- 《陆奇最新演讲：中国人工智能创业的三大机会》，新浪财经，2025-06-28（媒体转述，非实录）：<https://finance.sina.com.cn/stock/t/2025-06-28/doc-infcrwnf1818971.shtml>
-- 李丰在峰瑞资本 2025 年投资人年度峰会的演讲（钛媒体节选，新浪财经转载），2025-12-29：<https://finance.sina.com.cn/cj/2025-12-29/doc-inhemyss4929491.shtml>
-- 胡时伟《数字化转型与下一代企业》，2022 T-EDGE 全球创新大会（钛媒体整理，凤凰网转载）：<https://h5.ifeng.com/c/vivoArticle/v002Oko7kRXrS4cQ0cBMxXCfjnnPgeUROYeZdz8GTH74f88__>
-- 胡时伟《AI 为企业核心竞争力带来的变革性影响》课堂笔记，混沌学园，36 氪转载，2023-07-20：<https://m.36kr.com/p/2352453587507716>
-- 胡时伟公开履历，财新专题页：<https://promote.caixin.com/2024/5562/102244129/>
-- 曹勖文《四种方式找到好的创业想法》，奇绩创坛知乎专栏，2023-11-13：<https://zhuanlan.zhihu.com/p/666555435>
+- 陆奇[《新格局下的创业创新机会》](<https://www.ckgsb.edu.cn/chuang/content/news_detail/832>)演讲实录，2020-12-19 深圳，长江商学院创创社区刊载
+- 陆奇[《新范式 新时代 新机会》](<https://www.thepaper.cn/newsDetail_forward_23057456>)演讲实录（奇绩创坛授权，澎湃新闻整理），2023-05-07
+- [《陆奇最新演讲：中国人工智能创业的三大机会》](<https://finance.sina.com.cn/stock/t/2025-06-28/doc-infcrwnf1818971.shtml>)，新浪财经，2025-06-28（媒体转述，非实录）
+- [李丰在峰瑞资本 2025 年投资人年度峰会的演讲](<https://finance.sina.com.cn/cj/2025-12-29/doc-inhemyss4929491.shtml>)（钛媒体节选，新浪财经转载），2025-12-29
+- 胡时伟[《数字化转型与下一代企业》](<https://h5.ifeng.com/c/vivoArticle/v002Oko7kRXrS4cQ0cBMxXCfjnnPgeUROYeZdz8GTH74f88__>)，2022 T-EDGE 全球创新大会（钛媒体整理，凤凰网转载）
+- 胡时伟[《AI 为企业核心竞争力带来的变革性影响》](<https://m.36kr.com/p/2352453587507716>)课堂笔记，混沌学园，36 氪转载，2023-07-20
+- [胡时伟公开履历](<https://promote.caixin.com/2024/5562/102244129/>)，财新专题页
+- 曹勖文[《四种方式找到好的创业想法》](<https://zhuanlan.zhihu.com/p/666555435>)，奇绩创坛知乎专栏，2023-11-13

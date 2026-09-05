@@ -102,14 +102,14 @@ draft: false
 
 以下链接均于 2026-09-05 核验可访问。
 
-- 瑞·达利欧，《经济机器是怎样运行的》中文版视频（2013）：<https://www.youtube.com/watch?v=rFV7wdEX-Mo>
-- 桥水基金中文站，视频页与投资理念说明：<https://www.bridgewater.cn/philosophy/economic-machine/>
-- 中文图文学习笔记（第三方整理，含关键术语英文对照）：<https://www.xiaoming.io/economic-machine/>
-- 刘元春，《中国宏观经济运行的新逻辑与政策新思路》，CMF 年度论坛（2024-2025）发言，2024-12-05 财新网观点频道：<https://opinion.caixin.com/2024-12-05/102264636.html>
-- 中国宏观经济论坛（CMF）年度论坛官方页面（含出席嘉宾与议程）：<http://ier.ruc.edu.cn/ltzj/hgjjjdbgfbh/2024n1/20242025/hyyc2025/9d0aed82bc2b49da8a76f0b025f699ad.htm>
-- 刘元春任职信息，上海财经大学商学院师资页：<https://cob.sufe.edu.cn/Faculty/Resume/238>
-- 黄奇帆，「和传统基建相比，新基建有四大不同」，2020 财新夏季峰会发言，界面新闻 2020-06-22 报道：<https://www.jiemian.com/article/4569893.html>
-- 黄奇帆，《要抓住金融的本质》，上海交通大学高级金融学院 2018 届毕业典礼演讲：<https://mba.saif.sjtu.edu.cn/show-1569-652.html?tag=new>
-- James Clear，《First Principles: Elon Musk on the Power of Thinking for Yourself》，含 2012 年《连线》采访引语：<https://jamesclear.com/first-principles>
-- Chris Anderson，《Elon Musk's Mission to Mars》，Wired，2012：<https://www.wired.com/2012/10/ff-elon-musk-qa/>
-- X.com（网上银行）词条，英文维基百科，创办与并入 PayPal 的时间线及 1999 年 CBS MarketWatch 引语出处：<https://en.wikipedia.org/wiki/X.com_(bank)>
+- 瑞·达利欧，[《经济机器是怎样运行的》](<https://www.youtube.com/watch?v=rFV7wdEX-Mo>)中文版视频（2013）
+- [桥水基金中文站](<https://www.bridgewater.cn/philosophy/economic-machine/>)，视频页与投资理念说明
+- [中文图文学习笔记](<https://www.xiaoming.io/economic-machine/>)（第三方整理，含关键术语英文对照）
+- 刘元春，[《中国宏观经济运行的新逻辑与政策新思路》](<https://opinion.caixin.com/2024-12-05/102264636.html>)，CMF 年度论坛（2024-2025）发言，2024-12-05 财新网观点频道
+- [中国宏观经济论坛](<http://ier.ruc.edu.cn/ltzj/hgjjjdbgfbh/2024n1/20242025/hyyc2025/9d0aed82bc2b49da8a76f0b025f699ad.htm>)（CMF）年度论坛官方页面（含出席嘉宾与议程）
+- [刘元春任职信息](<https://cob.sufe.edu.cn/Faculty/Resume/238>)，上海财经大学商学院师资页
+- 黄奇帆，[「和传统基建相比，新基建有四大不同」](<https://www.jiemian.com/article/4569893.html>)，2020 财新夏季峰会发言，界面新闻 2020-06-22 报道
+- 黄奇帆，[《要抓住金融的本质》](<https://mba.saif.sjtu.edu.cn/show-1569-652.html?tag=new>)，上海交通大学高级金融学院 2018 届毕业典礼演讲
+- James Clear，[《First Principles: Elon Musk on the Power of Thinking for Yourself》](<https://jamesclear.com/first-principles>)，含 2012 年《连线》采访引语
+- Chris Anderson，[《Elon Musk's Mission to Mars》](<https://www.wired.com/2012/10/ff-elon-musk-qa/>)，Wired，2012
+- [X.com](<https://en.wikipedia.org/wiki/X.com_(bank)>)（网上银行）词条，英文维基百科，创办与并入 PayPal 的时间线及 1999 年 CBS MarketWatch 引语出处
