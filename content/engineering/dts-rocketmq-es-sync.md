@@ -6,8 +6,7 @@ updated: 2026-08-29
 tags:
   - engineering
   - elasticsearch
-  - rocketmq
-  - cdc
+  - mq
 status: evergreen
 draft: false
 ---

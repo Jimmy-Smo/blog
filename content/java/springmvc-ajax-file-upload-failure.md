@@ -5,10 +5,6 @@ date: 2021-07-29
 updated: 2026-09-05
 tags:
   - java
-  - spring-mvc
-  - jquery
-  - http
-  - debugging
 status: versioned
 draft: true
 ---

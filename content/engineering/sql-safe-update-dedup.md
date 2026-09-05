@@ -5,7 +5,6 @@ date: 2026-07-15
 updated: 2026-08-28
 tags:
   - engineering
-  - sql
   - mysql
 status: evergreen
 draft: false

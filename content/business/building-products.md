@@ -6,9 +6,6 @@ updated: 2026-09-05
 tags:
   - business
   - product
-  - branding
-  - community
-  - hospitality
 status: evergreen
 draft: false
 ---

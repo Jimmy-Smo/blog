@@ -6,8 +6,6 @@ updated: 2026-08-29
 tags:
   - engineering
   - git
-  - github
-  - ssh
 status: evergreen
 draft: false
 ---

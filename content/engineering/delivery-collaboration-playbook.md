@@ -6,7 +6,6 @@ updated: 2026-08-29
 tags:
   - engineering
   - delivery
-  - collaboration
 status: evergreen
 draft: false
 ---

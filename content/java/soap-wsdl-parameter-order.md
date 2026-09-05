@@ -6,9 +6,6 @@ updated: 2026-09-05
 tags:
   - java
   - webservice
-  - soap
-  - xsd
-  - cxf
 status: versioned
 draft: true
 ---

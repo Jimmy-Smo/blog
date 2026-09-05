@@ -1,0 +1,121 @@
+---
+import { groupByYear, type Post } from '../lib/posts';
+
+interface Props {
+	posts: Post[];
+}
+
+const { posts } = Astro.props;
+const years = groupByYear(posts);
+const splitByYear = years.length > 1;
+
+const ym = (d: Date) => {
+	const y = d.getUTCFullYear();
+	const m = String(d.getUTCMonth() + 1).padStart(2, '0');
+	return `${y}-${m}`;
+};
+---
+
+{
+	posts.length === 0 && <p class="empty">还没有已发布的文章。</p>
+}
+
+{
+	years.map(({ year, posts: items }) => (
+		<div class="year-block">
+			{splitByYear && <h2 class="year">{year}</h2>}
+			<ul class="post-list">
+				{items.map((post) => (
+					<li>
+						<a class="row" href={`/blog/${post.id}/`}>
+							<span class="row-main">
+								<span class="title">{post.data.title}</span>
+								<span class="desc">{post.data.description}</span>
+							</span>
+							<time class="row-date" datetime={post.data.date.toISOString()}>
+								{ym(post.data.date)}
+							</time>
+						</a>
+					</li>
+				))}
+			</ul>
+		</div>
+	))
+}
+
+<style>
+	.year-block + .year-block {
+		margin-top: 2.4em;
+	}
+	.year {
+		margin: 0 0 0.3em;
+		font-size: 0.8em;
+		font-weight: 600;
+		letter-spacing: 0.06em;
+		color: var(--fg-3);
+		font-family: var(--font-mono);
+		font-variant-numeric: tabular-nums;
+	}
+	.post-list {
+		list-style: none;
+		margin: 0;
+		padding: 0;
+	}
+	.post-list li {
+		border-bottom: 1px solid var(--border);
+	}
+	.post-list li:last-child {
+		border-bottom: none;
+	}
+	.row {
+		display: flex;
+		justify-content: space-between;
+		align-items: baseline;
+		gap: 1.5em;
+		padding: 0.9em 0.25em;
+		text-decoration: none;
+	}
+	.row-main {
+		display: flex;
+		flex-direction: column;
+		min-width: 0;
+	}
+	.title {
+		color: var(--fg);
+		font-weight: 500;
+		line-height: 1.5;
+	}
+	.desc {
+		color: var(--fg-3);
+		font-size: 0.85em;
+		line-height: 1.6;
+		margin-top: 0.1em;
+		display: -webkit-box;
+		-webkit-line-clamp: 1;
+		-webkit-box-orient: vertical;
+		overflow: hidden;
+	}
+	.row-date {
+		flex-shrink: 0;
+		font-family: var(--font-mono);
+		font-size: 0.8em;
+		color: var(--fg-3);
+		font-variant-numeric: tabular-nums;
+	}
+	.row:hover .title {
+		color: var(--accent);
+	}
+	.empty {
+		color: var(--fg-3);
+	}
+	@media (max-width: 620px) {
+		.row {
+			flex-direction: column;
+			align-items: stretch;
+			gap: 0.35em;
+		}
+		.row-date {
+			order: -1;
+		}
+	}
+</style>

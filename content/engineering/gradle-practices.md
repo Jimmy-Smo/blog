@@ -6,7 +6,6 @@ updated: 2026-08-28
 tags:
   - engineering
   - gradle
-  - build
 status: versioned
 draft: false
 ---

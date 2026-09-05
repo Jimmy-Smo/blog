@@ -6,8 +6,6 @@ updated: 2026-09-05
 tags:
   - java
   - jvm
-  - escape-analysis
-  - compiler
 status: archived
 draft: false
 ---

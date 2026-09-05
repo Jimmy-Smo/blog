@@ -9,7 +9,8 @@ import { collectTags, getPublishedPosts, STATUS_META } from '../lib/posts';
 
 const posts = await getPublishedPosts();
 const recent = posts.slice(0, 8);
-const tags = collectTags(posts).slice(0, 16);
+const tags = collectTags(posts);
+const frequent = tags.filter((t) => t.count >= 2);
 
 const iso = (d: Date) => d.toISOString().slice(0, 10);
 
@@ -114,19 +115,19 @@ function excerptOf(body: string | undefined, max = 110): string {
 			</section>
 
 			{
-				tags.length > 0 && (
+				frequent.length > 0 && (
 					<section class="section">
 						<div class="section-head">
 							<h2 class="eyebrow">按标签浏览</h2>
+							<a class="link-quiet" href="/tags/">
+								全部标签 →
+							</a>
 						</div>
-						<div class="topics">
-							{tags.map(({ tag, count }) => (
-								<a class="topic" href={`/tags/${tag}/`}>
-									<span class="topic-name">{tag}</span>
-									<span class="topic-count">{count} 篇</span>
-									<span class="topic-arrow" aria-hidden="true">
-										→
-									</span>
+						<div class="tag-index">
+							{frequent.map(({ tag, count }) => (
+								<a class="tag-row" href={`/tags/${tag}/`}>
+									<span class="tag-row-name">{tag}</span>
+									<span class="tag-row-count">{count} 篇</span>
 								</a>
 							))}
 						</div>
@@ -212,60 +213,50 @@ function excerptOf(body: string | undefined, max = 110): string {
 		font-size: 0.95em;
 	}
 
-	/* ---- 标签入口: 只渲染真实存在的标签和篇数 ---- */
-	.topics {
+	/* 只放出现过两次及以上的标签, 一次词去 /tags/ */
+	.tag-index {
 		display: grid;
-		grid-template-columns: repeat(auto-fill, minmax(12rem, 1fr));
+		grid-template-columns: repeat(2, minmax(0, 1fr));
 		gap: 0 2.5rem;
 	}
-	.topic {
-		display: grid;
-		grid-template-columns: auto 1fr auto;
+	.tag-row {
+		display: flex;
+		justify-content: space-between;
 		align-items: baseline;
-		gap: 0 0.7rem;
-		padding: 0.95rem 0.75rem;
+		gap: 0.7rem;
+		padding: 0.7rem 0.75rem;
 		margin-inline: -0.75rem;
 		border-bottom: 1px solid var(--border);
 		border-radius: 6px;
 		color: inherit;
+		font-family: var(--font-mono);
 		transition: background-color 0.18s ease;
 	}
-	.topic:hover {
+	.tag-row:hover {
 		background: var(--bg-subtle);
 		text-decoration: none;
 	}
-	/* 小号 mono 标签不着强调色 (会掉到 3.7:1), 改用下划线 + 箭头位移 */
-	.topic:hover .topic-name {
+	.tag-row:hover .tag-row-name {
 		text-decoration: underline;
 		text-underline-offset: 4px;
 		text-decoration-color: var(--border-2);
 	}
-	.topic:hover .topic-arrow {
-		color: var(--fg);
-		transform: translateX(3px);
-	}
-	.topic-name {
-		font-family: var(--font-mono);
+	.tag-row-name {
 		font-size: 0.92rem;
 		font-weight: 500;
 		color: var(--fg);
 	}
-	.topic-count {
-		font-family: var(--font-mono);
+	.tag-row-count {
 		font-size: 0.76rem;
 		color: var(--fg-2);
 		font-variant-numeric: tabular-nums;
-		justify-self: end;
-	}
-	.topic-arrow {
-		color: var(--fg-3);
-		font-size: 0.8rem;
-		transition:
-			color 0.18s ease,
-			transform 0.18s ease;
+		white-space: nowrap;
 	}
 
 	@media (max-width: 620px) {
+		.tag-index {
+			grid-template-columns: 1fr;
+		}
 		.home {
 			padding-top: 2.5rem;
 		}
