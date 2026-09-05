@@ -89,11 +89,11 @@ draft: false
 
 核验日期均为 2026-09-05，链接可访问。
 
-- 徐直军，《拥抱全面智能化时代》，华为全联接大会 2024 主题发言，2024-09-19：<https://www.huawei.com/cn/news/2024/9/hc-intelligent-era-xu>
-- 华为第 21 届分析师大会新闻稿（徐直军「全面智能化之路」主题演讲），2024-04：<https://www.huawei.com/cn/news/2024/4/has-all-intelligence>
-- 《刘强东分享会发言全文，首次阐释京东决策背后的逻辑》，DoNews 整理，2025-06-18：<https://news.qq.com/rain/a/20250618A022CN00>
-- Stephen Witt, *How Jensen Huang's Nvidia Is Powering the A.I. Revolution*, The New Yorker, 2023-12-04：<https://www.newyorker.com/magazine/2023/12/04/how-jensen-huangs-nvidia-is-powering-the-ai-revolution>
-- 《王兴：美团的 AI 策略是进攻，不是防守》，21 世纪经济报道，2025-03-21：<https://www.21jingji.com/article/20250321/herald/13e50df36c02355f77f84341027eff71.html>
-- 《美团 CEO 王兴再谈 AI 战略：唯一合理策略是进攻 不追求成为 Token 工厂》，澎湃新闻，2026-03-26：<https://finance.eastmoney.com/a/202603263685933631.html>
-- 崔鹏，《对话杨国安：如何重燃腾讯》，《中国企业家》，2019-11：<http://www.yangsanjiao.com/newsinfo/2166857.html>
-- 《「杨三角」理论第 3 版重磅发布》，中国日报网，2025-09-03（页面标注为推广信息）：<https://cn.chinadaily.com.cn/a/202509/03/WS68b80325a310f072577469cf.html>
+- 徐直军，[《拥抱全面智能化时代》](<https://www.huawei.com/cn/news/2024/9/hc-intelligent-era-xu>)，华为全联接大会 2024 主题发言，2024-09-19
+- [华为第 21 届分析师大会新闻稿](<https://www.huawei.com/cn/news/2024/4/has-all-intelligence>)（徐直军「全面智能化之路」主题演讲），2024-04
+- [《刘强东分享会发言全文，首次阐释京东决策背后的逻辑》](<https://news.qq.com/rain/a/20250618A022CN00>)，DoNews 整理，2025-06-18
+- Stephen Witt, [*How Jensen Huang's Nvidia Is Powering the A.I. Revolution*](<https://www.newyorker.com/magazine/2023/12/04/how-jensen-huangs-nvidia-is-powering-the-ai-revolution>), The New Yorker, 2023-12-04
+- [《王兴：美团的 AI 策略是进攻，不是防守》](<https://www.21jingji.com/article/20250321/herald/13e50df36c02355f77f84341027eff71.html>)，21 世纪经济报道，2025-03-21
+- [《美团 CEO 王兴再谈 AI 战略：唯一合理策略是进攻 不追求成为 Token 工厂》](<https://finance.eastmoney.com/a/202603263685933631.html>)，澎湃新闻，2026-03-26
+- 崔鹏，[《对话杨国安：如何重燃腾讯》](<http://www.yangsanjiao.com/newsinfo/2166857.html>)，《中国企业家》，2019-11
+- [《「杨三角」理论第 3 版重磅发布》](<https://cn.chinadaily.com.cn/a/202509/03/WS68b80325a310f072577469cf.html>)，中国日报网，2025-09-03（页面标注为推广信息）

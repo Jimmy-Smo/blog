@@ -541,6 +541,54 @@ const relative = days === 0 ? '今天' : days === 1 ? '昨天' : `${days} 天前
 		font-size: 1.18em;
 		font-weight: 600;
 	}
+	/* 单栏书目: 小字号、悬挂编号, 标题下方的细线区分正文。 */
+	.prose :global(.references) {
+		margin-top: 3rem;
+		font-size: 0.875em;
+		font-weight: 400;
+		line-height: 1.65;
+		overflow-wrap: anywhere;
+	}
+	.prose :global(.references > h2) {
+		margin: 0 0 0.85rem;
+		padding: 0 0 0.55rem;
+		border-top: 0;
+		border-bottom: 1px solid var(--border);
+		font-size: 1.15em;
+		font-weight: 400;
+		line-height: 1.4;
+		scroll-margin-top: calc(var(--header-h) + 4rem);
+	}
+	.prose :global(.references > p) {
+		margin: 0 0 0.75em;
+		color: var(--fg-2);
+	}
+	.prose :global(.references > ol) {
+		list-style: decimal outside;
+		margin: 0;
+		padding-left: 1.8em;
+	}
+	.prose :global(.references li) {
+		margin: 0.5em 0;
+		padding-left: 0.2em;
+	}
+	.prose :global(.references li::marker) {
+		color: var(--fg-2);
+		font-variant-numeric: tabular-nums;
+	}
+	.prose :global(.references li p) {
+		margin: 0;
+	}
+	.prose :global(.references a) {
+		color: var(--accent-text);
+		text-decoration: underline;
+		text-decoration-thickness: 1px;
+		text-underline-offset: 2px;
+		text-decoration-color: color-mix(in oklab, var(--accent-text) 30%, transparent);
+	}
+	.prose :global(.references a:hover) {
+		text-decoration-color: currentColor;
+	}
 	/* 命中锚点时给标题一个位置确认标记 */
 	.prose :is(h2, h3):target::before {
 		content: '';

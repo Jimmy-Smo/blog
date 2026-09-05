@@ -10,6 +10,7 @@ import pagefind from 'astro-pagefind';
 import tailwindcss from '@tailwindcss/vite';
 import rehypeCodeFold from './src/plugins/rehype-code-fold.mjs';
 import rehypeProseImages from './src/plugins/rehype-prose-images.mjs';
+import rehypeReferences from './src/plugins/rehype-references.mjs';
 
 // https://astro.build/config
 export default defineConfig({
@@ -45,7 +46,7 @@ export default defineConfig({
   // 代码块双主题: 输出 --shiki-light/--shiki-dark 两组 CSS 变量,
   // global.css 里按 prefers-color-scheme 切换。
   markdown: {
-    processor: unified({ rehypePlugins: [rehypeCodeFold, rehypeProseImages] }),
+    processor: unified({ rehypePlugins: [rehypeCodeFold, rehypeProseImages, rehypeReferences] }),
     shikiConfig: {
       themes: { light: 'github-light', dark: 'github-dark' },
       defaultColor: false,
