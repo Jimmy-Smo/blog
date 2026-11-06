@@ -26,6 +26,7 @@ Wrangler commands are prefixed with `env -u all_proxy` because wrangler's undici
 
 - Post ID = path under `content/` without extension (e.g. `java/soap-wsdl-parameter-order`), which becomes the URL `/blog/<id>/`. Subdirectories are for the author's filing only; the site navigates by date, topics (`/topics/<topic>/`), and tags (`/tags/<tag>/`), never by directory. Old shelf-tag URLs are redirected to topic pages in `public/_redirects`.
 - `src/lib/posts.ts#getPublishedPosts` is the single gate for drafts: it filters `draft: true` only when `import.meta.env.PROD`. All pages (index, blog, topics, tags, RSS) go through it. Schema default is `draft: true`.
+- English versions are a second collection `en` (`content/en/`, same id as the Chinese original, URL `/en/blog/<id>/`, index `/en/`). Only selected posts are translated. UI strings for both languages live in `src/lib/i18n.ts`; `BlogPost.astro` takes `lang` and `hasTranslation`, and the header language switch points to the counterpart page when one exists. Pagefind builds separate indexes per `html[lang]`.
 - `STATUS_META` in the same file drives the `evergreen` / `versioned` / `archived` labels and notices shown on posts.
 - `BlogPost.astro` links each post to its GitHub source at `content/<id>.md` on `main`, and computes "x 天前" at build time.
 

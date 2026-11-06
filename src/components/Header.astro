@@ -1,6 +1,16 @@
 ---
 import { GITHUB_REPO, SITE_TITLE, X_URL } from '../consts';
 import HeaderLink from './HeaderLink.astro';
+import { UI, type Lang } from '../lib/i18n';
+
+interface Props {
+	lang?: Lang;
+	/** 语言切换按钮指向哪里: 有对应译文就指向译文, 否则指向另一语言的首页。 */
+	altHref?: string;
+}
+
+const { lang = 'zh', altHref = lang === 'zh' ? '/en/' : '/' } = Astro.props;
+const t = UI[lang];
 ---
 
 <a class="skip-link" href="#main">跳到主要内容</a>
@@ -10,12 +20,30 @@ import HeaderLink from './HeaderLink.astro';
 			<span>{SITE_TITLE}</span>
 		</a>
 		<div class="internal-links">
-			<HeaderLink href="/">首页</HeaderLink>
-			<HeaderLink href="/blog">文章</HeaderLink>
-			<HeaderLink href="/search">搜索</HeaderLink>
-			<HeaderLink href="/about">关于</HeaderLink>
+			{
+				lang === 'zh' ? (
+					<>
+						<HeaderLink href="/">首页</HeaderLink>
+						<HeaderLink href="/blog">文章</HeaderLink>
+						<HeaderLink href="/search">搜索</HeaderLink>
+						<HeaderLink href="/about">关于</HeaderLink>
+					</>
+				) : (
+					<HeaderLink href="/en">Posts</HeaderLink>
+				)
+			}
 		</div>
 		<div class="icon-links">
+			<a
+				class="lang-switch"
+				href={altHref}
+				hreflang={lang === 'zh' ? 'en' : 'zh-CN'}
+				lang={lang === 'zh' ? 'en' : 'zh-CN'}
+				title={t.switchTitle}
+				aria-label={t.switchTitle}
+			>
+				{t.switchLabel}
+			</a>
 			<button id="theme-toggle" class="theme-toggle" aria-label="切换深浅主题" title="切换深浅主题">
 				<svg class="icon-moon" viewBox="0 0 24 24" aria-hidden="true" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"></path></svg>
 				<svg class="icon-sun" viewBox="0 0 24 24" aria-hidden="true" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"></circle><path d="M12 2v2"></path><path d="M12 20v2"></path><path d="m4.93 4.93 1.41 1.41"></path><path d="m17.66 17.66 1.41 1.41"></path><path d="M2 12h2"></path><path d="M20 12h2"></path><path d="m6.34 17.66-1.41 1.41"></path><path d="m19.07 4.93-1.41 1.41"></path></svg>

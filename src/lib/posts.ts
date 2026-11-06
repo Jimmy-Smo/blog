@@ -1,6 +1,7 @@
 import { getCollection, type CollectionEntry } from 'astro:content';
 
 export type Post = CollectionEntry<'blog'>;
+export type EnPost = CollectionEntry<'en'>;
 
 /**
  * 已发布文章, 按日期倒序。
@@ -9,6 +10,17 @@ export type Post = CollectionEntry<'blog'>;
 export async function getPublishedPosts(): Promise<Post[]> {
 	const posts = await getCollection('blog', ({ data }) => !data.draft || !import.meta.env.PROD);
 	return posts.sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf());
+}
+
+/** 英文版文章, 和中文同样的草稿规则, 按日期倒序。 */
+export async function getEnglishPosts(): Promise<EnPost[]> {
+	const posts = await getCollection('en', ({ data }) => !data.draft || !import.meta.env.PROD);
+	return posts.sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf());
+}
+
+/** 有英文版的中文文章 id 集合。 */
+export async function getTranslatedIds(): Promise<Set<string>> {
+	return new Set((await getEnglishPosts()).map((p) => p.id));
 }
 
 /** 汇总标签及出现次数, 按数量倒序。 */

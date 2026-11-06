@@ -8,42 +8,52 @@ import FormattedDate from '../components/FormattedDate.astro';
 import Header from '../components/Header.astro';
 import { GITHUB_REPO } from '../consts';
 import { SERIES, STATUS_META, TOPICS } from '../lib/posts';
+import { HTML_LANG, STATUS_META_EN, UI, enPostUrl, zhPostUrl, type Lang } from '../lib/i18n';
 
 type Props = CollectionEntry<'blog'>['data'] & {
 	id: string;
 	headings: MarkdownHeading[];
+	/** 默认中文; 英文版文章传 'en'。 */
+	lang?: Lang;
+	/** 这篇有另一种语言的版本 (中文原文有英文版, 或英文版本身)。 */
+	hasTranslation?: boolean;
 };
 
-const { title, description, date, updated, topic, tags, status, heroImage, id, headings, series } = Astro.props;
+const { title, description, date, updated, topic, tags, status, heroImage, id, headings, series, lang = 'zh', hasTranslation = false } = Astro.props;
+const t = UI[lang];
+const isEn = lang === 'en';
 
 // 目录只收 h2/h3; 少于 2 节的短文不出目录, 版面回到单栏。
 const toc = headings.filter((h) => h.depth === 2 || h.depth === 3);
-const meta = STATUS_META[status];
+const meta = isEn ? { ...STATUS_META[status], ...STATUS_META_EN[status] } : STATUS_META[status];
 // 修订日期只在和文章日期不同的时候显示。
 const day = (d: Date) => d.toISOString().slice(0, 10);
 const revised = updated && day(updated) !== day(date) ? updated : undefined;
 const topicLabel = TOPICS[topic].label;
-const sourceUrl = `${GITHUB_REPO}/blob/main/content/${id}.md`;
+const sourceUrl = `${GITHUB_REPO}/blob/main/content/${isEn ? 'en/' : ''}${id}.md`;
+// 语言切换: 有对应版本就互指, 没有就交给 Header 的默认值 (另一语言首页)。
+const altHref = hasTranslation ? (isEn ? zhPostUrl(id) : enPostUrl(id)) : undefined;
+const alternates = hasTranslation ? { zh: zhPostUrl(id), en: enPostUrl(id) } : undefined;
 // 系列文章 (非索引页本身) 在标题区和文末给一条回索引页的路。
-const seriesMeta = series ? SERIES[series] : undefined;
+const seriesMeta = series && !isEn ? SERIES[series] : undefined;
 const seriesIndex = seriesMeta && seriesMeta.index !== id ? seriesMeta : undefined;
 ---
 
-<html lang="zh-CN">
+<html lang={HTML_LANG[lang]}>
 	<head>
-		<BaseHead title={title} description={description} image={heroImage} />
+		<BaseHead title={title} description={description} image={heroImage} alternates={alternates} />
 	</head>
 
 	<body>
-		<Header />
+		<Header lang={lang} altHref={altHref} />
 		{/* 阅读进度: 纯 CSS 滚动驱动动画, 不支持时整条隐藏 */}
 		<div class="reading-progress" aria-hidden="true"></div>
 		<main id="main" class="shell article-main">
 			<div class="article-layout">
 				{
 					toc.length >= 2 && (
-						<nav class="toc-rail" aria-label="本文目录" data-pagefind-ignore>
-							<p class="eyebrow toc-title">本文目录</p>
+						<nav class="toc-rail" aria-label={t.toc} data-pagefind-ignore>
+							<p class="eyebrow toc-title">{t.toc}</p>
 							<ul class="toc-list">
 								{toc.map((h) => (
 									<li class={h.depth === 3 ? 'lv3' : ''}>
@@ -58,9 +68,9 @@ const seriesIndex = seriesMeta && seriesMeta.index !== id ? seriesMeta : undefin
 				<article>
 					<header class="article-head" data-pagefind-ignore>
 						<p class="breadcrumb">
-							<a href="/blog/">文章</a>
+							<a href={t.postsHref}>{t.posts}</a>
 							<span aria-hidden="true">/</span>
-							<a href={`/topics/${topic}/`}>{topicLabel}</a>
+							{isEn ? <span>{topicLabel}</span> : <a href={`/topics/${topic}/`}>{topicLabel}</a>}
 						</p>
 						<h1 class="article-title">{title}</h1>
 						<p class="article-lede">{description}</p>
@@ -68,9 +78,13 @@ const seriesIndex = seriesMeta && seriesMeta.index !== id ? seriesMeta : undefin
 							tags.length > 0 && (
 								<div class="article-tags">
 									{tags.map((tag) => (
-										<a class="tag" href={`/tags/${tag}/`}>
-											{tag}
-										</a>
+										isEn ? (
+											<span class="tag">{tag}</span>
+										) : (
+											<a class="tag" href={`/tags/${tag}/`}>
+												{tag}
+											</a>
+										)
 									))}
 								</div>
 							)
@@ -79,12 +93,12 @@ const seriesIndex = seriesMeta && seriesMeta.index !== id ? seriesMeta : undefin
 						{/* 一行元信息: 日期、修订、维护状态。详细说明放到文末, 不挡在正文前面。 */}
 						<p class="article-meta">
 							<span>
-								<FormattedDate date={date} />
+								<FormattedDate date={date} lang={lang} />
 							</span>
 							{
 								revised && (
 									<span>
-										<FormattedDate date={revised} /> 修订
+										<FormattedDate date={revised} lang={lang} /> {t.revised}
 									</span>
 								)
 							}
@@ -92,17 +106,30 @@ const seriesIndex = seriesMeta && seriesMeta.index !== id ? seriesMeta : undefin
 								<span class:list={['dot', meta.dot]} aria-hidden="true" />
 								{meta.label}
 							</span>
-							{seriesIndex && <a href={`/blog/${seriesIndex.index}/`}>系列：{seriesIndex.label}</a>}
+							{seriesIndex && <a href={`/blog/${seriesIndex.index}/`}>{t.series}{seriesIndex.label}</a>}
+							{altHref && (
+								<a href={altHref} hreflang={isEn ? 'zh-CN' : 'en'} lang={isEn ? 'zh-CN' : 'en'}>
+									{t.translationLink}
+								</a>
+							)}
 						</p>
 						{meta.staleness && <p class:list={['staleness', `staleness--${status}`]}>{meta.staleness}</p>}
+						{
+							isEn && (
+								<p class="staleness translation-note">
+									Translated from the <a href={zhPostUrl(id)} lang="zh-CN">Chinese original</a> with AI
+									assistance. Where the two differ, the Chinese version is authoritative.
+								</p>
+							)
+						}
 					</header>
 
 					{
 						toc.length >= 2 && (
 							<details class="toc-inline" data-pagefind-ignore>
 								<summary>
-									<b>本文目录</b>
-									<span>{toc.filter((h) => h.depth === 2).length} 节</span>
+									<b>{t.toc}</b>
+									<span>{t.tocSections(toc.filter((h) => h.depth === 2).length)}</span>
 								</summary>
 								<ul class="toc-list">
 									{toc.map((h) => (
@@ -132,21 +159,29 @@ const seriesIndex = seriesMeta && seriesMeta.index !== id ? seriesMeta : undefin
 						<div class="revision">
 							<p>{meta.revision}</p>
 							<a class="btn" href={sourceUrl} target="_blank" rel="noopener noreferrer">
-								在 GitHub 上查看源文件
+								{t.viewSource}
 							</a>
 						</div>
-						<nav class="article-nav" aria-label="文章导航">
-							<a class="btn" href="/blog/">← 全部文章</a>
+						<nav class="article-nav" aria-label={t.articleNav}>
+							<a class="btn" href={isEn ? '/en/' : '/blog/'}>{t.allPosts}</a>
 							{seriesIndex && (
-								<a class="btn" href={`/blog/${seriesIndex.index}/`}>系列目录：{seriesIndex.label}</a>
+								<a class="btn" href={`/blog/${seriesIndex.index}/`}>{t.seriesIndex}{seriesIndex.label}</a>
 							)}
-							<a class="btn" href={`/topics/${topic}/`}>更多 {topicLabel} 文章</a>
+							{isEn ? (
+								altHref && (
+									<a class="btn" href={altHref} lang="zh-CN">
+										{t.translationLink}
+									</a>
+								)
+							) : (
+								<a class="btn" href={`/topics/${topic}/`}>{t.morePosts(topicLabel)}</a>
+							)}
 						</nav>
 					</footer>
 				</article>
 			</div>
 		</main>
-		<Footer />
+		<Footer lang={lang} />
 
 		<script is:inline>
 			// 目录滚动跟随 (scrollspy): 替代设计稿里写死的 :has(#…:target) 选择器,
@@ -469,6 +504,19 @@ const seriesIndex = seriesMeta && seriesMeta.index !== id ? seriesMeta : undefin
 		color: var(--fg-2);
 		font-size: 0.82rem;
 		line-height: 1.65;
+	}
+	/* 楷体只为中文准备, 英文版标题和导语回到无衬线 */
+	html[lang='en'] .article-title,
+	html[lang='en'] .article-lede {
+		font-family: var(--font-sans);
+	}
+	html[lang='en'] .article-title {
+		letter-spacing: -0.01em;
+	}
+	.translation-note a {
+		color: inherit;
+		text-decoration: underline;
+		text-underline-offset: 3px;
 	}
 	.staleness--versioned {
 		color: var(--warn);

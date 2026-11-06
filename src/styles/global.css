@@ -654,6 +654,21 @@ html.js .site-header.is-stuck {
 .theme-toggle svg {
 	display: none;
 }
+/* 中英切换: 和图标按钮同一行, 用一个小字号文字块代替图标 */
+.icon-links a.lang-switch {
+	align-items: center;
+	justify-content: center;
+	min-width: 1.9em;
+	height: 1.9em;
+	padding: 0 0.4em;
+	margin-right: 0.2em;
+	border: 1px solid var(--border-2);
+	color: var(--fg-2);
+	font-size: 0.74rem;
+	font-weight: 600;
+	letter-spacing: 0.02em;
+	line-height: 1;
+}
 /* 亮色显示月亮 (点击进入深色), 深色显示太阳 */
 .theme-toggle .icon-moon {
 	display: block;

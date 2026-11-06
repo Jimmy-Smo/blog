@@ -1,0 +1,88 @@
+---
+import BaseHead from '../../components/BaseHead.astro';
+import Footer from '../../components/Footer.astro';
+import Header from '../../components/Header.astro';
+import { getEnglishPosts, TOPICS } from '../../lib/posts';
+import { STATUS_META_EN } from '../../lib/i18n';
+
+// 英文首页: 只列有英文版的文章。站点主体是中文, 这里不做完整的英文站。
+const posts = await getEnglishPosts();
+---
+
+<!doctype html>
+<html lang="en">
+	<head>
+		<BaseHead
+			title="拾雾 Shiwu · English"
+			description="Selected posts from Shiwu, a Chinese-language blog by a backend engineer, translated into English."
+		/>
+	</head>
+	<body>
+		<Header lang="en" altHref="/" />
+		<main id="main" class="en-home">
+			<h1 class="page-title">Shiwu, in English</h1>
+			<p class="lede">
+				拾雾 (Shiwu, "picking through the fog") is a Chinese-language blog by Jimmy, a Java/Kotlin backend
+				engineer. Most posts are written for Chinese readers. The ones below are translated because they may be
+				useful beyond that audience.
+			</p>
+			<p class="note">
+				Translations are made with AI assistance. Where a translation and its Chinese original differ, the original
+				is authoritative.
+			</p>
+
+			<ul class="entries">
+				{
+					posts.map((post) => (
+						<li>
+							<a class="entry" href={`/en/blog/${post.id}/`}>
+								<div class="entry-stamp">
+									<b>{post.data.date.toISOString().slice(0, 10)}</b>
+									{post.data.status !== 'evergreen' && (
+										<span class="entry-status">{STATUS_META_EN[post.data.status].label}</span>
+									)}
+								</div>
+								<div class="entry-body">
+									<h2 class="entry-title">{post.data.title}</h2>
+									<p class="entry-desc">{post.data.description}</p>
+									<div class="entry-tags">
+										<span class="entry-topic">{TOPICS[post.data.topic].label}</span>
+										{post.data.tags.map((tag) => (
+											<span>{tag}</span>
+										))}
+									</div>
+								</div>
+							</a>
+						</li>
+					))
+				}
+			</ul>
+		</main>
+		<Footer lang="en" />
+	</body>
+</html>
+
+<style>
+	.page-title {
+		font-size: 1.75rem;
+		font-weight: 700;
+		margin: 0 0 0.9rem;
+	}
+	.lede {
+		font-size: 1.05rem;
+		line-height: 1.75;
+		max-width: 38em;
+		margin: 0 0 0.6rem;
+	}
+	.note {
+		color: var(--fg-2);
+		font-size: 0.88rem;
+		line-height: 1.7;
+		max-width: 42em;
+		margin: 0 0 2.5rem;
+	}
+	.entry-stamp b,
+	.entry-status {
+		white-space: nowrap;
+	}
+</style>

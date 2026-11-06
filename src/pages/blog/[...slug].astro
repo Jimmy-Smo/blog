@@ -1,7 +1,7 @@
 ---
 import { render } from 'astro:content';
 import BlogPost from '../../layouts/BlogPost.astro';
-import { getPublishedPosts } from '../../lib/posts';
+import { getPublishedPosts, getTranslatedIds } from '../../lib/posts';
 
 export async function getStaticPaths() {
 	const posts = await getPublishedPosts();
@@ -10,8 +10,9 @@ export async function getStaticPaths() {
 
 const post = Astro.props;
 const { Content, headings } = await render(post);
+const translated = await getTranslatedIds();
 ---
 
-<BlogPost {...post.data} id={post.id} headings={headings}>
+<BlogPost {...post.data} id={post.id} headings={headings} hasTranslation={translated.has(post.id)}>
 	<Content />
 </BlogPost>
