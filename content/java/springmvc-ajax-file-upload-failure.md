@@ -5,8 +5,8 @@ date: 2021-07-29
 updated: 2026-09-05
 tags:
   - java
-status: versioned
-draft: true
+status: archived
+draft: false
 ---
 
 第一次写文件上传，工程里也没有现成代码可以抄。按网上教程写完，跑起来不是 500 就是 400。500 时后台抛的是：

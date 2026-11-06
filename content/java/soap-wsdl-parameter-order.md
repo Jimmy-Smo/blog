@@ -6,8 +6,8 @@ updated: 2026-09-05
 tags:
   - java
   - webservice
-status: versioned
-draft: true
+status: archived
+draft: false
 ---
 
 对接方调一个 WebService 接口，进来了，打印出来的两个参数都是空。把报文要过来，改了命名空间，再把两个参数的顺序调正，就通了。对方问：这两个参数为什么一定要按顺序？当时只能说不按顺序就会出问题。后来打断点看了 CXF 怎么解析 SOAP。
@@ -76,10 +76,10 @@ Dubbo 的 WS 协议也是交给 CXF 的 `ServletController` 处理。参数是�
 <soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:ser="http://service.xxx">
     <soapenv:Header/>
     <soapenv:Body>
-        <ser:syncunitework>
+        <ser:sync>
             <ser:arg1>arg1</ser:arg1>
             <ser:arg0>arg0</ser:arg0>
-        </ser:syncunitework>
+        </ser:sync>
     </soapenv:Body>
 </soapenv:Envelope>
 ```
