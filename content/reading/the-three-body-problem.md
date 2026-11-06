@@ -5,7 +5,7 @@ date: 2026-11-05
 updated: 2026-11-06
 tags:
   - reading
-  - strategy
+  - science-fiction
 status: evergreen
 draft: false
 ---

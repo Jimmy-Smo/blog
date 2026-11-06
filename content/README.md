@@ -22,7 +22,7 @@
 
 货架六选一：`engineering` `business` `java` `jvm` `ai-tools` `reading`。
 
-现有具体词：`git` `mysql` `gradle` `shopify` `elasticsearch` `mq` `proxy` `kotlin` `spring-boot` `webservice` `kubernetes` `claude-code` `cursor` `agent` `product` `startup` `investing` `macroeconomics` `strategy` `delivery`。新词只在你明确会再写一篇时才加。
+现有具体词：`git` `mysql` `gradle` `shopify` `elasticsearch` `mq` `proxy` `kotlin` `spring-boot` `webservice` `kubernetes` `claude-code` `cursor` `agent` `product` `startup` `investing` `macroeconomics` `strategy` `delivery` `programming` `science-fiction`。新词只在你明确会再写一篇时才加。
 
 ## 发布标准
 
