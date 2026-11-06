@@ -44,6 +44,10 @@
 		'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif;
 	--font-mono:
 		ui-monospace, 'SF Mono', 'JetBrains Mono', Menlo, Consolas, monospace;
+	/* 代码块与行内代码专用: 自托管的 JetBrains Mono, 中文回落到苹方/雅黑, 与正文同族 */
+	--font-code-stack:
+		var(--font-code), 'JetBrains Mono', ui-monospace, 'SF Mono', Menlo, Consolas, 'PingFang SC',
+		'Microsoft YaHei', monospace;
 	/* 楷体栈用于标题/导语/引用: 霞鹜文楷 (SIL OFL) 由 BaseHead 引入, 分块加载;
 	   缺字/未加载时回落系统楷体。 */
 	--font-kai: 'LXGW WenKai', 'Kaiti SC', 'KaiTi', 'STKaiti', serif;

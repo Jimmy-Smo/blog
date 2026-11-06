@@ -31,7 +31,7 @@ Wrangler commands are prefixed with `env -u all_proxy` because wrangler's undici
 - `BlogPost.astro` links each post to its GitHub source at `content/<id>.md` on `main`, and computes "x 天前" at build time.
 
 **Markdown pipeline** (`astro.config.mjs`), custom rehype plugins in `src/plugins/`:
-- `rehype-code-fold`: wraps Shiki code blocks in native `<details>` (zero JS), with language label and line count; short snippets open by default.
+- `rehype-code-fold`: wraps Shiki code blocks in `div.code-block` with a bar (language, line count, copy button). Blocks of 26+ lines get a ~14-line preview with an expand button, only when JS is on; without JS everything is shown. `text` blocks wrap. Labels switch to English for files under `content/en/`. After changing a rehype plugin, delete `.astro/data-store.json` (and `node_modules/.astro/data-store.json`) or the build reuses cached HTML.
 - `rehype-prose-images`: adds `loading=lazy`/`decoding=async` to body `<img>` and `width`/`height` from `src/data/image-sizes.json` (written by `npm run img`) to prevent layout shift.
 - `rehype-references`: an `## 参考` / `## 参考资料` section is wrapped in `section.references` and its `ul` becomes a numbered `ol`.
 - Shiki uses dual themes with `defaultColor: false` (CSS variables switched in `global.css`).

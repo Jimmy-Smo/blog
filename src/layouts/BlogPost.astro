@@ -184,6 +184,57 @@ const seriesIndex = seriesMeta && seriesMeta.index !== id ? seriesMeta : undefin
 		<Footer lang={lang} />
 
 		<script is:inline>
+			// 代码块: 复制、长行换行、长代码展开。无 JS 时按钮由 CSS 隐藏, 代码全部显示。
+			(function () {
+				var blocks = document.querySelectorAll('.code-block');
+				if (!blocks.length) return;
+				// 只有代码真的横向溢出时才出现换行按钮
+				function measure() {
+					blocks.forEach(function (b) {
+						if (b.classList.contains('is-wrapped')) return;
+						var code = b.querySelector('pre > code');
+						b.classList.toggle('has-overflow', code.scrollWidth > code.clientWidth + 1);
+					});
+				}
+				measure();
+				var t;
+				window.addEventListener('resize', function () {
+					clearTimeout(t);
+					t = setTimeout(measure, 150);
+				});
+				document.addEventListener('click', function (e) {
+					var btn = e.target.closest('.code-block__copy, .code-block__wrap, .code-block__expand');
+					if (!btn) return;
+					var block = btn.closest('.code-block');
+					if (btn.classList.contains('code-block__copy')) {
+						var code = block.querySelector('pre code');
+						if (!navigator.clipboard) return;
+						navigator.clipboard.writeText(code.innerText).then(function () {
+							var label = btn.title;
+							btn.classList.add('is-copied');
+							btn.title = btn.dataset.copied;
+							setTimeout(function () {
+								btn.classList.remove('is-copied');
+								btn.title = label;
+							}, 1500);
+						});
+					} else if (btn.classList.contains('code-block__wrap')) {
+						var wrapped = block.classList.toggle('is-wrapped');
+						btn.setAttribute('aria-pressed', wrapped ? 'true' : 'false');
+						if (!wrapped) measure();
+					} else {
+						var open = block.classList.toggle('is-expanded');
+						btn.setAttribute('aria-expanded', open ? 'true' : 'false');
+						if (!btn.dataset.expand) btn.dataset.expand = btn.textContent;
+						btn.textContent = open ? btn.dataset.collapse : btn.dataset.expand;
+						// 收起时如果块顶已经滚出视口, 拉回来, 免得读者停在后文中间
+						if (!open && block.getBoundingClientRect().top < 0) block.scrollIntoView({ block: 'start' });
+					}
+				});
+			})();
+		</script>
+
+		<script is:inline>
 			// 目录滚动跟随 (scrollspy): 替代设计稿里写死的 :has(#…:target) 选择器,
 			// 对任意文章的标题都生效。滚动经过哪个小节, 就高亮对应目录项。
 			(function () {
@@ -676,8 +727,8 @@ const seriesIndex = seriesMeta && seriesMeta.index !== id ? seriesMeta : undefin
 
 	/* 中西混排: 行内代码给出侧边距, 否则会紧贴汉字 */
 	.prose :global(code) {
-		font-family: var(--font-mono);
-		font-size: 0.85em;
+		font-family: var(--font-code-stack);
+		font-size: 0.84em;
 		background: var(--code-bg);
 		color: var(--code-fg);
 		padding: 0.12em 0.4em;
@@ -695,104 +746,109 @@ const seriesIndex = seriesMeta && seriesMeta.index !== id ? seriesMeta : undefin
 	/* ---- 代码块 ----
 	   Shiki 双主题变量原样使用; 但背景改绑 --bg-subtle,
 	   避免浅色下代码块底色与页面同为白、只靠一条边框存在。 */
-	.prose :global(.code-fold) {
+	.prose :global(.code-block) {
+		position: relative;
 		margin: 1.5em 0;
 		border: 1px solid var(--border);
 		border-radius: 8px;
 		background: var(--bg-subtle);
 		overflow: hidden;
 	}
-	.prose :global(.code-fold__summary) {
-		min-height: 2.6rem;
-		padding: 0 1rem;
+	/* 顶栏: 语言 · 行数, 右侧是图标按钮。比代码再低一档, 不和正文抢注意力 */
+	.prose :global(.code-block__bar) {
 		display: flex;
 		align-items: center;
-		justify-content: space-between;
-		gap: 1rem;
-		list-style: none;
-		cursor: pointer;
-		color: var(--fg-2);
-		font-family: var(--font-mono);
-		font-size: 0.78rem;
+		gap: 0.55rem;
+		height: 2.15rem;
+		padding: 0 0.4rem 0 1rem;
+		border-bottom: 1px solid var(--border);
+		font-family: var(--font-code-stack);
+		font-size: 0.7rem;
 		line-height: 1;
-		user-select: none;
-		transition: background-color 160ms ease, color 160ms ease;
-	}
-	.prose :global(.code-fold__summary::-webkit-details-marker) {
-		display: none;
-	}
-	.prose :global(.code-fold__summary:hover) {
-		background: color-mix(in oklab, var(--fg) 5%, transparent);
-		color: var(--fg);
-	}
-	.prose :global(.code-fold__summary:focus-visible) {
-		outline-offset: -3px;
-	}
-	.prose :global(.code-fold__meta) {
-		min-width: 0;
-		overflow: hidden;
-		text-overflow: ellipsis;
-		white-space: nowrap;
-	}
-	.prose :global(.code-fold__language) {
-		color: var(--fg);
-		font-weight: 600;
-		letter-spacing: 0.06em;
-	}
-	.prose :global(.code-fold__lines) {
 		color: var(--fg-3);
+		user-select: none;
 	}
-	.prose :global(.code-fold__action) {
-		flex: none;
+	.prose :global(.code-block__lang) {
+		color: var(--fg-2);
+		font-weight: 600;
+		letter-spacing: 0.04em;
+	}
+	.prose :global(.code-block__lines::before) {
+		content: '·';
+		margin-right: 0.55rem;
+	}
+	.prose :global(.code-block__btn) {
 		display: inline-flex;
 		align-items: center;
-		gap: 0.55em;
-		color: var(--accent-text);
-	}
-	.prose :global(.code-fold__action::after) {
-		content: '';
-		width: 0.5em;
-		height: 0.5em;
-		border-right: 1.5px solid currentColor;
-		border-bottom: 1.5px solid currentColor;
-		transform: translateY(-0.14em) rotate(45deg);
-		transition: transform 160ms ease;
-	}
-	.prose :global(.code-fold__when-open) {
-		display: none;
-	}
-	.prose :global(.code-fold[open] .code-fold__when-closed) {
-		display: none;
-	}
-	.prose :global(.code-fold[open] .code-fold__when-open) {
-		display: inline;
-	}
-	.prose :global(.code-fold[open] .code-fold__action::after) {
-		transform: translateY(0.14em) rotate(225deg);
-	}
-	.prose :global(pre) {
-		position: relative;
-		/* padding-top 用 rem, 与语言标签的 height 同单位; 用 em 会因两者字号不同而错位 */
-		margin: 1.5em 0;
-		padding: 2.2rem 0 0;
-		border: 1px solid var(--border);
-		border-radius: 8px;
-		font-size: 0.84em;
-		line-height: 1.7;
-		overflow: visible !important; /* 覆盖 Shiki 内联的 overflow-x:auto, 滚动交给内层 code */
-	}
-	.prose :global(.code-fold > pre) {
-		margin: 0;
-		padding-top: 0;
+		justify-content: center;
+		width: 1.75rem;
+		height: 1.75rem;
+		padding: 0;
 		border: 0;
-		border-top: 1px solid var(--border);
+		border-radius: 5px;
+		background: none;
+		color: var(--fg-3);
+		cursor: pointer;
+		transition: background-color 160ms ease, color 160ms ease;
+	}
+	.prose :global(.code-block__btn:hover) {
+		background: color-mix(in oklab, var(--fg) 8%, transparent);
+		color: var(--fg);
+	}
+	.prose :global(.code-block__wrap) {
+		display: none;
+		margin-left: auto;
+	}
+	.prose :global(.code-block.has-overflow .code-block__wrap),
+	.prose :global(.code-block.is-wrapped .code-block__wrap) {
+		display: inline-flex;
+	}
+	.prose :global(.code-block.is-wrapped .code-block__wrap) {
+		color: var(--accent-text);
+		background: color-mix(in oklab, var(--accent) 12%, transparent);
+	}
+	/* 换行按钮不显示时, 复制按钮自己靠右 */
+	.prose :global(.code-block__copy) {
+		margin-left: auto;
+	}
+	.prose :global(.code-block.has-overflow .code-block__copy),
+	.prose :global(.code-block.is-wrapped .code-block__copy) {
+		margin-left: 0;
+	}
+	.prose :global(.code-block__icon--done) {
+		display: none;
+	}
+	.prose :global(.code-block__copy.is-copied) {
+		color: var(--ok);
+	}
+	.prose :global(.code-block__copy.is-copied .code-block__icon--idle) {
+		display: none;
+	}
+	.prose :global(.code-block__copy.is-copied .code-block__icon--done) {
+		display: block;
+	}
+	/* 没有 JS 时按钮都用不了, 直接不显示; 长代码也保持全部展开 */
+	:global(html:not(.js)) .prose :global(.code-block__btn),
+	:global(html:not(.js)) .prose :global(.code-block__expand) {
+		display: none;
+	}
+
+	.prose :global(.code-block pre) {
+		margin: 0;
+		padding: 0;
+		border: 0;
 		border-radius: 0;
+		font-family: var(--font-code-stack);
+		font-size: 0.8125rem; /* 固定 13px, 比 17px 正文小一档, 一行能放下更多代码 */
+		line-height: 1.7;
+		font-variant-ligatures: none; /* 不把 != -> 合成连字, 读者看到的就是要敲的字符 */
+		overflow: visible !important; /* 覆盖 Shiki 内联的 overflow-x:auto, 滚动交给内层 code */
 	}
 	.prose :global(pre > code) {
 		all: unset;
 		display: block;
 		overflow-x: auto;
-		padding: 0 1.15em 1.15em;
+		padding: 0.95em 1.15em 1.05em;
 		tab-size: 2;
 		overscroll-behavior-x: contain; /* 横向滑到底不外泄成页面级滑动/返回手势 */
 		/* 左右两侧的滚动提示: 内容溢出时才出现, 纯 background-attachment 实现 */
@@ -814,27 +870,53 @@ const seriesIndex = seriesMeta && seriesMeta.index !== id ? seriesMeta : undefin
 			100% 0;
 		background-attachment: local, local, scroll, scroll;
 	}
-	.prose :global(.code-fold > pre > code) {
-		padding-top: 1.15em;
+	/* 报错、日志这类纯文本默认换行; 其他代码由读者用换行按钮切换 */
+	.prose :global(.code-block--wrap pre > code),
+	.prose :global(.code-block.is-wrapped pre > code) {
+		white-space: pre-wrap;
+		overflow-wrap: anywhere;
 	}
-	/* 语言标签: 固定在代码块左上角, 不随横向滚动漂移 */
-	.prose :global(pre[data-language]::before) {
-		content: attr(data-language);
+
+	/* 长代码: 有 JS 时先露出约 14 行, 底部渐隐, 点按钮展开全部 */
+	:global(html.js) .prose :global(.code-block--long:not(.is-expanded) pre) {
+		max-height: calc(1.7em * 14 + 0.95em);
+		overflow: hidden !important;
+	}
+	:global(html.js) .prose :global(.code-block--long:not(.is-expanded) pre::after) {
+		content: '';
 		position: absolute;
-		inset: 0 0 auto 0;
-		height: 2.2rem;
-		display: flex;
-		align-items: center;
-		padding: 0 1.15em;
-		border-bottom: 1px solid var(--border);
-		font-family: var(--font-mono);
-		font-size: 0.78rem;
-		letter-spacing: 0.1em;
-		text-transform: uppercase;
-		color: var(--fg-2);
+		inset: auto 0 0 0;
+		height: 4.5em;
+		background: linear-gradient(to bottom, transparent, var(--bg-subtle));
+		pointer-events: none;
 	}
-	.prose :global(.code-fold > pre[data-language]::before) {
-		display: none;
+	.prose :global(.code-block--long pre) {
+		position: relative;
+	}
+	.prose :global(.code-block__expand) {
+		display: block;
+		width: 100%;
+		padding: 0.6rem 1rem;
+		border: 0;
+		border-top: 1px solid var(--border);
+		background: none;
+		color: var(--accent-text);
+		font-family: var(--font-code-stack);
+		font-size: 0.72rem;
+		cursor: pointer;
+		transition: background-color 160ms ease;
+	}
+	.prose :global(.code-block__expand:hover) {
+		background: color-mix(in oklab, var(--fg) 5%, transparent);
+	}
+
+	/* 不在 .code-block 里的 pre (例如 mermaid 之外的原始 HTML) 保持一个朴素外观 */
+	.prose :global(pre:not(.code-block pre)) {
+		margin: 1.5em 0;
+		border: 1px solid var(--border);
+		border-radius: 8px;
+		font-size: 0.84em;
+		line-height: 1.7;
 	}
 	:global(.astro-code) {
 		background-color: var(--bg-subtle) !important;
@@ -982,16 +1064,18 @@ const seriesIndex = seriesMeta && seriesMeta.index !== id ? seriesMeta : undefin
 		.prose h3 {
 			scroll-margin-top: calc(var(--header-h) + 3.75rem);
 		}
-		.prose pre {
+		.prose :global(.code-block) {
 			margin-inline: calc(-1 * var(--gutter));
 			border-inline: none;
 			border-radius: 0;
-			font-size: 0.8em;
 		}
-		.prose pre > code {
-			padding-inline: var(--gutter);
+		.prose :global(.code-block pre) {
+			font-size: 0.78rem;
 		}
-		.prose pre[data-language]::before {
+		.prose :global(.code-block__bar) {
+			padding-left: var(--gutter);
+		}
+		.prose :global(pre > code) {
 			padding-inline: var(--gutter);
 		}
 		.prose table {
