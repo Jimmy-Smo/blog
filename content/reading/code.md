@@ -91,6 +91,6 @@ series: hn-books
 
 这种感觉会改变你和计算机的关系：从「使用一个工具」，变成「理解一台机器」。
 
-## 参考
+## 参考资料
 
 - Charles Petzold, Code: The Hidden Language of Computer Hardware and Software, 1999; 2nd ed., 2022，整理日期 2026-11-06

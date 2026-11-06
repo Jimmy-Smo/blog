@@ -155,7 +155,7 @@ As of jQuery 1.6 you can pass false to tell jQuery to not set any content type h
 
 `Content-Type` 的 token 字符集是有规定的，`false` 这种拼进去就是非法头。MDN：[Content-Type](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Content-Type)。
 
-## 参考
+## 参考资料
 
 - jQuery `$.ajax`：<https://api.jquery.com/jquery.ajax/>
 - MDN Content-Type：<https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Content-Type>

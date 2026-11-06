@@ -73,6 +73,6 @@ series: hn-books
 
 产品经理最缺的往往不是方法，是这种「我信的东西也是一个故事」的自觉。有了这个自觉，你既不会把产品的成功归功于自己聪明，也不会把失败归咎于用户不识货。
 
-## 参考
+## 参考资料
 
 - Yuval Noah Harari, Sapiens: A Brief History of Humankind, 2011/2014，整理日期 2026-11-06

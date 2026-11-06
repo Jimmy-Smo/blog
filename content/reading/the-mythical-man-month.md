@@ -79,6 +79,6 @@ series: hn-books
 
 等待是最贵的成本，而它通常不在任何人的任务列表里。
 
-## 参考
+## 参考资料
 
 - Frederick P. Brooks, The Mythical Man-Month, 1975/1995，整理日期 2026-11-06

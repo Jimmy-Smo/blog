@@ -35,7 +35,7 @@ draft: false
 
 一开始用「CXF 默认配置项」去搜，出来的都是怎么写这个 `cxf.xml`，不是框架自己怎么找到它。关键字还得再练。这个结论在 2026 年重新核对源码时做了修正，原来的截图和排查过程保留下来，当作一次历史记录。
 
-## 参考
+## 参考资料
 
 - [Apache CXF：BusApplicationContext.java](https://github.com/apache/cxf/blob/main/core/src/main/java/org/apache/cxf/bus/spring/BusApplicationContext.java)
 - [Apache CXF：Configurer.java](https://github.com/apache/cxf/blob/main/core/src/main/java/org/apache/cxf/configuration/Configurer.java)

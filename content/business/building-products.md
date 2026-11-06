@@ -80,7 +80,7 @@ draft: false
 
 这是《蔡钰·商业高手心法 20 讲》五篇笔记里的第四篇。其余四篇：[第一篇 看懂宏观](/blog/business/macro-lenses-for-business/)、[第二篇 寻找机会](/blog/business/finding-opportunities/)、[第三篇 制定战略](/blog/business/strategy-under-uncertainty/)、[第五篇 长期不败](/blog/business/long-term-survival/)。
 
-## 参考
+## 参考资料
 
 以下链接均于 2026-09-05 核验可访问。
 

@@ -71,6 +71,6 @@ MIT 在 2008 年前后把它从入门课换掉，换成基于 Python 的课程�
 
 烂掉的方式很稳定：变化从某一个点渗进来，因为那里没有屏障，于是一改就牵动全身。SICP 让你在写第一行代码之前就看见那个点。
 
-## 参考
+## 参考资料
 
 - Harold Abelson, Gerald Jay Sussman, Structure and Interpretation of Computer Programs, 1985，整理日期 2026-11-06

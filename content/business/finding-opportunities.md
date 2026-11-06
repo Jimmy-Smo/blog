@@ -96,7 +96,7 @@ draft: false
 
 本系列其余四篇：[第一篇 看懂宏观](/blog/business/macro-lenses-for-business/)、[第三篇 制定战略](/blog/business/strategy-under-uncertainty/)、[第四篇 打造产品](/blog/business/building-products/)、[第五篇 长期不败](/blog/business/long-term-survival/)。
 
-## 参考
+## 参考资料
 
 链接核验日期均为 2026-09-05。
 

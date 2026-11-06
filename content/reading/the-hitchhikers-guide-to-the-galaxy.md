@@ -65,6 +65,6 @@ series: hn-books
 
 认出来之后，你才有机会问那句最简单也最难的问题：这件事，到底在解决什么。问完之后，你可能会发现答案是「没人记得了」，然后你就可以动手删掉它。
 
-## 参考
+## 参考资料
 
 - Douglas Adams, The Hitchhiker's Guide to the Galaxy, 1979，整理日期 2026-11-06

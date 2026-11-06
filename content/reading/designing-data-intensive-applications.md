@@ -112,7 +112,7 @@ ACID 里的 C（一致性）其实是应用的责任，不是数据库的保证�
 
 这本书不教任何工具，它教你在一张权衡表上标出自己的位置。标记这件事，比记住任何一个组件都值钱。
 
-## 参考
+## 参考资料
 
 - Martin Kleppmann, Designing Data-Intensive Applications, 2017（第一版），整理日期 2026-11-06
 - Martin Kleppmann, Chris Riccomini, Designing Data-Intensive Applications, 2nd Edition, O'Reilly, 2026-02，出版信息核验日期 2026-11-06

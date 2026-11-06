@@ -101,6 +101,6 @@ MVP 经常被理解成「先做个糙的」，但糙不等于瞄准。很多 MVP
 
 后者可以被争论，也可以被解决。
 
-## 参考
+## 参考资料
 
 - Andrew Hunt, David Thomas, The Pragmatic Programmer, 1999; 20th Anniversary Edition, 2019，整理日期 2026-11-06

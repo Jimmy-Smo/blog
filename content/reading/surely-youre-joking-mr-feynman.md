@@ -68,7 +68,7 @@ NASA 的工程师其实早就知道低温有风险，但风险被一层层管理
 
 这种冲动在组织里是有代价的，但它也是唯一能让技术判断不被稀释的东西。
 
-## 参考
+## 参考资料
 
 - Richard P. Feynman, Surely You're Joking, Mr. Feynman!, 1985
 - Richard P. Feynman, What Do You Care What Other People Think?, 1988，整理日期 2026-11-06

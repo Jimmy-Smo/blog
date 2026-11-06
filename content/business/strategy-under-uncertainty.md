@@ -82,7 +82,7 @@ draft: false
 
 这是系列的第三篇。其余四篇：[第一篇 看懂宏观](/blog/business/macro-lenses-for-business/)、[第二篇 寻找机会](/blog/business/finding-opportunities/)、[第四篇 打造产品](/blog/business/building-products/)、[第五篇 长期不败](/blog/business/long-term-survival/)。
 
-## 参考
+## 参考资料
 
 核验日期均为 2026-09-05，链接可访问。
 

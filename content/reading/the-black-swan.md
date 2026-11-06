@@ -79,6 +79,6 @@ series: hn-books
 
 再问一句：如果最坏的情况发生，我们活不活得下来。如果答案是「活不下来」，那概率是多少就不重要了。
 
-## 参考
+## 参考资料
 
 - Nassim Nicholas Taleb, The Black Swan, 2007，整理日期 2026-11-06

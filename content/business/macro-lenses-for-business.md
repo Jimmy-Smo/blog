@@ -95,7 +95,7 @@ draft: false
 
 这是《商业高手心法》五篇笔记的第一篇，其余四篇分别对应后面四章：[第二篇 寻找机会](/blog/business/finding-opportunities/)、[第三篇 制定战略](/blog/business/strategy-under-uncertainty/)、[第四篇 打造产品](/blog/business/building-products/)、[第五篇 长期不败](/blog/business/long-term-survival/)。
 
-## 参考
+## 参考资料
 
 以下链接均于 2026-09-05 核验可访问。
 

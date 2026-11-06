@@ -96,6 +96,6 @@ GEB 的目录看起来像发疯：一会儿讲形式系统，一会儿讲艾舍�
 
 这本书读不完不丢人，读完也不代表你懂了。它本来就不是一本能被「用完」的书，它是一副眼镜。
 
-## 参考
+## 参考资料
 
 - Douglas R. Hofstadter, Gödel, Escher, Bach: an Eternal Golden Braid, 1979，整理日期 2026-11-06

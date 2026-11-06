@@ -77,6 +77,6 @@ series: hn-books
 
 这个反射建立起来之后，你会发现很多「用户教育」的需求消失了，因为问题从来不在用户那边。
 
-## 参考
+## 参考资料
 
 - Don Norman, The Design of Everyday Things, 1988; revised ed., 2013，整理日期 2026-11-06

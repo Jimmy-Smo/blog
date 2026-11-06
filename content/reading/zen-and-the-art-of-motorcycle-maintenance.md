@@ -78,6 +78,6 @@ Quality 不是主观偏好，也不是客观属性，而是主客体相遇时发
 
 至于垫片，它给的是一个提醒：解决问题的人，是理解系统的人，不是拥有更多零件的人。
 
-## 参考
+## 参考资料
 
 - Robert M. Pirsig, Zen and the Art of Motorcycle Maintenance, 1974，整理日期 2026-11-06
