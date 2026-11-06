@@ -8,6 +8,7 @@ tags:
   - science-fiction
 status: evergreen
 draft: false
+series: hn-books
 ---
 
 你设计了一个积分机制，本意是奖励高质量内容。上线三个月，团队发现有人靠刷量拿了榜首，还总结出了一套方法论发在社区里。你看着后台数据，明白了一件事：你造的不是机制，是一个被无数人研究怎么利用的系统。

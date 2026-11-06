@@ -8,6 +8,7 @@ tags:
   - product
 status: evergreen
 draft: false
+series: hn-books
 ---
 
 你做的这个东西，没人「真正需要」它。它不解决饥饿，不治病，不能挡雨。但它有几亿用户，估值高过大多数国家的 GDP。你跟人解释它的价值，说着说着就开始用「生态」「共识」「心智」这类词，自己都觉得虚。

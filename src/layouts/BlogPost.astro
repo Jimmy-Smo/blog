@@ -7,25 +7,26 @@ import Footer from '../components/Footer.astro';
 import FormattedDate from '../components/FormattedDate.astro';
 import Header from '../components/Header.astro';
 import { GITHUB_REPO } from '../consts';
-import { STATUS_META } from '../lib/posts';
+import { SERIES, STATUS_META, tagLabel } from '../lib/posts';
 
 type Props = CollectionEntry<'blog'>['data'] & {
 	id: string;
 	headings: MarkdownHeading[];
 };
 
-const { title, description, date, updated, tags, status, heroImage, id, headings } = Astro.props;
+const { title, description, date, updated, tags, status, heroImage, id, headings, series } = Astro.props;
 
 // 目录只收 h2/h3; 少于 2 节的短文不出目录, 版面回到单栏。
 const toc = headings.filter((h) => h.depth === 2 || h.depth === 3);
 const meta = STATUS_META[status];
-const updatedDate = updated ?? date;
+// 修订日期只在和文章日期不同的时候显示。
+const day = (d: Date) => d.toISOString().slice(0, 10);
+const revised = updated && day(updated) !== day(date) ? updated : undefined;
 const primaryTag = tags[0];
 const sourceUrl = `${GITHUB_REPO}/blob/main/content/${id}.md`;
-
-// 「x 天前」在构建期计算, 静态站下次发布时会刷新。
-const days = Math.max(0, Math.floor((Date.now() - updatedDate.getTime()) / 86400000));
-const relative = days === 0 ? '今天' : days === 1 ? '昨天' : `${days} 天前`;
+// 系列文章 (非索引页本身) 在标题区和文末给一条回索引页的路。
+const seriesMeta = series ? SERIES[series] : undefined;
+const seriesIndex = seriesMeta && seriesMeta.index !== id ? seriesMeta : undefined;
 ---
 
 <html lang="zh-CN">
@@ -62,7 +63,7 @@ const relative = days === 0 ? '今天' : days === 1 ? '昨天' : `${days} 天前
 								primaryTag && (
 									<>
 										<span aria-hidden="true">/</span>
-										<a href={`/tags/${primaryTag}/`}>{primaryTag}</a>
+										<a href={`/tags/${primaryTag}/`}>{tagLabel(primaryTag)}</a>
 									</>
 								)
 							}
@@ -74,40 +75,32 @@ const relative = days === 0 ? '今天' : days === 1 ? '昨天' : `${days} 天前
 								<div class="article-tags">
 									{tags.map((tag) => (
 										<a class="tag" href={`/tags/${tag}/`}>
-											{tag}
+											{tagLabel(tag)}
 										</a>
 									))}
 								</div>
 							)
 						}
 
-						{/* 维护状态条: 时效性信息的正式位置 */}
-						<aside
-							class:list={['maintenance', status !== 'evergreen' && `maintenance--${status}`]}
-							aria-label="内容维护状态"
-						>
-							<p class="maintenance-state">
-								<span class:list={['dot', meta.dot]} aria-hidden="true"></span>
-								<b>{meta.label}</b>
-								<em>{meta.note}</em>
-							</p>
-							<dl>
-								<div>
-									<dt>最后更新</dt>
-									<dd>
-										<FormattedDate date={updatedDate} />
-										<small>{relative}</small>
-									</dd>
-								</div>
-								<div>
-									<dt>文章日期</dt>
-									<dd>
-										<FormattedDate date={date} />
-									</dd>
-								</div>
-							</dl>
-							{meta.staleness && <p class="staleness">{meta.staleness}</p>}
-						</aside>
+						{/* 一行元信息: 日期、修订、维护状态。详细说明放到文末, 不挡在正文前面。 */}
+						<p class="article-meta">
+							<span>
+								<FormattedDate date={date} />
+							</span>
+							{
+								revised && (
+									<span>
+										<FormattedDate date={revised} /> 修订
+									</span>
+								)
+							}
+							<span class:list={['article-status', `article-status--${status}`]}>
+								<span class:list={['dot', meta.dot]} aria-hidden="true" />
+								{meta.label}
+							</span>
+							{seriesIndex && <a href={`/blog/${seriesIndex.index}/`}>系列：{seriesIndex.label}</a>}
+						</p>
+						{meta.staleness && <p class:list={['staleness', `staleness--${status}`]}>{meta.staleness}</p>}
 					</header>
 
 					{
@@ -150,8 +143,11 @@ const relative = days === 0 ? '今天' : days === 1 ? '昨天' : `${days} 天前
 						</div>
 						<nav class="article-nav" aria-label="文章导航">
 							<a class="btn" href="/blog/">← 全部文章</a>
+							{seriesIndex && (
+								<a class="btn" href={`/blog/${seriesIndex.index}/`}>系列目录：{seriesIndex.label}</a>
+							)}
 							{primaryTag && (
-								<a class="btn" href={`/tags/${primaryTag}/`}>更多 {primaryTag} 文章</a>
+								<a class="btn" href={`/tags/${primaryTag}/`}>更多{tagLabel(primaryTag)}文章</a>
 							)}
 						</nav>
 					</footer>
@@ -391,9 +387,7 @@ const relative = days === 0 ? '今天' : days === 1 ? '昨天' : `${days} 天前
 		align-items: center;
 		gap: 0.45rem;
 		margin: 0 0 1rem;
-		font-family: var(--font-mono);
-		font-size: 0.76rem;
-		letter-spacing: 0.04em;
+		font-size: 0.8rem;
 		color: var(--fg-3);
 	}
 	.breadcrumb a {
@@ -440,73 +434,43 @@ const relative = days === 0 ? '今天' : days === 1 ? '昨天' : `${days} 天前
 		border: 1px solid var(--border);
 	}
 
-	/* ---- 维护状态条 ---- */
-	.maintenance {
-		border-block: 1px solid var(--border-2);
-		padding: 1rem 0 1.05rem;
-	}
-	.maintenance-state {
+	/* ---- 一行元信息 ---- */
+	.article-meta {
 		display: flex;
 		flex-wrap: wrap;
-		align-items: baseline;
-		gap: 0.5rem 0.7rem;
-		margin: 0 0 0.85rem;
-	}
-	.maintenance-state .dot {
-		align-self: center;
-	}
-	.maintenance-state b {
-		font-size: 0.95rem;
-		font-weight: 600;
-		color: var(--fg);
-	}
-	.maintenance-state em {
-		font-style: normal;
-		color: var(--fg-2);
-		font-size: 0.86rem;
-	}
-	.maintenance dl {
-		display: grid;
-		grid-template-columns: repeat(3, minmax(0, 1fr));
-		gap: 0.9rem 1.5rem;
+		align-items: center;
+		gap: 0.3rem 0;
 		margin: 0;
-	}
-	.maintenance dt {
-		font-family: var(--font-mono);
-		font-size: 0.71rem;
-		letter-spacing: 0.1em;
-		text-transform: uppercase;
+		padding-bottom: 1.25rem;
+		border-bottom: 1px solid var(--border);
+		font-size: 0.85rem;
 		color: var(--fg-2);
-		margin-bottom: 0.15rem;
-	}
-	.maintenance dd {
-		margin: 0;
-		font-size: 0.88rem;
-		line-height: 1.6;
-		color: var(--fg);
-		font-weight: 500;
 		font-variant-numeric: tabular-nums;
 	}
-	.maintenance dd small {
-		display: block;
+	.article-meta > * + *::before {
+		content: '·';
+		margin: 0 0.6em;
+		color: var(--fg-3);
+	}
+	.article-meta a {
 		color: var(--fg-2);
-		font-size: 0.86em;
-		font-weight: 400;
+		text-decoration: underline;
+		text-underline-offset: 3px;
+		text-decoration-color: var(--border-2);
 	}
-	@media (max-width: 620px) {
-		.maintenance dl {
-			grid-template-columns: repeat(2, minmax(0, 1fr));
-		}
+	.article-meta a:hover {
+		color: var(--fg);
 	}
-	.maintenance--versioned .staleness {
+	.article-status {
+		display: inline-flex;
+		align-items: center;
+		gap: 0.4em;
+	}
+	.article-status--versioned {
 		color: var(--warn);
-		background: color-mix(in oklab, var(--warn) 10%, var(--bg));
-	}
-	.maintenance--archived .maintenance-state b {
-		color: var(--fg-2);
 	}
 	.staleness {
-		margin-top: 0.9rem;
+		margin: 1rem 0 0;
 		padding: 0.65rem 0.85rem;
 		border-radius: 6px;
 		background: var(--bg-subtle);
@@ -514,16 +478,20 @@ const relative = days === 0 ? '今天' : days === 1 ? '昨天' : `${days} 天前
 		font-size: 0.82rem;
 		line-height: 1.65;
 	}
+	.staleness--versioned {
+		color: var(--warn);
+		background: color-mix(in oklab, var(--warn) 10%, var(--bg));
+	}
 
 	/* ---- 正文 ---- */
 	.prose {
 		line-height: 1.85;
-		padding-top: 2.5rem;
+		padding-top: 2rem;
 	}
 	.prose > :first-child {
 		margin-top: 0;
 	}
-	/* 首个 h2 紧跟维护状态条, 去掉分隔线, 避免两条横线叠在一起 */
+	/* 首个 h2 紧跟元信息行, 去掉分隔线, 避免两条横线叠在一起 */
 	.prose > h2:first-child {
 		border-top: none;
 		padding-top: 0;

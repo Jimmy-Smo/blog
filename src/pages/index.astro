@@ -5,10 +5,11 @@ import BaseHead from '../components/BaseHead.astro';
 import Footer from '../components/Footer.astro';
 import Header from '../components/Header.astro';
 import { GITHUB_REPO, SITE_DESCRIPTION, SITE_TITLE } from '../consts';
-import { collectTags, getPublishedPosts, STATUS_META } from '../lib/posts';
+import { collapseSeries, collectTags, getPublishedPosts, SERIES, STATUS_META, tagLabel } from '../lib/posts';
 
 const posts = await getPublishedPosts();
-const recent = posts.slice(0, 8);
+// 一个系列只占一条, 一次发一批也不会刷满首页。
+const recent = collapseSeries(posts).slice(0, 8);
 const tags = collectTags(posts);
 const frequent = tags.filter((t) => t.count >= 2);
 
@@ -58,7 +59,7 @@ function excerptOf(body: string | undefined, max = 110): string {
 				<div class="identity-body">
 					<h1 class="identity-name">{SITE_TITLE}</h1>
 					<p class="identity-lede">
-						学到的、看到的、想到的，都会在这里认真写下来。不求多，想清楚了再发。
+						Java / Kotlin 后端，在这里写踩过的坑、读过的书和想明白的事。不求多，想清楚了再发。
 					</p>
 				</div>
 			</section>
@@ -71,26 +72,33 @@ function excerptOf(body: string | undefined, max = 110): string {
 
 				<ul class="entries">
 					{
-						recent.map((post, i) => {
+						recent.map(({ post, seriesCount }, i) => {
 							const meta = STATUS_META[post.data.status];
-							const excerpt = i === 0 ? excerptOf(post.body) : '';
+							const excerpt = i === 0 && !seriesCount ? excerptOf(post.body) : '';
+							const day = iso(post.data.date);
+							// 日期只在变化时显示, 状态只在不是「长期维护」时显示: 重复的信息不占版面。
+							const showDay = i === 0 || day !== iso(recent[i - 1].post.data.date);
+							const series = seriesCount && post.data.series ? SERIES[post.data.series] : undefined;
 							return (
 								<li>
 									<a class:list={['entry', { 'entry--lead': i === 0 }]} href={`/blog/${post.id}/`}>
 										<div class="entry-stamp">
-											<b>{iso(post.data.date)}</b>
-											<span class="entry-status">
-												<span class:list={['dot', meta.dot]} aria-hidden="true" />
-												{meta.label}
-											</span>
+											{showDay && <b>{day}</b>}
+											{post.data.status !== 'evergreen' && (
+												<span class="entry-status">
+													<span class:list={['dot', meta.dot]} aria-hidden="true" />
+													{meta.label}
+												</span>
+											)}
 										</div>
 										<div class="entry-body">
+											{series && <p class="entry-series">系列 · {seriesCount} 篇</p>}
 											<h3 class="entry-title">{post.data.title}</h3>
 											<p class="entry-desc">{post.data.description}</p>
 											{excerpt && <p class="entry-excerpt">{excerpt}</p>}
 											<div class="entry-tags">
 												{post.data.tags.map((tag) => (
-													<span>{tag}</span>
+													<span>{tagLabel(tag)}</span>
 												))}
 											</div>
 										</div>
@@ -126,7 +134,7 @@ function excerptOf(body: string | undefined, max = 110): string {
 						<div class="tag-index">
 							{frequent.map(({ tag, count }) => (
 								<a class="tag-row" href={`/tags/${tag}/`}>
-									<span class="tag-row-name">{tag}</span>
+									<span class="tag-row-name">{tagLabel(tag)}</span>
 									<span class="tag-row-count">{count} 篇</span>
 								</a>
 							))}
@@ -177,6 +185,13 @@ function excerptOf(body: string | undefined, max = 110): string {
 		max-width: 28em;
 		margin: 0;
 		text-wrap: pretty;
+	}
+
+	.entry-series {
+		margin: 0 0 0.3rem;
+		font-size: 0.78rem;
+		color: var(--fg-2);
+		letter-spacing: 0.04em;
 	}
 
 	/* ---- 区块标题 ---- */
@@ -242,7 +257,8 @@ function excerptOf(body: string | undefined, max = 110): string {
 		text-decoration-color: var(--border-2);
 	}
 	.tag-row-name {
-		font-size: 0.92rem;
+		font-family: var(--font-sans);
+		font-size: 0.95rem;
 		font-weight: 500;
 		color: var(--fg);
 	}

@@ -22,7 +22,9 @@
 
 货架六选一：`engineering` `business` `java` `jvm` `ai-tools` `reading`。
 
-现有具体词：`git` `mysql` `gradle` `shopify` `elasticsearch` `mq` `proxy` `kotlin` `spring-boot` `webservice` `kubernetes` `claude-code` `cursor` `agent` `product` `startup` `investing` `macroeconomics` `strategy` `delivery` `programming` `science-fiction`。新词只在你明确会再写一篇时才加。
+现有具体词：`git` `mysql` `gradle` `shopify` `elasticsearch` `mq` `proxy` `kotlin` `spring-boot` `webservice` `kubernetes` `claude-code` `cursor` `agent` `product` `startup` `investing` `macroeconomics` `strategy` `delivery` `programming` `science-fiction`。新词只在你明确会再写一篇时才加。加新词时，在 `src/lib/posts.ts` 的 `TAG_LABELS` 里补它的中文显示名（页面显示中文，URL 仍用英文）。
+
+一次成批发布的系列文章，frontmatter 加 `series: <key>`，并在 `src/lib/posts.ts` 的 `SERIES` 里登记索引页。首页「最新文章」会把整个系列折叠成一条，指向索引页；`/blog/` 和标签页仍逐篇列出。现有系列：`hn-books`（索引页 `reading/hacker-news-book-list`）。
 
 ## 发布标准
 

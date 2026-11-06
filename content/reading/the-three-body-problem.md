@@ -8,6 +8,7 @@ tags:
   - science-fiction
 status: evergreen
 draft: false
+series: hn-books
 ---
 
 你做战略规划的时候，默认了一个前提：你的计划是保密的。如果这个前提不成立呢？如果对手能实时看到你的每一份文档、每一次会议、每一个决定，你还怎么规划？

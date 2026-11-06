@@ -8,6 +8,7 @@ tags:
   - programming
 status: evergreen
 draft: false
+series: hn-books
 ---
 
 产品经理第七次改需求，你的函数里已经有九个 `if`，每个都对应一次「这次真的定了」。你想重构，一动手就发现所有分支都咬在一起，动哪根线都会响。

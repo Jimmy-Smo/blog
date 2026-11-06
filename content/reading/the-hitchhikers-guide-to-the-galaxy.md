@@ -8,6 +8,7 @@ tags:
   - science-fiction
 status: evergreen
 draft: false
+series: hn-books
 ---
 
 你开了一个会，讨论「我们该怎么评审需求」。会上决定成立一个小组，先调研一下业界怎么做需求评审。小组开了第二次会，讨论调研的范围。你坐在那儿，忽然意识到：流程已经比它要解决的问题还大了。

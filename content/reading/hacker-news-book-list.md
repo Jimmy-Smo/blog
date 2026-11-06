@@ -7,6 +7,7 @@ tags:
   - reading
 status: evergreen
 draft: false
+series: hn-books
 ---
 
 二十本书，二十篇解读，都列在下面的表里。每篇可以单独读，也可以按下面的路线串起来读。

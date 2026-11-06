@@ -10,7 +10,7 @@
   ------------------------------------------------------------------------- */
 :root {
 	--shell: 960px;
-	--measure: 720px;
+	--measure: 640px;
 	--rail: 200px;
 	--gutter: 1.25rem;
 	--header-h: 3.6rem;
@@ -415,8 +415,7 @@ main {
 	border-radius: 5px;
 	border: 1px solid var(--border-2);
 	background: var(--bg);
-	font-family: var(--font-mono);
-	font-size: 0.76rem;
+	font-size: 0.8rem;
 	color: var(--fg-2);
 	transition:
 		background-color 0.16s ease,
@@ -499,10 +498,8 @@ main {
 	flex-wrap: wrap;
 	gap: 0.5rem;
 	margin-top: 0.85rem;
-	font-family: var(--font-mono);
-	font-size: 0.76rem;
+	font-size: 0.8rem;
 	color: var(--fg-2);
-	letter-spacing: 0.02em;
 }
 /* 头条: 多给一段真实正文摘录, 让读者判断文风 */
 .entry--lead {

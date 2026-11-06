@@ -7,6 +7,7 @@ tags:
   - reading
 status: evergreen
 draft: false
+series: hn-books
 ---
 
 你们团队有一个谁都没规定、但所有人都在遵守的惯例：合并代码前必须在群里发一句。没人记得这规矩怎么来的，也没人敢不遵守。你问过原因，答案五花八门，每个都不太对。

@@ -8,6 +8,7 @@ tags:
   - strategy
 status: evergreen
 draft: false
+series: hn-books
 ---
 
 出了事故，复盘会的结论是「加强管控」。于是加了三道审批、两份检查表、一个周会。半年后出了一次更大的事故，因为你把决策权收走了，一线的人不再敢在第一时间处理，所有事都要等审批。

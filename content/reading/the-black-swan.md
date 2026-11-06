@@ -8,6 +8,7 @@ tags:
   - strategy
 status: evergreen
 draft: false
+series: hn-books
 ---
 
 事故复盘会上，有人说：「我们跑了八年，从来没出过这种问题。」这句话听起来像证据，其实是把「没见过」当成了「不会发生」。而真正把公司打垮的那次故障，往往正好是八年没发生过的那一类。

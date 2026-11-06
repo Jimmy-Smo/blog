@@ -8,6 +8,7 @@ tags:
   - programming
 status: evergreen
 draft: false
+series: hn-books
 ---
 
 你写 Python 写了十年，自认对计算机很懂。直到某天要改一段 C 扩展，编译器报了个段错误，你盯着指针看了半小时，不知道它指向哪，也不知道那块内存还在不在。你意识到自己一直在用一层很厚的壳，壳底下的事你从没真正处理过。

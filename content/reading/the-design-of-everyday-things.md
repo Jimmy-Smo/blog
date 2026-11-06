@@ -8,6 +8,7 @@ tags:
   - product
 status: evergreen
 draft: false
+series: hn-books
 ---
 
 一扇门，装了一个很漂亮的把手。每个人走过去都拉，门是推的。于是有人在门上贴了一张纸：「推」。纸被撕掉之后，所有人又开始拉。

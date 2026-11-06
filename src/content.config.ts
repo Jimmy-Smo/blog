@@ -17,6 +17,8 @@ const blog = defineCollection({
 			tags: z.array(z.string()).default([]),
 			status: z.enum(['evergreen', 'versioned', 'archived']).default('evergreen'),
 			draft: z.boolean().default(true),
+			/** 系列 key, 见 src/lib/posts.ts 的 SERIES。 */
+			series: z.string().optional(),
 			heroImage: z.optional(image()),
 		}),
 });

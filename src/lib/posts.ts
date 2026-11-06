@@ -51,9 +51,9 @@ export const STATUS_META: Record<
 	evergreen: {
 		label: '长期维护',
 		dot: '',
-		note: '内容持续修订，命令与结论会随工具链更新',
+		note: '内容会持续修订',
 		revision:
-			'这篇处于长期维护状态，源文件放在 GitHub 仓库里。命令失效、版本对不上或结论有出入，欢迎直接提 Issue。',
+			'这篇处于长期维护状态，源文件放在 GitHub 仓库里。发现事实错误、版本对不上或结论有出入，欢迎直接提 Issue。',
 	},
 	versioned: {
 		label: '版本相关',
@@ -70,3 +70,78 @@ export const STATUS_META: Record<
 		revision: '这篇已归档，源文件还留在 GitHub 仓库里，仅作历史参考。',
 	},
 };
+
+/**
+ * 标签的中文显示名。URL 与 frontmatter 仍用英文 slug, 只有页面上显示这里的名字;
+ * 没登记的标签原样显示。新增标签词时顺手在这里补一行。
+ */
+const TAG_LABELS: Record<string, string> = {
+	engineering: '工程',
+	business: '商业',
+	java: 'Java',
+	jvm: 'JVM',
+	'ai-tools': 'AI 工具',
+	reading: '读书',
+	git: 'Git',
+	mysql: 'MySQL',
+	gradle: 'Gradle',
+	shopify: 'Shopify',
+	elasticsearch: 'Elasticsearch',
+	mq: '消息队列',
+	proxy: '代理',
+	kotlin: 'Kotlin',
+	'spring-boot': 'Spring Boot',
+	webservice: 'WebService',
+	kubernetes: 'Kubernetes',
+	heapdump: 'HeapDump',
+	'claude-code': 'Claude Code',
+	cursor: 'Cursor',
+	agent: 'Agent',
+	product: '产品',
+	startup: '创业',
+	investing: '投资',
+	macroeconomics: '宏观经济',
+	strategy: '战略',
+	delivery: '交付',
+	programming: '编程',
+	'science-fiction': '科幻',
+	weekly: '周刊',
+};
+
+export function tagLabel(tag: string): string {
+	return TAG_LABELS[tag] ?? tag;
+}
+
+/**
+ * 系列: frontmatter 里 `series: <key>` 的文章在首页「最新文章」里折叠成一条,
+ * 指向系列索引页, 避免一次发一批时把首页刷满。/blog 和标签页仍逐篇列出。
+ */
+export const SERIES: Record<string, { index: string; label: string }> = {
+	'hn-books': { index: 'reading/hacker-news-book-list', label: '二十本技术人的书' },
+};
+
+export type FeedItem = { post: Post; seriesCount?: number };
+
+/** 首页用的时间线: 同一系列只保留一条 (以系列索引页代表), 位置取该系列最新一篇。 */
+export function collapseSeries(posts: Post[]): FeedItem[] {
+	const counts = new Map<string, number>();
+	for (const p of posts) {
+		const s = p.data.series;
+		if (s) counts.set(s, (counts.get(s) ?? 0) + 1);
+	}
+	const seen = new Set<string>();
+	const items: FeedItem[] = [];
+	for (const p of posts) {
+		const s = p.data.series;
+		const meta = s ? SERIES[s] : undefined;
+		if (!s || !meta) {
+			items.push({ post: p });
+			continue;
+		}
+		if (seen.has(s)) continue;
+		seen.add(s);
+		const index = posts.find((x) => x.id === meta.index) ?? p;
+		items.push({ post: index, seriesCount: counts.get(s) });
+	}
+	return items;
+}

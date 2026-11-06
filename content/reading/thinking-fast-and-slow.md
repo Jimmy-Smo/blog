@@ -8,6 +8,7 @@ tags:
   - product
 status: evergreen
 draft: false
+series: hn-books
 ---
 
 用户访谈里，十个人有八个说「我很在意隐私，愿意为它付费」。上线付费墙，付费率百分之二。你怀疑问卷设计，换了一版，结论一样。你开始怀疑的不是用户，是你自己对「人怎么决策」的默认假设。
