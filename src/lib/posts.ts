@@ -129,9 +129,14 @@ export function collapseSeries(posts: Post[]): FeedItem[] {
 			items.push({ post: p });
 			continue;
 		}
+		const index = posts.find((x) => x.id === meta.index);
+		// 索引未发布时逐篇列出, 不能折叠到一篇普通成员文章。
+		if (!index) {
+			items.push({ post: p });
+			continue;
+		}
 		if (seen.has(s)) continue;
 		seen.add(s);
-		const index = posts.find((x) => x.id === meta.index) ?? p;
 		items.push({ post: index, seriesCount: counts.get(s) });
 	}
 	return items;

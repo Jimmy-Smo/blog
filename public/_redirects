@@ -3,3 +3,6 @@
 /tags/ai-tools/ /topics/ai/ 301
 /tags/business/ /topics/business/ 301
 /tags/reading/ /topics/reading/ 301
+
+# AI 编程工作流重写后不再使用 cursor 标签, 保留旧入口。
+/tags/cursor/ /topics/ai/ 301

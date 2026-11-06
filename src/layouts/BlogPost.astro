@@ -17,9 +17,11 @@ type Props = CollectionEntry<'blog'>['data'] & {
 	lang?: Lang;
 	/** 这篇有另一种语言的版本 (中文原文有英文版, 或英文版本身)。 */
 	hasTranslation?: boolean;
+	/** 系列索引已通过发布门槛; 未发布时成员页不链接到它。 */
+	hasSeriesIndex?: boolean;
 };
 
-const { title, description, date, updated, topic, tags, status, heroImage, id, headings, series, lang = 'zh', hasTranslation = false } = Astro.props;
+const { title, description, date, updated, topic, tags, status, heroImage, id, headings, series, lang = 'zh', hasTranslation = false, hasSeriesIndex = false } = Astro.props;
 const t = UI[lang];
 const isEn = lang === 'en';
 
@@ -36,7 +38,7 @@ const altHref = hasTranslation ? (isEn ? zhPostUrl(id) : enPostUrl(id)) : undefi
 const alternates = hasTranslation ? { zh: zhPostUrl(id), en: enPostUrl(id) } : undefined;
 // 系列文章 (非索引页本身) 在标题区和文末给一条回索引页的路。
 const seriesMeta = series && !isEn ? SERIES[series] : undefined;
-const seriesIndex = seriesMeta && seriesMeta.index !== id ? seriesMeta : undefined;
+const seriesIndex = seriesMeta && seriesMeta.index !== id && hasSeriesIndex ? seriesMeta : undefined;
 ---
 
 <html lang={HTML_LANG[lang]}>
@@ -115,7 +117,7 @@ const seriesIndex = seriesMeta && seriesMeta.index !== id ? seriesMeta : undefin
 						</p>
 						{meta.staleness && <p class:list={['staleness', `staleness--${status}`]}>{meta.staleness}</p>}
 						{
-							isEn && (
+							isEn && hasTranslation && (
 								<p class="staleness translation-note">
 									Translated from the <a href={zhPostUrl(id)} lang="zh-CN">Chinese original</a> with AI
 									assistance. Where the two differ, the Chinese version is authoritative.
@@ -210,7 +212,7 @@ const seriesIndex = seriesMeta && seriesMeta.index !== id ? seriesMeta : undefin
 						var code = block.querySelector('pre code');
 						if (!navigator.clipboard) return;
 						navigator.clipboard.writeText(code.innerText).then(function () {
-							var label = btn.title;
+							var label = btn.getAttribute('aria-label');
 							btn.classList.add('is-copied');
 							btn.title = btn.dataset.copied;
 							setTimeout(function () {
