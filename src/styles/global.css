@@ -415,7 +415,8 @@ main {
 	border-radius: 5px;
 	border: 1px solid var(--border-2);
 	background: var(--bg);
-	font-size: 0.8rem;
+	font-family: var(--font-mono);
+	font-size: 0.76rem;
 	color: var(--fg-2);
 	transition:
 		background-color 0.16s ease,
@@ -498,8 +499,17 @@ main {
 	flex-wrap: wrap;
 	gap: 0.5rem;
 	margin-top: 0.85rem;
-	font-size: 0.8rem;
+	font-family: var(--font-mono);
+	font-size: 0.76rem;
 	color: var(--fg-2);
+	letter-spacing: 0.02em;
+}
+/* 主题排在标签前面, 用正文字体和更重的字重区分出层级 */
+.entry-tags .entry-topic {
+	font-family: var(--font-sans);
+	font-weight: 600;
+	color: var(--fg);
+	letter-spacing: 0;
 }
 /* 头条: 多给一段真实正文摘录, 让读者判断文风 */
 .entry--lead {

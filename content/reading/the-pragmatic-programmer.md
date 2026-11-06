@@ -3,8 +3,8 @@ title: 《程序员修炼之道》解读：同一个坑，你踩了第三次
 description: 从三份几乎一样的重复代码出发，拆解 DRY 到底指什么、正交性、曳光弹和 MVP 的区别、破窗为什么被用坏了，以及「不要靠巧合编程」的真正含义。
 date: 2026-11-05
 updated: 2026-11-06
+topic: reading
 tags:
-  - reading
   - programming
 status: evergreen
 draft: false

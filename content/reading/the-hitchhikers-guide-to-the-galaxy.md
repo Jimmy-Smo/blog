@@ -3,8 +3,8 @@ title: 《银河系漫游指南》解读：流程比问题本身还大
 description: 从一个「为了讨论怎么讨论而开的会」出发，拆解这本书用尺度并置制造的荒诞、42 这个笑话的真正含义，以及它为什么不提供任何方法却仍然有用。
 date: 2026-11-05
 updated: 2026-11-06
+topic: reading
 tags:
-  - reading
   - science-fiction
 status: evergreen
 draft: false

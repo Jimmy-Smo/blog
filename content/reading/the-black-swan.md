@@ -3,8 +3,8 @@ title: 《黑天鹅》解读：「我们从来没出过这种故障」是最危�
 description: 从一次「从来没发生过」的事故出发，拆解肥尾、叙事谬误、游戏谬误和沉默的证据，以及塔勒布为什么把「没见过」当成没有证据而不是证据。
 date: 2026-11-05
 updated: 2026-11-06
+topic: reading
 tags:
-  - reading
   - strategy
 status: evergreen
 draft: false

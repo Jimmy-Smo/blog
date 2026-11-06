@@ -3,8 +3,8 @@ title: 《思考，快与慢》解读：用户说的和做的，为什么总是�
 description: 从用户访谈里那句「我会为隐私付费」出发，拆解双系统、启发式偏误、前景理论、两个自我和计划谬误，以及复现危机究竟打掉了这本书的哪些部分。
 date: 2026-11-05
 updated: 2026-11-06
+topic: reading
 tags:
-  - reading
   - product
 status: evergreen
 draft: false

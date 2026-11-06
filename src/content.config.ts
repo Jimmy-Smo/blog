@@ -14,6 +14,8 @@ const blog = defineCollection({
 			description: z.string(),
 			date: z.coerce.date(),
 			updated: z.coerce.date().optional(),
+			/** 主题: 少而固定, 见 src/lib/posts.ts 的 TOPICS。 */
+			topic: z.enum(['engineering', 'ai', 'business', 'reading']),
 			tags: z.array(z.string()).default([]),
 			status: z.enum(['evergreen', 'versioned', 'archived']).default('evergreen'),
 			draft: z.boolean().default(true),

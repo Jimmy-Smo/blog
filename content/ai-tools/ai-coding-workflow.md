@@ -3,8 +3,8 @@ title: AI 编程工作流：一份指令文件，几个终端 Agent
 description: 从 IDE 插件各占一格，到几个终端 Agent 共用一份 AGENTS.md：指令文件怎么写一次到处用，无头模式怎么进脚本和 CI，权限边界划在哪。
 date: 2026-07-15
 updated: 2026-11-06
+topic: ai
 tags:
-  - ai-tools
   - claude-code
 status: versioned
 draft: false

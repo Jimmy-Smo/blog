@@ -3,8 +3,8 @@ title: 《别闹了，费曼先生》解读：组织是怎么集体骗自己的
 description: 从一次「报告写得漂亮、问题没人碰」的复盘出发，拆解挑战者号的冰水演示、货拜族科学和开锁那一段，以及技术问题被翻译成管理语言时丢掉了什么；素材分别来自 1985 年那本和 1988 年的续作。
 date: 2026-11-05
 updated: 2026-11-06
-tags:
-  - reading
+topic: reading
+tags: []
 status: evergreen
 draft: false
 series: hn-books

@@ -5,13 +5,12 @@ import BaseHead from '../components/BaseHead.astro';
 import Footer from '../components/Footer.astro';
 import Header from '../components/Header.astro';
 import { GITHUB_REPO, SITE_DESCRIPTION, SITE_TITLE } from '../consts';
-import { collapseSeries, collectTags, getPublishedPosts, SERIES, STATUS_META, tagLabel } from '../lib/posts';
+import { collapseSeries, collectTopics, getPublishedPosts, SERIES, STATUS_META, TOPICS } from '../lib/posts';
 
 const posts = await getPublishedPosts();
 // 一个系列只占一条, 一次发一批也不会刷满首页。
 const recent = collapseSeries(posts).slice(0, 8);
-const tags = collectTags(posts);
-const frequent = tags.filter((t) => t.count >= 2);
+const topics = collectTopics(posts);
 
 const iso = (d: Date) => d.toISOString().slice(0, 10);
 
@@ -97,8 +96,9 @@ function excerptOf(body: string | undefined, max = 110): string {
 											<p class="entry-desc">{post.data.description}</p>
 											{excerpt && <p class="entry-excerpt">{excerpt}</p>}
 											<div class="entry-tags">
+												<span class="entry-topic">{TOPICS[post.data.topic].label}</span>
 												{post.data.tags.map((tag) => (
-													<span>{tagLabel(tag)}</span>
+													<span>{tag}</span>
 												))}
 											</div>
 										</div>
@@ -123,18 +123,21 @@ function excerptOf(body: string | undefined, max = 110): string {
 			</section>
 
 			{
-				frequent.length > 0 && (
+				topics.length > 0 && (
 					<section class="section">
 						<div class="section-head">
-							<h2 class="eyebrow">按标签浏览</h2>
+							<h2 class="eyebrow">按主题浏览</h2>
 							<a class="link-quiet" href="/tags/">
 								全部标签 →
 							</a>
 						</div>
 						<div class="tag-index">
-							{frequent.map(({ tag, count }) => (
-								<a class="tag-row" href={`/tags/${tag}/`}>
-									<span class="tag-row-name">{tagLabel(tag)}</span>
+							{topics.map(({ topic, count }) => (
+								<a class="tag-row" href={`/topics/${topic}/`}>
+									<span class="tag-row-main">
+										<span class="tag-row-name">{TOPICS[topic].label}</span>
+										<span class="tag-row-note">{TOPICS[topic].note}</span>
+									</span>
 									<span class="tag-row-count">{count} 篇</span>
 								</a>
 							))}
@@ -228,7 +231,7 @@ function excerptOf(body: string | undefined, max = 110): string {
 		font-size: 0.95em;
 	}
 
-	/* 只放出现过两次及以上的标签, 一次词去 /tags/ */
+	/* 主题只有几个, 全部列出; 细分标签去 /tags/ */
 	.tag-index {
 		display: grid;
 		grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -261,6 +264,18 @@ function excerptOf(body: string | undefined, max = 110): string {
 		font-size: 0.95rem;
 		font-weight: 500;
 		color: var(--fg);
+	}
+	.tag-row-main {
+		display: flex;
+		flex-direction: column;
+		gap: 0.15rem;
+		min-width: 0;
+	}
+	.tag-row-note {
+		font-family: var(--font-sans);
+		font-size: 0.8rem;
+		color: var(--fg-2);
+		line-height: 1.5;
 	}
 	.tag-row-count {
 		font-size: 0.76rem;

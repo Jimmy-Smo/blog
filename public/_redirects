@@ -1,0 +1,5 @@
+# 2026-11 标签拆成「主题 + 标签」后, 原来的四个货架标签改成了主题页。
+/tags/engineering/ /topics/engineering/ 301
+/tags/ai-tools/ /topics/ai/ 301
+/tags/business/ /topics/business/ 301
+/tags/reading/ /topics/reading/ 301

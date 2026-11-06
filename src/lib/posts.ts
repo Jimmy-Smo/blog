@@ -72,44 +72,23 @@ export const STATUS_META: Record<
 };
 
 /**
- * 标签的中文显示名。URL 与 frontmatter 仍用英文 slug, 只有页面上显示这里的名字;
- * 没登记的标签原样显示。新增标签词时顺手在这里补一行。
+ * 主题: 站点的一级分类, 少而固定, 每篇必须有且只有一个 (frontmatter `topic`)。
+ * 标签 (`tags`) 是更细的二级关键词, 可以多, 一律英文 slug。
  */
-const TAG_LABELS: Record<string, string> = {
-	engineering: '工程',
-	business: '商业',
-	java: 'Java',
-	jvm: 'JVM',
-	'ai-tools': 'AI 工具',
-	reading: '读书',
-	git: 'Git',
-	mysql: 'MySQL',
-	gradle: 'Gradle',
-	shopify: 'Shopify',
-	elasticsearch: 'Elasticsearch',
-	mq: '消息队列',
-	proxy: '代理',
-	kotlin: 'Kotlin',
-	'spring-boot': 'Spring Boot',
-	webservice: 'WebService',
-	kubernetes: 'Kubernetes',
-	heapdump: 'HeapDump',
-	'claude-code': 'Claude Code',
-	cursor: 'Cursor',
-	agent: 'Agent',
-	product: '产品',
-	startup: '创业',
-	investing: '投资',
-	macroeconomics: '宏观经济',
-	strategy: '战略',
-	delivery: '交付',
-	programming: '编程',
-	'science-fiction': '科幻',
-	weekly: '周刊',
-};
+export const TOPICS = {
+	engineering: { label: 'Engineering', note: '后端、数据库、构建、网络与交付' },
+	ai: { label: 'AI', note: 'AI 编程工具、Agent 与开发者工作流' },
+	business: { label: 'Business', note: '商业判断、战略与产品，材料来自公开演讲与报道' },
+	reading: { label: 'Reading', note: '一本书一篇的解读' },
+} as const;
 
-export function tagLabel(tag: string): string {
-	return TAG_LABELS[tag] ?? tag;
+export type Topic = keyof typeof TOPICS;
+
+/** 主题及篇数, 按 TOPICS 里的固定顺序, 没有文章的主题不返回。 */
+export function collectTopics(posts: Post[]): Array<{ topic: Topic; count: number }> {
+	return (Object.keys(TOPICS) as Topic[])
+		.map((topic) => ({ topic, count: posts.filter((p) => p.data.topic === topic).length }))
+		.filter((t) => t.count > 0);
 }
 
 /**

@@ -3,8 +3,8 @@ title: 《人类简史》解读：为什么一群人会相信你做的产品
 description: 从一个没人「真正需要」却有几亿人用的产品出发，拆解智人靠虚构协作的论证、三大统一力量、农业革命的争议，以及这本书解释力过强带来的问题。
 date: 2026-11-05
 updated: 2026-11-06
+topic: reading
 tags:
-  - reading
   - product
 status: evergreen
 draft: false

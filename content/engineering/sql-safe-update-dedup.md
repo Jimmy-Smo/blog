@@ -3,8 +3,8 @@ title: MySQL 批量更新与去重：先选中，再回写
 description: 用 MySQL 8.0 窗口函数、临时表和 JOIN 安全地做批量更新与去重，并控制误改、长事务和 1093 错误
 date: 2026-07-15
 updated: 2026-08-28
+topic: engineering
 tags:
-  - engineering
   - mysql
 status: evergreen
 draft: false

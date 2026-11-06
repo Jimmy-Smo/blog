@@ -3,8 +3,8 @@ title: "打造产品：一个导演、一个藏区酒店高管、一个酒馆老
 description: 以《蔡钰·商业高手心法 20 讲》第四章目录为索引，用王潮歌、洛桑江初、梁优、季琦四人的公开材料，梳理精神产品、目的地、共创和减法这四条产品路径。
 date: 2026-09-05
 updated: 2026-09-05
+topic: business
 tags:
-  - business
   - product
 status: evergreen
 draft: false

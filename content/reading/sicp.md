@@ -3,8 +3,8 @@ title: 《计算机程序的构造和解释》解读：需求一变，代码就�
 description: 从「每来一个需求就多一个 if」出发，拆解 SICP 的抽象屏障、元循环求值器、环境模型与流，以及它为什么在 2009 年被 MIT 从入门课里拿掉。
 date: 2026-11-05
 updated: 2026-11-06
+topic: reading
 tags:
-  - reading
   - programming
 status: evergreen
 draft: false

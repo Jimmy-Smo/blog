@@ -16,15 +16,15 @@
 - `reading/`：书的解读，一本一篇，索引页是 `hacker-news-book-list`
 - `weekly/`：不定期发布的精选周刊（尚未纳入站点集合）
 
-公开分类用 frontmatter 的 `tags`。站点只认标签，不认目录。
+公开分类分两层，都写在 frontmatter 里。站点只认这两层，不认目录。
 
-默认 2 个：货架 1 个，再加 1 个明年还可能再写的词。只有两件会独立再写的栈才打到 3。不确定就只打货架。不要把章节名、人名、一次性细节做成标签。
+**主题 `topic`**：一级分类，每篇必须有且只有一个，四选一：`engineering`（后端、数据库、构建、网络与交付，Java/JVM 也在这里）、`ai`、`business`、`reading`。主题少而固定，要加新主题，先改 `src/content.config.ts` 的枚举和 `src/lib/posts.ts` 的 `TOPICS`。主题页在 `/topics/<topic>/`。
 
-货架六选一：`engineering` `business` `java` `jvm` `ai-tools` `reading`。
+**标签 `tags`**：二级关键词，英文小写 slug，页面上原样显示。可以比主题多，一般 1 到 2 个，没有合适的就留空（`tags: []`）。只打明年还可能再写的词，不要把章节名、人名、一次性细节做成标签。
 
-现有具体词：`git` `mysql` `gradle` `shopify` `elasticsearch` `mq` `proxy` `kotlin` `spring-boot` `webservice` `kubernetes` `claude-code` `cursor` `agent` `product` `startup` `investing` `macroeconomics` `strategy` `delivery` `programming` `science-fiction`。新词只在你明确会再写一篇时才加。加新词时，在 `src/lib/posts.ts` 的 `TAG_LABELS` 里补它的中文显示名（页面显示中文，URL 仍用英文）。
+现有标签：`java` `jvm` `kotlin` `spring-boot` `webservice` `git` `mysql` `gradle` `shopify` `elasticsearch` `mq` `proxy` `kubernetes` `delivery` `claude-code` `agent` `product` `startup` `investing` `macroeconomics` `strategy` `programming` `science-fiction`。新词只在你明确会再写一篇时才加。
 
-一次成批发布的系列文章，frontmatter 加 `series: <key>`，并在 `src/lib/posts.ts` 的 `SERIES` 里登记索引页。首页「最新文章」会把整个系列折叠成一条，指向索引页；`/blog/` 和标签页仍逐篇列出。现有系列：`hn-books`（索引页 `reading/hacker-news-book-list`）。
+一次成批发布的系列文章，frontmatter 加 `series: <key>`，并在 `src/lib/posts.ts` 的 `SERIES` 里登记索引页。首页「最新文章」会把整个系列折叠成一条，指向索引页；`/blog/`、主题页和标签页仍逐篇列出。现有系列：`hn-books`（索引页 `reading/hacker-news-book-list`）。
 
 ## 发布标准
 

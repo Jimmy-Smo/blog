@@ -3,6 +3,7 @@ title: JVM OOM 排查：Metaspace 泄漏定位与 K8s 环境 HeapDump 采集
 description: 在 Kubernetes 部署的 Java 服务上完成 OOM 取证与根因定位，覆盖 Metaspace 泄漏和堆内存 dump 采集 SOP
 date: 2026-07-15
 updated: 2026-07-15
+topic: engineering
 tags:
   - jvm
   - kubernetes

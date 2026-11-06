@@ -7,14 +7,14 @@ import Footer from '../components/Footer.astro';
 import FormattedDate from '../components/FormattedDate.astro';
 import Header from '../components/Header.astro';
 import { GITHUB_REPO } from '../consts';
-import { SERIES, STATUS_META, tagLabel } from '../lib/posts';
+import { SERIES, STATUS_META, TOPICS } from '../lib/posts';
 
 type Props = CollectionEntry<'blog'>['data'] & {
 	id: string;
 	headings: MarkdownHeading[];
 };
 
-const { title, description, date, updated, tags, status, heroImage, id, headings, series } = Astro.props;
+const { title, description, date, updated, topic, tags, status, heroImage, id, headings, series } = Astro.props;
 
 // 目录只收 h2/h3; 少于 2 节的短文不出目录, 版面回到单栏。
 const toc = headings.filter((h) => h.depth === 2 || h.depth === 3);
@@ -22,7 +22,7 @@ const meta = STATUS_META[status];
 // 修订日期只在和文章日期不同的时候显示。
 const day = (d: Date) => d.toISOString().slice(0, 10);
 const revised = updated && day(updated) !== day(date) ? updated : undefined;
-const primaryTag = tags[0];
+const topicLabel = TOPICS[topic].label;
 const sourceUrl = `${GITHUB_REPO}/blob/main/content/${id}.md`;
 // 系列文章 (非索引页本身) 在标题区和文末给一条回索引页的路。
 const seriesMeta = series ? SERIES[series] : undefined;
@@ -59,14 +59,8 @@ const seriesIndex = seriesMeta && seriesMeta.index !== id ? seriesMeta : undefin
 					<header class="article-head" data-pagefind-ignore>
 						<p class="breadcrumb">
 							<a href="/blog/">文章</a>
-							{
-								primaryTag && (
-									<>
-										<span aria-hidden="true">/</span>
-										<a href={`/tags/${primaryTag}/`}>{tagLabel(primaryTag)}</a>
-									</>
-								)
-							}
+							<span aria-hidden="true">/</span>
+							<a href={`/topics/${topic}/`}>{topicLabel}</a>
 						</p>
 						<h1 class="article-title">{title}</h1>
 						<p class="article-lede">{description}</p>
@@ -75,7 +69,7 @@ const seriesIndex = seriesMeta && seriesMeta.index !== id ? seriesMeta : undefin
 								<div class="article-tags">
 									{tags.map((tag) => (
 										<a class="tag" href={`/tags/${tag}/`}>
-											{tagLabel(tag)}
+											{tag}
 										</a>
 									))}
 								</div>
@@ -146,9 +140,7 @@ const seriesIndex = seriesMeta && seriesMeta.index !== id ? seriesMeta : undefin
 							{seriesIndex && (
 								<a class="btn" href={`/blog/${seriesIndex.index}/`}>系列目录：{seriesIndex.label}</a>
 							)}
-							{primaryTag && (
-								<a class="btn" href={`/tags/${primaryTag}/`}>更多{tagLabel(primaryTag)}文章</a>
-							)}
+							<a class="btn" href={`/topics/${topic}/`}>更多 {topicLabel} 文章</a>
 						</nav>
 					</footer>
 				</article>

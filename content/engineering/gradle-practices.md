@@ -3,8 +3,8 @@ title: Gradle 8.x 构建实践：Wrapper、Daemon 与缓存排错
 description: 固定 Gradle 版本和下载来源，理清 Daemon 的 JVM 选择，并用可恢复的方式处理依赖与缓存问题
 date: 2026-07-15
 updated: 2026-08-28
+topic: engineering
 tags:
-  - engineering
   - gradle
 status: versioned
 draft: false

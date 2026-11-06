@@ -3,8 +3,8 @@ title: 二十本技术人的书，逐本解读
 description: 从一份 Hacker News 二十年推荐数据里挑出的二十本书，每本配一篇解读，都从一个具体让人不爽的工作场景写起。
 date: 2026-11-05
 updated: 2026-11-06
-tags:
-  - reading
+topic: reading
+tags: []
 status: evergreen
 draft: false
 series: hn-books

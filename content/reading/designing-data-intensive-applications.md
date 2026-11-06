@@ -3,8 +3,8 @@ title: 《数据密集型应用系统设计》解读：数据一涨，所有最�
 description: 从一次答不出「要不要强一致」的设计评审出发，拆解复制、分区、事务隔离、共识与流处理，以及 DDIA 为什么给坐标系而不给最佳实践。
 date: 2026-11-05
 updated: 2026-11-06
-tags:
-  - reading
+topic: reading
+tags: []
 status: evergreen
 draft: false
 series: hn-books

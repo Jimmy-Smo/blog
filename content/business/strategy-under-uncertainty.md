@@ -3,8 +3,8 @@ title: "制定战略：五位经营者公开材料里的同一个动作"
 description: 以《蔡钰·商业高手心法 20 讲》第三章的五个讲题为索引，从徐直军、刘强东、黄仁勋、王兴、杨国安的公开发言里，拆出战略从产业判断落到公司动作的完整链条。
 date: 2026-09-05
 updated: 2026-09-05
+topic: business
 tags:
-  - business
   - strategy
 status: evergreen
 draft: false

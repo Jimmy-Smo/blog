@@ -3,8 +3,8 @@ title: 《哥德尔、艾舍尔、巴赫》解读：系统为什么会不知道�
 description: 从一次两层抽象各自正确、合起来却出错的线上故障出发，拆解 GEB 的自指论证：哥德尔到底证明了什么，怪圈怎么通向意识，以及哪一步开始变成类比。
 date: 2026-11-05
 updated: 2026-11-06
-tags:
-  - reading
+topic: reading
+tags: []
 status: evergreen
 draft: false
 series: hn-books

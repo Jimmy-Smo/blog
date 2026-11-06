@@ -3,8 +3,8 @@ title: 《人月神话》解读：项目延期了，老板说加两个人
 description: 从一次「加人救火」的失败出发，拆解布鲁克斯定律背后的沟通成本算术、概念完整性、外科手术团队、第二系统效应和没有银弹，以及它哪一半已经过期。
 date: 2026-11-05
 updated: 2026-11-06
+topic: reading
 tags:
-  - reading
   - delivery
 status: evergreen
 draft: false

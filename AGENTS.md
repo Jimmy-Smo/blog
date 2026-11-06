@@ -24,8 +24,8 @@ Wrangler commands are prefixed with `env -u all_proxy` because wrangler's undici
 
 **Content lives outside `src/`.** `src/content.config.ts` defines one `blog` collection whose glob loader points at the repo-root `content/` dir, excluding `_*` templates, `README.md` files, and `content/weekly/` (weekly is not yet a collection). `archive/weekly/` is old notes and is not loaded at all.
 
-- Post ID = path under `content/` without extension (e.g. `java/soap-wsdl-parameter-order`), which becomes the URL `/blog/<id>/`. Subdirectories are for the author's filing only; the site navigates by date and tags, never by directory.
-- `src/lib/posts.ts#getPublishedPosts` is the single gate for drafts: it filters `draft: true` only when `import.meta.env.PROD`. All pages (index, blog, tags, RSS) go through it. Schema default is `draft: true`.
+- Post ID = path under `content/` without extension (e.g. `java/soap-wsdl-parameter-order`), which becomes the URL `/blog/<id>/`. Subdirectories are for the author's filing only; the site navigates by date, topics (`/topics/<topic>/`), and tags (`/tags/<tag>/`), never by directory. Old shelf-tag URLs are redirected to topic pages in `public/_redirects`.
+- `src/lib/posts.ts#getPublishedPosts` is the single gate for drafts: it filters `draft: true` only when `import.meta.env.PROD`. All pages (index, blog, topics, tags, RSS) go through it. Schema default is `draft: true`.
 - `STATUS_META` in the same file drives the `evergreen` / `versioned` / `archived` labels and notices shown on posts.
 - `BlogPost.astro` links each post to its GitHub source at `content/<id>.md` on `main`, and computes "x 天前" at build time.
 
@@ -45,7 +45,7 @@ From `content/README.md` and `README.md`. Follow these when creating or editing 
 
 - Start from `content/_template.md` (prefer `npm run post:new`). Title comes from frontmatter; never write an H1 in the body. Organize with H2/H3 (TOC uses those, shown only when there are ≥2).
 - `date` is the article date, maintained by hand and never bumped on publish. `updated` = last substantive revision.
-- Tags: default 2. One "shelf" tag from `engineering` `business` `java` `jvm` `ai-tools` `reading`, plus at most one recurring topic word from the existing list in `content/README.md`. Only add a new tag word if another post on it is clearly coming. No one-off, chapter-name, or person tags.
+- Classification has two layers. `topic` (required, exactly one): `engineering` `ai` `business` `reading`; Java/JVM posts go under `engineering`. `tags`: English lowercase slugs shown as-is, usually 1–2, may be empty, chosen from the existing list in `content/README.md`. Only add a new tag word if another post on it is clearly coming. No one-off, chapter-name, or person tags.
 - Version-sensitive content (versions, products, prices, policy) must state the version or verification date; use `status: versioned` where appropriate.
 - Images: upload with `npm run img`, reference the returned `https://img.jimmy42x.com/...` absolute URL. Never commit large images or reference local/desktop paths. Commit the updated `src/data/image-sizes.json`.
 - The repo is public, and drafts are public as source files. Never add internal work-project details, real accounts, keys, unredacted data, raw personal retrospectives, or large binaries.

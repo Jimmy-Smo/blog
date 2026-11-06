@@ -3,7 +3,7 @@ import BaseHead from '../../components/BaseHead.astro';
 import Footer from '../../components/Footer.astro';
 import Header from '../../components/Header.astro';
 import { SITE_TITLE } from '../../consts';
-import { collectTags, getPublishedPosts, STATUS_META, tagLabel } from '../../lib/posts';
+import { collectTags, getPublishedPosts, STATUS_META, TOPICS } from '../../lib/posts';
 
 export async function getStaticPaths() {
 	const posts = await getPublishedPosts();
@@ -14,7 +14,7 @@ export async function getStaticPaths() {
 }
 
 const { tag, posts } = Astro.props;
-const label = tagLabel(tag);
+const label = tag;
 const iso = (d: Date) => d.toISOString().slice(0, 10);
 ---
 
@@ -48,8 +48,9 @@ const iso = (d: Date) => d.toISOString().slice(0, 10);
 										<h3 class="entry-title">{post.data.title}</h3>
 										<p class="entry-desc">{post.data.description}</p>
 										<div class="entry-tags">
+											<span class="entry-topic">{TOPICS[post.data.topic].label}</span>
 											{post.data.tags.map((t) => (
-												<span>{tagLabel(t)}</span>
+												<span>{t}</span>
 											))}
 										</div>
 									</div>

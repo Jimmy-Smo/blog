@@ -3,8 +3,8 @@ title: 《代码大全》解读：代码评审上你只会说「感觉不对」
 description: 从一次说不出所以然的评审意见出发，拆解 Code Complete 为什么只讲构造阶段、它的检查表从哪来、几条真正有分量的规则，以及它没覆盖什么。
 date: 2026-11-05
 updated: 2026-11-06
+topic: reading
 tags:
-  - reading
   - programming
 status: evergreen
 draft: false

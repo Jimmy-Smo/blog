@@ -3,8 +3,8 @@ title: 《沙丘》解读：你造的机制，被用户用成了它的反面
 description: 从一个被刷榜的积分机制出发，拆解《沙丘》里的生态决定文化、香料作为单点依赖、预言作为失控的控制系统、救世主作为故障模式，以及它为什么是一部反英雄小说。
 date: 2026-11-05
 updated: 2026-11-06
+topic: reading
 tags:
-  - reading
   - science-fiction
 status: evergreen
 draft: false

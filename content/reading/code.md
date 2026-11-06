@@ -3,8 +3,8 @@ title: 《编码》解读：你天天说「底层」，但说不清底层到底�
 description: 从一次说不清「中断发生时 CPU 在干什么」的问答出发，拆解《编码》如何用继电器一路搭到 CPU，以及它真正修的是哪一类理解缺口。
 date: 2026-11-05
 updated: 2026-11-06
+topic: reading
 tags:
-  - reading
   - programming
 status: evergreen
 draft: false

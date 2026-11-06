@@ -3,8 +3,8 @@ title: "寻找机会：陆奇、李丰、胡时伟、曹勖文各自的公开方
 description: 以《蔡钰·商业高手心法 20 讲》第二章的目录为索引，从四位主讲人的公开演讲和文章里整理出四套粒度不同的找机会方法。
 date: 2026-09-05
 updated: 2026-09-05
+topic: business
 tags:
-  - business
   - startup
 status: evergreen
 draft: false

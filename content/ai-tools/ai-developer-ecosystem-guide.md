@@ -3,8 +3,8 @@ title: AI 开发者生态的五层
 description: 从模型、工具、编排往下看到网络和账号：上面三层决定能做什么，下面两层决定能不能稳定用。
 date: 2026-07-20
 updated: 2026-09-05
+topic: ai
 tags:
-  - ai-tools
   - agent
 status: archived
 draft: false

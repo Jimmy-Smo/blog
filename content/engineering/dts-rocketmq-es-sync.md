@@ -3,8 +3,8 @@ title: MySQL 到 Elasticsearch 的同步链路设计：CDC、消息契约与回�
 description: 设计并运维 DTS→RocketMQ→ES 数据同步链路，覆盖方案选型、消息契约、幂等重试、回放补数与可观测性
 date: 2026-07-15
 updated: 2026-08-29
+topic: engineering
 tags:
-  - engineering
   - elasticsearch
   - mq
 status: evergreen

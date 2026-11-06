@@ -3,6 +3,7 @@ title: SOAP 报文参数顺序写反，服务端拿到的是 null
 description: SOAP 报文里参数顺序写反导致服务端拿到 null，从 CXF 源码追到 XSD xsd:sequence 的顺序约束。
 date: 2021-09-06
 updated: 2026-09-05
+topic: engineering
 tags:
   - java
   - webservice

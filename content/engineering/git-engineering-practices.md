@@ -3,8 +3,8 @@ title: Git 工程实践：SSH 凭据、日常工作流与发布流程
 description: 用 1Password 管理 SSH 密钥、gh CLI 管理仓库、worktree 并行开发，以及 release 分支到打 tag 的发布基线
 date: 2026-07-16
 updated: 2026-08-29
+topic: engineering
 tags:
-  - engineering
   - git
 status: evergreen
 draft: false

@@ -3,8 +3,8 @@ title: Shopify Admin GraphQL 商品接入：商品、库存、媒体与发布
 description: 按 Shopify Admin GraphQL API 2026-07 串起商品同步、变体价格、库存、媒体处理与渠道发布
 date: 2026-07-16
 updated: 2026-08-28
+topic: engineering
 tags:
-  - engineering
   - shopify
 status: versioned
 draft: false
