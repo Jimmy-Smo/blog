@@ -103,7 +103,7 @@ CXF 自己的概述只说它能讲 SOAP、XML/HTTP、REST 这些协议。真正�
 
 所以归根到底不是 Dubbo 或 CXF 另搞了一套，是 WSDL 用了 `xsd:sequence`。
 
-## 参考
+## 参考资料
 
 - Dubbo WebService 协议说明：<https://dubbo.gitbooks.io/dubbo-user-book/content/references/protocol/webservice.html>
 - Apache CXF Overview：<http://cxf.apache.org/docs/overview.html>

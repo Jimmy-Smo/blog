@@ -93,6 +93,6 @@ series: hn-books
 
 这本书不让你变聪明，它让你知道自己会在哪里犯蠢，然后提前绕开。
 
-## 参考
+## 参考资料
 
 - Daniel Kahneman, Thinking, Fast and Slow, 2011，整理日期 2026-11-06

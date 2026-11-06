@@ -69,6 +69,6 @@ C 标准对很多操作不做规定：有符号整数溢出、越界访问、释
 
 垃圾回收、闭包、切片、字符串不可变，这些在你手写过一次 `malloc` 之后，会从「语言特性」变成「设计选择」，而设计选择是可以被质疑的。
 
-## 参考
+## 参考资料
 
 - Brian W. Kernighan, Dennis M. Ritchie, The C Programming Language, 2nd ed., 1988，整理日期 2026-11-06

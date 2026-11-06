@@ -73,6 +73,6 @@ series: hn-books
 
 这个判断需要克制。允许小波动，不等于放任一切。你需要的是一条边界：哪些故障必须立刻止住，哪些故障应该让它发生完，然后从里面学东西。这条边界，书里没给，得你自己画。
 
-## 参考
+## 参考资料
 
 - Nassim Nicholas Taleb, Antifragile: Things That Gain from Disorder, 2012，整理日期 2026-11-06

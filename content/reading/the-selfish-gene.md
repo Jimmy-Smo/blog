@@ -72,6 +72,6 @@ series: hn-books
 
 这三个问题，比「这规矩合不合理」更能解释它为什么还在。
 
-## 参考
+## 参考资料
 
 - Richard Dawkins, The Selfish Gene, 1976; 40th Anniversary Edition, 2016，整理日期 2026-11-06

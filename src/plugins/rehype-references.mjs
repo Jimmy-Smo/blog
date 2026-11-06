@@ -7,7 +7,7 @@ export default function rehypeReferences() {
 	return (tree) => {
 		for (let i = 0; i < tree.children.length; i++) {
 			const heading = tree.children[i];
-			if (heading.tagName !== 'h2' || !/^参考(?:资料)?$/.test(textContent(heading).trim())) continue;
+			if (heading.tagName !== 'h2' || !/^(?:参考(?:资料)?|References)$/i.test(textContent(heading).trim())) continue;
 			let end = i + 1;
 			while (end < tree.children.length && !/^h[12]$/.test(tree.children[end].tagName)) end++;
 			const children = tree.children.slice(i, end);

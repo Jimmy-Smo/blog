@@ -35,7 +35,7 @@ draft: false
 
 可能还需要更多铺垫。先记在这里。
 
-## 参考
+## 参考资料
 
 - RednaxelaFX，[逃逸分析为何不能在编译期进行？](https://www.zhihu.com/question/27963717/answer/38871719)
 - [C++ Programming/RTTI](https://en.wikibooks.org/wiki/C%2B%2B_Programming/RTTI)

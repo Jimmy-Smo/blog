@@ -42,7 +42,7 @@ CLI 和 Agent 能进开发流程，主要是三件事叠在一起。网页 Chat 
 | --- | --- | --- |
 | 模型层 | 提供智能能力（API / 订阅） | OpenAI / Anthropic (Claude) / xAI (Grok) / DeepSeek / Kimi / GLM |
 | 工具层 | 把模型接入本地开发环境 | Claude Code / Codex / Grok Build / Pi / DeepSeek Harness / OpenCode |
-| 编排层 | 统一管理多工具、多模型配置 | CC Switch |
+| 编排层 | 统一管理多工具、多模型配置 | CC Switch / Magpie 等同类工具 |
 | 网络基础设施层 | 保证对境外服务的稳定、高质量访问 | 代理客户端 / 节点 / IP 质量 / DNS |
 | 账号入口层 | 服务的身份基础 | Google 账号 / GitHub 账号 / 各 AI 平台账号 |
 
@@ -87,11 +87,13 @@ MCP（Model Context Protocol）是 Anthropic 发起的开放协议，用统一�
 
 网页本身还不是模型能直接吃的输入。[Firecrawl](https://www.firecrawl.dev/) 把任意网页抓成干净的 Markdown 或 JSON，典型场景是给 RAG（检索增强生成）准备语料、让 Agent 读一个网站而不被 HTML 噪音淹没、批量采集文档站做知识库。在工具链里：Agent 是手，Firecrawl 是眼，负责把网页变成模型可读输入。
 
-## 编排层：配置散了才需要 CC Switch
+## 编排层：配置散了才需要统一管理
 
-[CC Switch](https://ccswitch.io/)（[中文](https://ccswitch.io/zh/)）是跨平台桌面工具，统一管理多个 AI 编程工具的配置（API Key、模型选择、供应商切换）。截至 2026-09-05，官网列出的是 Claude Code、Claude Desktop、Codex、Gemini CLI、OpenCode、OpenClaw 和 Hermes Agent（以官网当前列表为准；Grok Build、Pi、DeepSeek Harness 等可用其自身配置或兼容层管理）。
+同时用两三个 CLI、接两三家模型时，配置散在各自文件里，切供应商要逐个改。这时可以用 CC Switch、Magpie 或其他同类工具提供统一入口，降低切换成本。按自己用的 CLI 和模型选合适的就行。
 
-同时用两三个 CLI、接两三家模型时，配置散在各自文件里，切供应商要逐个改。CC Switch 给统一入口，降低切换成本。工具层已经多到需要「管理工具的工具」，类似当年 nvm 之于 Node 版本。只用一家、只装一个 CLI，不必上这一层。
+以 [CC Switch](https://ccswitch.io/)（[中文](https://ccswitch.io/zh/)）为例，它是跨平台桌面工具，统一管理多个 AI 编程工具的配置（API Key、模型选择、供应商切换）。截至 2026-09-05，官网列出的是 Claude Code、Claude Desktop、Codex、Gemini CLI、OpenCode、OpenClaw 和 Hermes Agent（以官网当前列表为准；Grok Build、Pi、DeepSeek Harness 等可用其自身配置或兼容层管理）。
+
+工具层已经多到需要「管理工具的工具」，类似当年 nvm 之于 Node 版本。只用一家、只装一个 CLI，不必上这一层。
 
 ## 网络层：能打开网页不等于能稳定用
 
@@ -140,7 +142,7 @@ Hermes Agent、Pi、DeepSeek Harness 都还没实际跑过。DeepSeek Harness �
 
 浏览器扩展和用户脚本是个人环境，不展开。具体机场、节点渠道和买号平台不列名单，自己检索即可。
 
-## 参考
+## 参考资料
 
 - [Claude Code Overview](https://code.claude.com/docs/en/overview)（核验日期 2026-07-20）
 - [Anthropic 文档中心](https://docs.anthropic.com)

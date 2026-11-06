@@ -46,4 +46,6 @@
    `https://img.jimmy42x.com/...` 绝对 URL，不提交大图进仓库、不引用桌面绝对路径。
 6. `draft` 设置为 `false`。
 
+参考章节统一用 `## 参考资料`，英文版用 `## References`。页面会自动显示为紧凑的编号列表。
+
 新文章从 [`_template.md`](_template.md) 开始。
