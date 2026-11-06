@@ -1,21 +1,22 @@
 import { getCollection, type CollectionEntry } from 'astro:content';
+import { comparePostDates, formatPostDate } from './post-dates.mjs';
 
 export type Post = CollectionEntry<'blog'>;
 export type EnPost = CollectionEntry<'en'>;
 
 /**
- * 已发布文章, 按日期倒序。
+ * 已发布文章, 按完整文章时间倒序。
  * draft 只在生产构建时过滤——`astro dev` 里仍能预览草稿。
  */
 export async function getPublishedPosts(): Promise<Post[]> {
 	const posts = await getCollection('blog', ({ data }) => !data.draft || !import.meta.env.PROD);
-	return posts.sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf());
+	return posts.sort((a, b) => comparePostDates(a.data.date, b.data.date, a.id, b.id));
 }
 
-/** 英文版文章, 和中文同样的草稿规则, 按日期倒序。 */
+/** 英文版文章, 和中文同样的草稿规则, 按完整文章时间倒序。 */
 export async function getEnglishPosts(): Promise<EnPost[]> {
 	const posts = await getCollection('en', ({ data }) => !data.draft || !import.meta.env.PROD);
-	return posts.sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf());
+	return posts.sort((a, b) => comparePostDates(a.data.date, b.data.date, a.id, b.id));
 }
 
 /** 有英文版的中文文章 id 集合。 */
@@ -36,11 +37,11 @@ export function collectTags(posts: Post[]): Array<{ tag: string; count: number }
 		.sort((a, b) => b.count - a.count || a.tag.localeCompare(b.tag));
 }
 
-/** 按 UTC 年份分组, 新的年份在前。跨年才需要把结果渲染成带标题的多段。 */
+/** 按站点时区的年份分组, 新的年份在前。跨年才需要把结果渲染成带标题的多段。 */
 export function groupByYear(posts: Post[]): Array<{ year: number; posts: Post[] }> {
 	const map = new Map<number, Post[]>();
 	for (const post of posts) {
-		const year = post.data.date.getUTCFullYear();
+		const year = Number(formatPostDate(post.data.date).slice(0, 4));
 		const list = map.get(year);
 		if (list) list.push(post);
 		else map.set(year, [post]);

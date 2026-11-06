@@ -1,7 +1,7 @@
 ---
 title: Excel 图片导入：难点不只是读单元格
 description: 用 Apache POI 区分图片资源与摆放位置，为固定 xlsx 模板建立图片到业务行的索引，并处理合并单元格、重复图片和内存边界。
-date: 2026-11-06
+date: 2026-11-06T21:02:19+08:00
 updated: 2026-11-06
 topic: engineering
 tags:

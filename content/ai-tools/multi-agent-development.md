@@ -1,7 +1,7 @@
 ---
 title: 从一个 Agent 到一组 Agent：开发者怎么管并行的编程 Agent
 description: 开发者的问题从用好一个 Agent 变成同时跑好几个：worktree 隔离、谁来调度、Orca 这类编排工具什么时候值得上，以及审查为什么成了新瓶颈。
-date: 2026-11-06
+date: 2026-11-06T19:38:14+08:00
 topic: ai
 tags:
   - agent

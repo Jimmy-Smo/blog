@@ -1,4 +1,5 @@
 ---
+import { formatPostDate } from '../lib/post-dates.mjs';
 import { Image } from 'astro:assets';
 import type { MarkdownHeading } from 'astro';
 import type { CollectionEntry } from 'astro:content';
@@ -29,7 +30,7 @@ const isEn = lang === 'en';
 const toc = headings.filter((h) => h.depth === 2 || h.depth === 3);
 const meta = isEn ? { ...STATUS_META[status], ...STATUS_META_EN[status] } : STATUS_META[status];
 // 修订日期只在和文章日期不同的时候显示。
-const day = (d: Date) => d.toISOString().slice(0, 10);
+const day = formatPostDate;
 const revised = updated && day(updated) !== day(date) ? updated : undefined;
 const topicLabel = TOPICS[topic].label;
 const sourceUrl = `${GITHUB_REPO}/blob/main/content/${isEn ? 'en/' : ''}${id}.md`;

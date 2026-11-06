@@ -1,7 +1,7 @@
 ---
 title: Java 测试分层：别让每个测试都启动 Spring
 description: 用一个可运行的 Maven 示例分开单元测试与 HTTP 集成测试，再按失败信号选择普通 JUnit、Spring 测试切片或完整应用上下文。
-date: 2026-11-06
+date: 2026-11-06T21:02:19+08:00
 updated: 2026-11-06
 topic: engineering
 tags:

@@ -1,7 +1,7 @@
 ---
 title: When agents multiply, they have to talk to each other
 description: From one agent tending a blog to thousands spread across cloud, laptops, and the edge. Personal assistants and in-system agents are two different shapes, the US and China are at different stages with the first, and however agents are deployed, they need to reach each other. The hard part is trust.
-date: 2026-11-06
+date: 2026-11-06T19:38:14+08:00
 topic: ai
 tags:
   - agent

@@ -7,6 +7,7 @@ const postSchema = ({ image }: { image: () => z.ZodTypeAny }) =>
 	z.object({
 		title: z.string(),
 		description: z.string(),
+		/** 新文使用带时区的 ISO 时间；旧文仅日期仍兼容。 */
 		date: z.coerce.date(),
 		updated: z.coerce.date().optional(),
 		/** 主题: 少而固定, 见 src/lib/posts.ts 的 TOPICS。 */

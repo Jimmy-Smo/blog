@@ -10,6 +10,7 @@
 npm install
 npm run dev        # 本地开发，包含草稿
 npm run build      # 构建 dist/ 和搜索索引
+node --test scripts/post-dates.test.mjs  # 时间排序与发文脚本回归
 npm run cf:dev     # 按线上环境预览，需要先 build
 ```
 
@@ -27,7 +28,7 @@ npm run img -- <topic/slug> <图片...>           # 压缩并上传图片
 
 文章 frontmatter 由构建期 schema 校验。其中：
 
-- `date` 是文章日期，手动维护，不因集中发布而改变
+- `date` 是文章时间，新文记录到秒并带时区（如 `2026-11-06T23:25:49+08:00`），按完整时间降序排列；不因修订或集中发布而重置。旧文只有日期的写法仍兼容。页面日期统一按 `Asia/Taipei` 显示。
 - `updated` 是最后一次实质修订日期
 - `draft: true` 不生成博客页面，但源文件仍会出现在公开仓库
 - `status` 可选 `evergreen`、`versioned` 或 `archived`
