@@ -76,6 +76,23 @@ export default defineConfig({
               ],
           },
       },
+      {
+          // 代码字体: JetBrains Mono 可变字重, 只取拉丁子集 (约 40KB), 中文注释回落到系统字体。
+          provider: fontProviders.local(),
+          name: 'JetBrains Mono',
+          cssVariable: '--font-code',
+          fallbacks: ['monospace'],
+          options: {
+              variants: [
+                  {
+                      src: ['./node_modules/@fontsource-variable/jetbrains-mono/files/jetbrains-mono-latin-wght-normal.woff2'],
+                      weight: '100 800',
+                      style: 'normal',
+                      display: 'swap',
+                  },
+              ],
+          },
+      },
 	],
 
   vite: {

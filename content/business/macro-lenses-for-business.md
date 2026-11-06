@@ -3,8 +3,8 @@ title: "看懂宏观的四种镜头：债务周期、结构排序、问题意识
 description: 以《蔡钰·商业高手心法 20 讲》第一章的目录为索引，用达利欧、刘元春、黄奇帆和马斯克的公开材料，整理四种把宏观新闻转成自己判断的分析方式。
 date: 2026-09-05
 updated: 2026-09-05
+topic: business
 tags:
-  - business
   - macroeconomics
 status: evergreen
 draft: false

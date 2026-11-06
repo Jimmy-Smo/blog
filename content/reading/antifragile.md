@@ -3,10 +3,12 @@ title: 《反脆弱》解读：为了稳定加的层层审批，让系统更脆
 description: 从一次「加了三道审批还是出了事故」的复盘出发，拆解脆弱、强韧、反脆弱的三分法、杠铃策略、via negativa 和切身利害，以及这本书为什么断言多于论证。
 date: 2026-11-05
 updated: 2026-11-06
+topic: reading
 tags:
-  - reading
+  - strategy
 status: evergreen
 draft: false
+series: hn-books
 ---
 
 出了事故，复盘会的结论是「加强管控」。于是加了三道审批、两份检查表、一个周会。半年后出了一次更大的事故，因为你把决策权收走了，一线的人不再敢在第一时间处理，所有事都要等审批。

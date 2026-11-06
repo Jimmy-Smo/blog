@@ -3,11 +3,12 @@ title: 《设计心理学》解读：用户又「用错了」，你的第一反�
 description: 从那扇所有人都推错的门出发，拆解可供性与能指的区别、映射和反馈、失误与错误的分野、概念模型，以及「用户失败就是设计失败」这句话的操作含义。
 date: 2026-11-05
 updated: 2026-11-06
+topic: reading
 tags:
-  - reading
   - product
 status: evergreen
 draft: false
+series: hn-books
 ---
 
 一扇门，装了一个很漂亮的把手。每个人走过去都拉，门是推的。于是有人在门上贴了一张纸：「推」。纸被撕掉之后，所有人又开始拉。

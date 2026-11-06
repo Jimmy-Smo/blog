@@ -3,6 +3,7 @@ title: 静态编译下，方法重写使逃逸分析变得不可能
 description: 一篇 2021 年留下的逃逸分析查证记录，保留当时对运行时多态与编译期优化关系的理解。结论可能不完整，欢迎指正。
 date: 2021-09-24
 updated: 2026-09-05
+topic: engineering
 tags:
   - java
   - jvm

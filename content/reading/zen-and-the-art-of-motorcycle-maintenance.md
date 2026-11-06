@@ -3,10 +3,11 @@ title: 《禅与摩托车维修艺术》解读：修一个 bug 修到想砸键�
 description: 从那个越修越烦、最后想砸键盘的下午出发，拆解 Quality、gumption trap、古典与浪漫的分裂，以及这本书的哲学为什么转不完最后一圈。
 date: 2026-11-05
 updated: 2026-11-06
-tags:
-  - reading
+topic: reading
+tags: []
 status: evergreen
 draft: false
+series: hn-books
 ---
 
 你追一个 bug 追了三个小时。每次以为找到了，跑一遍，换了个地方错。你开始烦躁，手上的动作变粗，螺丝拧花了一颗，情绪更差。最后你没有修好它，你合上电脑，去阳台站了一会儿。

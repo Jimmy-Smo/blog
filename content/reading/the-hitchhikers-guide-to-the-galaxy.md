@@ -3,10 +3,12 @@ title: 《银河系漫游指南》解读：流程比问题本身还大
 description: 从一个「为了讨论怎么讨论而开的会」出发，拆解这本书用尺度并置制造的荒诞、42 这个笑话的真正含义，以及它为什么不提供任何方法却仍然有用。
 date: 2026-11-05
 updated: 2026-11-06
+topic: reading
 tags:
-  - reading
+  - science-fiction
 status: evergreen
 draft: false
+series: hn-books
 ---
 
 你开了一个会，讨论「我们该怎么评审需求」。会上决定成立一个小组，先调研一下业界怎么做需求评审。小组开了第二次会，讨论调研的范围。你坐在那儿，忽然意识到：流程已经比它要解决的问题还大了。

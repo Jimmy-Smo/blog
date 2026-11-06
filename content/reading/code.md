@@ -3,10 +3,12 @@ title: 《编码》解读：你天天说「底层」，但说不清底层到底�
 description: 从一次说不清「中断发生时 CPU 在干什么」的问答出发，拆解《编码》如何用继电器一路搭到 CPU，以及它真正修的是哪一类理解缺口。
 date: 2026-11-05
 updated: 2026-11-06
+topic: reading
 tags:
-  - reading
+  - programming
 status: evergreen
 draft: false
+series: hn-books
 ---
 
 有人问你：「中断发生的时候，CPU 到底在做什么？」你张嘴想说「保存现场，跳转到处理程序」，但再往下问一层，你就卡住了。保存到哪？谁保存？返回地址怎么知道？你发现自己背的是结论，不是过程。

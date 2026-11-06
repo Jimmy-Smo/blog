@@ -3,6 +3,7 @@ title: CXF 启动时如何默认加载 classpath 根下的 cxf.xml
 description: 记录一次源码追踪，并修正当年对调用链的判断：默认用户配置 cxf.xml 由 CXF 的 BusApplicationContext 加载。
 date: 2021-05-24
 updated: 2026-09-05
+topic: engineering
 tags:
   - java
   - webservice

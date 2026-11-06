@@ -7,42 +7,55 @@ import Footer from '../components/Footer.astro';
 import FormattedDate from '../components/FormattedDate.astro';
 import Header from '../components/Header.astro';
 import { GITHUB_REPO } from '../consts';
-import { STATUS_META } from '../lib/posts';
+import { SERIES, STATUS_META, TOPICS } from '../lib/posts';
+import { HTML_LANG, STATUS_META_EN, UI, enPostUrl, zhPostUrl, type Lang } from '../lib/i18n';
 
 type Props = CollectionEntry<'blog'>['data'] & {
 	id: string;
 	headings: MarkdownHeading[];
+	/** 默认中文; 英文版文章传 'en'。 */
+	lang?: Lang;
+	/** 这篇有另一种语言的版本 (中文原文有英文版, 或英文版本身)。 */
+	hasTranslation?: boolean;
+	/** 系列索引已通过发布门槛; 未发布时成员页不链接到它。 */
+	hasSeriesIndex?: boolean;
 };
 
-const { title, description, date, updated, tags, status, heroImage, id, headings } = Astro.props;
+const { title, description, date, updated, topic, tags, status, heroImage, id, headings, series, lang = 'zh', hasTranslation = false, hasSeriesIndex = false } = Astro.props;
+const t = UI[lang];
+const isEn = lang === 'en';
 
 // 目录只收 h2/h3; 少于 2 节的短文不出目录, 版面回到单栏。
 const toc = headings.filter((h) => h.depth === 2 || h.depth === 3);
-const meta = STATUS_META[status];
-const updatedDate = updated ?? date;
-const primaryTag = tags[0];
-const sourceUrl = `${GITHUB_REPO}/blob/main/content/${id}.md`;
-
-// 「x 天前」在构建期计算, 静态站下次发布时会刷新。
-const days = Math.max(0, Math.floor((Date.now() - updatedDate.getTime()) / 86400000));
-const relative = days === 0 ? '今天' : days === 1 ? '昨天' : `${days} 天前`;
+const meta = isEn ? { ...STATUS_META[status], ...STATUS_META_EN[status] } : STATUS_META[status];
+// 修订日期只在和文章日期不同的时候显示。
+const day = (d: Date) => d.toISOString().slice(0, 10);
+const revised = updated && day(updated) !== day(date) ? updated : undefined;
+const topicLabel = TOPICS[topic].label;
+const sourceUrl = `${GITHUB_REPO}/blob/main/content/${isEn ? 'en/' : ''}${id}.md`;
+// 语言切换: 有对应版本就互指, 没有就交给 Header 的默认值 (另一语言首页)。
+const altHref = hasTranslation ? (isEn ? zhPostUrl(id) : enPostUrl(id)) : undefined;
+const alternates = hasTranslation ? { zh: zhPostUrl(id), en: enPostUrl(id) } : undefined;
+// 系列文章 (非索引页本身) 在标题区和文末给一条回索引页的路。
+const seriesMeta = series && !isEn ? SERIES[series] : undefined;
+const seriesIndex = seriesMeta && seriesMeta.index !== id && hasSeriesIndex ? seriesMeta : undefined;
 ---
 
-<html lang="zh-CN">
+<html lang={HTML_LANG[lang]}>
 	<head>
-		<BaseHead title={title} description={description} image={heroImage} />
+		<BaseHead title={title} description={description} image={heroImage} alternates={alternates} />
 	</head>
 
 	<body>
-		<Header />
+		<Header lang={lang} altHref={altHref} />
 		{/* 阅读进度: 纯 CSS 滚动驱动动画, 不支持时整条隐藏 */}
 		<div class="reading-progress" aria-hidden="true"></div>
 		<main id="main" class="shell article-main">
 			<div class="article-layout">
 				{
 					toc.length >= 2 && (
-						<nav class="toc-rail" aria-label="本文目录" data-pagefind-ignore>
-							<p class="eyebrow toc-title">本文目录</p>
+						<nav class="toc-rail" aria-label={t.toc} data-pagefind-ignore>
+							<p class="eyebrow toc-title">{t.toc}</p>
 							<ul class="toc-list">
 								{toc.map((h) => (
 									<li class={h.depth === 3 ? 'lv3' : ''}>
@@ -57,15 +70,9 @@ const relative = days === 0 ? '今天' : days === 1 ? '昨天' : `${days} 天前
 				<article>
 					<header class="article-head" data-pagefind-ignore>
 						<p class="breadcrumb">
-							<a href="/blog/">文章</a>
-							{
-								primaryTag && (
-									<>
-										<span aria-hidden="true">/</span>
-										<a href={`/tags/${primaryTag}/`}>{primaryTag}</a>
-									</>
-								)
-							}
+							<a href={t.postsHref}>{t.posts}</a>
+							<span aria-hidden="true">/</span>
+							{isEn ? <span>{topicLabel}</span> : <a href={`/topics/${topic}/`}>{topicLabel}</a>}
 						</p>
 						<h1 class="article-title">{title}</h1>
 						<p class="article-lede">{description}</p>
@@ -73,49 +80,58 @@ const relative = days === 0 ? '今天' : days === 1 ? '昨天' : `${days} 天前
 							tags.length > 0 && (
 								<div class="article-tags">
 									{tags.map((tag) => (
-										<a class="tag" href={`/tags/${tag}/`}>
-											{tag}
-										</a>
+										isEn ? (
+											<span class="tag">{tag}</span>
+										) : (
+											<a class="tag" href={`/tags/${tag}/`}>
+												{tag}
+											</a>
+										)
 									))}
 								</div>
 							)
 						}
 
-						{/* 维护状态条: 时效性信息的正式位置 */}
-						<aside
-							class:list={['maintenance', status !== 'evergreen' && `maintenance--${status}`]}
-							aria-label="内容维护状态"
-						>
-							<p class="maintenance-state">
-								<span class:list={['dot', meta.dot]} aria-hidden="true"></span>
-								<b>{meta.label}</b>
-								<em>{meta.note}</em>
-							</p>
-							<dl>
-								<div>
-									<dt>最后更新</dt>
-									<dd>
-										<FormattedDate date={updatedDate} />
-										<small>{relative}</small>
-									</dd>
-								</div>
-								<div>
-									<dt>文章日期</dt>
-									<dd>
-										<FormattedDate date={date} />
-									</dd>
-								</div>
-							</dl>
-							{meta.staleness && <p class="staleness">{meta.staleness}</p>}
-						</aside>
+						{/* 一行元信息: 日期、修订、维护状态。详细说明放到文末, 不挡在正文前面。 */}
+						<p class="article-meta">
+							<span>
+								<FormattedDate date={date} lang={lang} />
+							</span>
+							{
+								revised && (
+									<span>
+										<FormattedDate date={revised} lang={lang} /> {t.revised}
+									</span>
+								)
+							}
+							<span class:list={['article-status', `article-status--${status}`]}>
+								<span class:list={['dot', meta.dot]} aria-hidden="true" />
+								{meta.label}
+							</span>
+							{seriesIndex && <a href={`/blog/${seriesIndex.index}/`}>{t.series}{seriesIndex.label}</a>}
+							{altHref && (
+								<a href={altHref} hreflang={isEn ? 'zh-CN' : 'en'} lang={isEn ? 'zh-CN' : 'en'}>
+									{t.translationLink}
+								</a>
+							)}
+						</p>
+						{meta.staleness && <p class:list={['staleness', `staleness--${status}`]}>{meta.staleness}</p>}
+						{
+							isEn && hasTranslation && (
+								<p class="staleness translation-note">
+									Translated from the <a href={zhPostUrl(id)} lang="zh-CN">Chinese original</a> with AI
+									assistance. Where the two differ, the Chinese version is authoritative.
+								</p>
+							)
+						}
 					</header>
 
 					{
 						toc.length >= 2 && (
 							<details class="toc-inline" data-pagefind-ignore>
 								<summary>
-									<b>本文目录</b>
-									<span>{toc.filter((h) => h.depth === 2).length} 节</span>
+									<b>{t.toc}</b>
+									<span>{t.tocSections(toc.filter((h) => h.depth === 2).length)}</span>
 								</summary>
 								<ul class="toc-list">
 									{toc.map((h) => (
@@ -145,20 +161,80 @@ const relative = days === 0 ? '今天' : days === 1 ? '昨天' : `${days} 天前
 						<div class="revision">
 							<p>{meta.revision}</p>
 							<a class="btn" href={sourceUrl} target="_blank" rel="noopener noreferrer">
-								在 GitHub 上查看源文件
+								{t.viewSource}
 							</a>
 						</div>
-						<nav class="article-nav" aria-label="文章导航">
-							<a class="btn" href="/blog/">← 全部文章</a>
-							{primaryTag && (
-								<a class="btn" href={`/tags/${primaryTag}/`}>更多 {primaryTag} 文章</a>
+						<nav class="article-nav" aria-label={t.articleNav}>
+							<a class="btn" href={isEn ? '/en/' : '/blog/'}>{t.allPosts}</a>
+							{seriesIndex && (
+								<a class="btn" href={`/blog/${seriesIndex.index}/`}>{t.seriesIndex}{seriesIndex.label}</a>
+							)}
+							{isEn ? (
+								altHref && (
+									<a class="btn" href={altHref} lang="zh-CN">
+										{t.translationLink}
+									</a>
+								)
+							) : (
+								<a class="btn" href={`/topics/${topic}/`}>{t.morePosts(topicLabel)}</a>
 							)}
 						</nav>
 					</footer>
 				</article>
 			</div>
 		</main>
-		<Footer />
+		<Footer lang={lang} />
+
+		<script is:inline>
+			// 代码块: 复制、长行换行、长代码展开。无 JS 时按钮由 CSS 隐藏, 代码全部显示。
+			(function () {
+				var blocks = document.querySelectorAll('.code-block');
+				if (!blocks.length) return;
+				// 只有代码真的横向溢出时才出现换行按钮
+				function measure() {
+					blocks.forEach(function (b) {
+						if (b.classList.contains('is-wrapped')) return;
+						var code = b.querySelector('pre > code');
+						b.classList.toggle('has-overflow', code.scrollWidth > code.clientWidth + 1);
+					});
+				}
+				measure();
+				var t;
+				window.addEventListener('resize', function () {
+					clearTimeout(t);
+					t = setTimeout(measure, 150);
+				});
+				document.addEventListener('click', function (e) {
+					var btn = e.target.closest('.code-block__copy, .code-block__wrap, .code-block__expand');
+					if (!btn) return;
+					var block = btn.closest('.code-block');
+					if (btn.classList.contains('code-block__copy')) {
+						var code = block.querySelector('pre code');
+						if (!navigator.clipboard) return;
+						navigator.clipboard.writeText(code.innerText).then(function () {
+							var label = btn.getAttribute('aria-label');
+							btn.classList.add('is-copied');
+							btn.title = btn.dataset.copied;
+							setTimeout(function () {
+								btn.classList.remove('is-copied');
+								btn.title = label;
+							}, 1500);
+						});
+					} else if (btn.classList.contains('code-block__wrap')) {
+						var wrapped = block.classList.toggle('is-wrapped');
+						btn.setAttribute('aria-pressed', wrapped ? 'true' : 'false');
+						if (!wrapped) measure();
+					} else {
+						var open = block.classList.toggle('is-expanded');
+						btn.setAttribute('aria-expanded', open ? 'true' : 'false');
+						if (!btn.dataset.expand) btn.dataset.expand = btn.textContent;
+						btn.textContent = open ? btn.dataset.collapse : btn.dataset.expand;
+						// 收起时如果块顶已经滚出视口, 拉回来, 免得读者停在后文中间
+						if (!open && block.getBoundingClientRect().top < 0) block.scrollIntoView({ block: 'start' });
+					}
+				});
+			})();
+		</script>
 
 		<script is:inline>
 			// 目录滚动跟随 (scrollspy): 替代设计稿里写死的 :has(#…:target) 选择器,
@@ -391,9 +467,7 @@ const relative = days === 0 ? '今天' : days === 1 ? '昨天' : `${days} 天前
 		align-items: center;
 		gap: 0.45rem;
 		margin: 0 0 1rem;
-		font-family: var(--font-mono);
-		font-size: 0.76rem;
-		letter-spacing: 0.04em;
+		font-size: 0.8rem;
 		color: var(--fg-3);
 	}
 	.breadcrumb a {
@@ -440,73 +514,43 @@ const relative = days === 0 ? '今天' : days === 1 ? '昨天' : `${days} 天前
 		border: 1px solid var(--border);
 	}
 
-	/* ---- 维护状态条 ---- */
-	.maintenance {
-		border-block: 1px solid var(--border-2);
-		padding: 1rem 0 1.05rem;
-	}
-	.maintenance-state {
+	/* ---- 一行元信息 ---- */
+	.article-meta {
 		display: flex;
 		flex-wrap: wrap;
-		align-items: baseline;
-		gap: 0.5rem 0.7rem;
-		margin: 0 0 0.85rem;
-	}
-	.maintenance-state .dot {
-		align-self: center;
-	}
-	.maintenance-state b {
-		font-size: 0.95rem;
-		font-weight: 600;
-		color: var(--fg);
-	}
-	.maintenance-state em {
-		font-style: normal;
-		color: var(--fg-2);
-		font-size: 0.86rem;
-	}
-	.maintenance dl {
-		display: grid;
-		grid-template-columns: repeat(3, minmax(0, 1fr));
-		gap: 0.9rem 1.5rem;
+		align-items: center;
+		gap: 0.3rem 0;
 		margin: 0;
-	}
-	.maintenance dt {
-		font-family: var(--font-mono);
-		font-size: 0.71rem;
-		letter-spacing: 0.1em;
-		text-transform: uppercase;
+		padding-bottom: 1.25rem;
+		border-bottom: 1px solid var(--border);
+		font-size: 0.85rem;
 		color: var(--fg-2);
-		margin-bottom: 0.15rem;
-	}
-	.maintenance dd {
-		margin: 0;
-		font-size: 0.88rem;
-		line-height: 1.6;
-		color: var(--fg);
-		font-weight: 500;
 		font-variant-numeric: tabular-nums;
 	}
-	.maintenance dd small {
-		display: block;
+	.article-meta > * + *::before {
+		content: '·';
+		margin: 0 0.6em;
+		color: var(--fg-3);
+	}
+	.article-meta a {
 		color: var(--fg-2);
-		font-size: 0.86em;
-		font-weight: 400;
+		text-decoration: underline;
+		text-underline-offset: 3px;
+		text-decoration-color: var(--border-2);
 	}
-	@media (max-width: 620px) {
-		.maintenance dl {
-			grid-template-columns: repeat(2, minmax(0, 1fr));
-		}
+	.article-meta a:hover {
+		color: var(--fg);
 	}
-	.maintenance--versioned .staleness {
+	.article-status {
+		display: inline-flex;
+		align-items: center;
+		gap: 0.4em;
+	}
+	.article-status--versioned {
 		color: var(--warn);
-		background: color-mix(in oklab, var(--warn) 10%, var(--bg));
-	}
-	.maintenance--archived .maintenance-state b {
-		color: var(--fg-2);
 	}
 	.staleness {
-		margin-top: 0.9rem;
+		margin: 1rem 0 0;
 		padding: 0.65rem 0.85rem;
 		border-radius: 6px;
 		background: var(--bg-subtle);
@@ -514,16 +558,33 @@ const relative = days === 0 ? '今天' : days === 1 ? '昨天' : `${days} 天前
 		font-size: 0.82rem;
 		line-height: 1.65;
 	}
+	/* 楷体只为中文准备, 英文版标题和导语回到无衬线 */
+	html[lang='en'] .article-title,
+	html[lang='en'] .article-lede {
+		font-family: var(--font-sans);
+	}
+	html[lang='en'] .article-title {
+		letter-spacing: -0.01em;
+	}
+	.translation-note a {
+		color: inherit;
+		text-decoration: underline;
+		text-underline-offset: 3px;
+	}
+	.staleness--versioned {
+		color: var(--warn);
+		background: color-mix(in oklab, var(--warn) 10%, var(--bg));
+	}
 
 	/* ---- 正文 ---- */
 	.prose {
 		line-height: 1.85;
-		padding-top: 2.5rem;
+		padding-top: 2rem;
 	}
 	.prose > :first-child {
 		margin-top: 0;
 	}
-	/* 首个 h2 紧跟维护状态条, 去掉分隔线, 避免两条横线叠在一起 */
+	/* 首个 h2 紧跟元信息行, 去掉分隔线, 避免两条横线叠在一起 */
 	.prose > h2:first-child {
 		border-top: none;
 		padding-top: 0;
@@ -668,8 +729,8 @@ const relative = days === 0 ? '今天' : days === 1 ? '昨天' : `${days} 天前
 
 	/* 中西混排: 行内代码给出侧边距, 否则会紧贴汉字 */
 	.prose :global(code) {
-		font-family: var(--font-mono);
-		font-size: 0.85em;
+		font-family: var(--font-code-stack);
+		font-size: 0.84em;
 		background: var(--code-bg);
 		color: var(--code-fg);
 		padding: 0.12em 0.4em;
@@ -687,104 +748,109 @@ const relative = days === 0 ? '今天' : days === 1 ? '昨天' : `${days} 天前
 	/* ---- 代码块 ----
 	   Shiki 双主题变量原样使用; 但背景改绑 --bg-subtle,
 	   避免浅色下代码块底色与页面同为白、只靠一条边框存在。 */
-	.prose :global(.code-fold) {
+	.prose :global(.code-block) {
+		position: relative;
 		margin: 1.5em 0;
 		border: 1px solid var(--border);
 		border-radius: 8px;
 		background: var(--bg-subtle);
 		overflow: hidden;
 	}
-	.prose :global(.code-fold__summary) {
-		min-height: 2.6rem;
-		padding: 0 1rem;
+	/* 顶栏: 语言 · 行数, 右侧是图标按钮。比代码再低一档, 不和正文抢注意力 */
+	.prose :global(.code-block__bar) {
 		display: flex;
 		align-items: center;
-		justify-content: space-between;
-		gap: 1rem;
-		list-style: none;
-		cursor: pointer;
-		color: var(--fg-2);
-		font-family: var(--font-mono);
-		font-size: 0.78rem;
+		gap: 0.55rem;
+		height: 2.15rem;
+		padding: 0 0.4rem 0 1rem;
+		border-bottom: 1px solid var(--border);
+		font-family: var(--font-code-stack);
+		font-size: 0.7rem;
 		line-height: 1;
-		user-select: none;
-		transition: background-color 160ms ease, color 160ms ease;
-	}
-	.prose :global(.code-fold__summary::-webkit-details-marker) {
-		display: none;
-	}
-	.prose :global(.code-fold__summary:hover) {
-		background: color-mix(in oklab, var(--fg) 5%, transparent);
-		color: var(--fg);
-	}
-	.prose :global(.code-fold__summary:focus-visible) {
-		outline-offset: -3px;
-	}
-	.prose :global(.code-fold__meta) {
-		min-width: 0;
-		overflow: hidden;
-		text-overflow: ellipsis;
-		white-space: nowrap;
-	}
-	.prose :global(.code-fold__language) {
-		color: var(--fg);
-		font-weight: 600;
-		letter-spacing: 0.06em;
-	}
-	.prose :global(.code-fold__lines) {
 		color: var(--fg-3);
+		user-select: none;
 	}
-	.prose :global(.code-fold__action) {
-		flex: none;
+	.prose :global(.code-block__lang) {
+		color: var(--fg-2);
+		font-weight: 600;
+		letter-spacing: 0.04em;
+	}
+	.prose :global(.code-block__lines::before) {
+		content: '·';
+		margin-right: 0.55rem;
+	}
+	.prose :global(.code-block__btn) {
 		display: inline-flex;
 		align-items: center;
-		gap: 0.55em;
-		color: var(--accent-text);
-	}
-	.prose :global(.code-fold__action::after) {
-		content: '';
-		width: 0.5em;
-		height: 0.5em;
-		border-right: 1.5px solid currentColor;
-		border-bottom: 1.5px solid currentColor;
-		transform: translateY(-0.14em) rotate(45deg);
-		transition: transform 160ms ease;
-	}
-	.prose :global(.code-fold__when-open) {
-		display: none;
-	}
-	.prose :global(.code-fold[open] .code-fold__when-closed) {
-		display: none;
-	}
-	.prose :global(.code-fold[open] .code-fold__when-open) {
-		display: inline;
-	}
-	.prose :global(.code-fold[open] .code-fold__action::after) {
-		transform: translateY(0.14em) rotate(225deg);
-	}
-	.prose :global(pre) {
-		position: relative;
-		/* padding-top 用 rem, 与语言标签的 height 同单位; 用 em 会因两者字号不同而错位 */
-		margin: 1.5em 0;
-		padding: 2.2rem 0 0;
-		border: 1px solid var(--border);
-		border-radius: 8px;
-		font-size: 0.84em;
-		line-height: 1.7;
-		overflow: visible !important; /* 覆盖 Shiki 内联的 overflow-x:auto, 滚动交给内层 code */
-	}
-	.prose :global(.code-fold > pre) {
-		margin: 0;
-		padding-top: 0;
+		justify-content: center;
+		width: 1.75rem;
+		height: 1.75rem;
+		padding: 0;
 		border: 0;
-		border-top: 1px solid var(--border);
+		border-radius: 5px;
+		background: none;
+		color: var(--fg-3);
+		cursor: pointer;
+		transition: background-color 160ms ease, color 160ms ease;
+	}
+	.prose :global(.code-block__btn:hover) {
+		background: color-mix(in oklab, var(--fg) 8%, transparent);
+		color: var(--fg);
+	}
+	.prose :global(.code-block__wrap) {
+		display: none;
+		margin-left: auto;
+	}
+	.prose :global(.code-block.has-overflow .code-block__wrap),
+	.prose :global(.code-block.is-wrapped .code-block__wrap) {
+		display: inline-flex;
+	}
+	.prose :global(.code-block.is-wrapped .code-block__wrap) {
+		color: var(--accent-text);
+		background: color-mix(in oklab, var(--accent) 12%, transparent);
+	}
+	/* 换行按钮不显示时, 复制按钮自己靠右 */
+	.prose :global(.code-block__copy) {
+		margin-left: auto;
+	}
+	.prose :global(.code-block.has-overflow .code-block__copy),
+	.prose :global(.code-block.is-wrapped .code-block__copy) {
+		margin-left: 0;
+	}
+	.prose :global(.code-block__icon--done) {
+		display: none;
+	}
+	.prose :global(.code-block__copy.is-copied) {
+		color: var(--ok);
+	}
+	.prose :global(.code-block__copy.is-copied .code-block__icon--idle) {
+		display: none;
+	}
+	.prose :global(.code-block__copy.is-copied .code-block__icon--done) {
+		display: block;
+	}
+	/* 没有 JS 时按钮都用不了, 直接不显示; 长代码也保持全部展开 */
+	:global(html:not(.js)) .prose :global(.code-block__btn),
+	:global(html:not(.js)) .prose :global(.code-block__expand) {
+		display: none;
+	}
+
+	.prose :global(.code-block pre) {
+		margin: 0;
+		padding: 0;
+		border: 0;
 		border-radius: 0;
+		font-family: var(--font-code-stack);
+		font-size: 0.8125rem; /* 固定 13px, 比 17px 正文小一档, 一行能放下更多代码 */
+		line-height: 1.7;
+		font-variant-ligatures: none; /* 不把 != -> 合成连字, 读者看到的就是要敲的字符 */
+		overflow: visible !important; /* 覆盖 Shiki 内联的 overflow-x:auto, 滚动交给内层 code */
 	}
 	.prose :global(pre > code) {
 		all: unset;
 		display: block;
 		overflow-x: auto;
-		padding: 0 1.15em 1.15em;
+		padding: 0.95em 1.15em 1.05em;
 		tab-size: 2;
 		overscroll-behavior-x: contain; /* 横向滑到底不外泄成页面级滑动/返回手势 */
 		/* 左右两侧的滚动提示: 内容溢出时才出现, 纯 background-attachment 实现 */
@@ -806,27 +872,53 @@ const relative = days === 0 ? '今天' : days === 1 ? '昨天' : `${days} 天前
 			100% 0;
 		background-attachment: local, local, scroll, scroll;
 	}
-	.prose :global(.code-fold > pre > code) {
-		padding-top: 1.15em;
+	/* 报错、日志这类纯文本默认换行; 其他代码由读者用换行按钮切换 */
+	.prose :global(.code-block--wrap pre > code),
+	.prose :global(.code-block.is-wrapped pre > code) {
+		white-space: pre-wrap;
+		overflow-wrap: anywhere;
 	}
-	/* 语言标签: 固定在代码块左上角, 不随横向滚动漂移 */
-	.prose :global(pre[data-language]::before) {
-		content: attr(data-language);
+
+	/* 长代码: 有 JS 时先露出约 14 行, 底部渐隐, 点按钮展开全部 */
+	:global(html.js) .prose :global(.code-block--long:not(.is-expanded) pre) {
+		max-height: calc(1.7em * 14 + 0.95em);
+		overflow: hidden !important;
+	}
+	:global(html.js) .prose :global(.code-block--long:not(.is-expanded) pre::after) {
+		content: '';
 		position: absolute;
-		inset: 0 0 auto 0;
-		height: 2.2rem;
-		display: flex;
-		align-items: center;
-		padding: 0 1.15em;
-		border-bottom: 1px solid var(--border);
-		font-family: var(--font-mono);
-		font-size: 0.78rem;
-		letter-spacing: 0.1em;
-		text-transform: uppercase;
-		color: var(--fg-2);
+		inset: auto 0 0 0;
+		height: 4.5em;
+		background: linear-gradient(to bottom, transparent, var(--bg-subtle));
+		pointer-events: none;
 	}
-	.prose :global(.code-fold > pre[data-language]::before) {
-		display: none;
+	.prose :global(.code-block--long pre) {
+		position: relative;
+	}
+	.prose :global(.code-block__expand) {
+		display: block;
+		width: 100%;
+		padding: 0.6rem 1rem;
+		border: 0;
+		border-top: 1px solid var(--border);
+		background: none;
+		color: var(--accent-text);
+		font-family: var(--font-code-stack);
+		font-size: 0.72rem;
+		cursor: pointer;
+		transition: background-color 160ms ease;
+	}
+	.prose :global(.code-block__expand:hover) {
+		background: color-mix(in oklab, var(--fg) 5%, transparent);
+	}
+
+	/* 不在 .code-block 里的 pre (例如 mermaid 之外的原始 HTML) 保持一个朴素外观 */
+	.prose :global(pre:not(.code-block pre)) {
+		margin: 1.5em 0;
+		border: 1px solid var(--border);
+		border-radius: 8px;
+		font-size: 0.84em;
+		line-height: 1.7;
 	}
 	:global(.astro-code) {
 		background-color: var(--bg-subtle) !important;
@@ -974,16 +1066,18 @@ const relative = days === 0 ? '今天' : days === 1 ? '昨天' : `${days} 天前
 		.prose h3 {
 			scroll-margin-top: calc(var(--header-h) + 3.75rem);
 		}
-		.prose pre {
+		.prose :global(.code-block) {
 			margin-inline: calc(-1 * var(--gutter));
 			border-inline: none;
 			border-radius: 0;
-			font-size: 0.8em;
 		}
-		.prose pre > code {
-			padding-inline: var(--gutter);
+		.prose :global(.code-block pre) {
+			font-size: 0.78rem;
 		}
-		.prose pre[data-language]::before {
+		.prose :global(.code-block__bar) {
+			padding-left: var(--gutter);
+		}
+		.prose :global(pre > code) {
 			padding-inline: var(--gutter);
 		}
 		.prose table {

@@ -1,6 +1,7 @@
 import { getCollection, type CollectionEntry } from 'astro:content';
 
 export type Post = CollectionEntry<'blog'>;
+export type EnPost = CollectionEntry<'en'>;
 
 /**
  * 已发布文章, 按日期倒序。
@@ -9,6 +10,17 @@ export type Post = CollectionEntry<'blog'>;
 export async function getPublishedPosts(): Promise<Post[]> {
 	const posts = await getCollection('blog', ({ data }) => !data.draft || !import.meta.env.PROD);
 	return posts.sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf());
+}
+
+/** 英文版文章, 和中文同样的草稿规则, 按日期倒序。 */
+export async function getEnglishPosts(): Promise<EnPost[]> {
+	const posts = await getCollection('en', ({ data }) => !data.draft || !import.meta.env.PROD);
+	return posts.sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf());
+}
+
+/** 有英文版的中文文章 id 集合。 */
+export async function getTranslatedIds(): Promise<Set<string>> {
+	return new Set((await getEnglishPosts()).map((p) => p.id));
 }
 
 /** 汇总标签及出现次数, 按数量倒序。 */
@@ -51,9 +63,9 @@ export const STATUS_META: Record<
 	evergreen: {
 		label: '长期维护',
 		dot: '',
-		note: '内容持续修订，命令与结论会随工具链更新',
+		note: '内容会持续修订',
 		revision:
-			'这篇处于长期维护状态，源文件放在 GitHub 仓库里。命令失效、版本对不上或结论有出入，欢迎直接提 Issue。',
+			'这篇处于长期维护状态，源文件放在 GitHub 仓库里。发现事实错误、版本对不上或结论有出入，欢迎直接提 Issue。',
 	},
 	versioned: {
 		label: '版本相关',
@@ -70,3 +82,62 @@ export const STATUS_META: Record<
 		revision: '这篇已归档，源文件还留在 GitHub 仓库里，仅作历史参考。',
 	},
 };
+
+/**
+ * 主题: 站点的一级分类, 少而固定, 每篇必须有且只有一个 (frontmatter `topic`)。
+ * 标签 (`tags`) 是更细的二级关键词, 可以多, 一律英文 slug。
+ */
+export const TOPICS = {
+	engineering: { label: 'Engineering', note: '后端、数据库、构建、网络与交付' },
+	ai: { label: 'AI', note: 'AI 编程工具、Agent 与开发者工作流' },
+	business: { label: 'Business', note: '商业判断、战略与产品，材料来自公开演讲与报道' },
+	reading: { label: 'Reading', note: '一本书一篇的解读' },
+} as const;
+
+export type Topic = keyof typeof TOPICS;
+
+/** 主题及篇数, 按 TOPICS 里的固定顺序, 没有文章的主题不返回。 */
+export function collectTopics(posts: Post[]): Array<{ topic: Topic; count: number }> {
+	return (Object.keys(TOPICS) as Topic[])
+		.map((topic) => ({ topic, count: posts.filter((p) => p.data.topic === topic).length }))
+		.filter((t) => t.count > 0);
+}
+
+/**
+ * 系列: frontmatter 里 `series: <key>` 的文章在首页「最新文章」里折叠成一条,
+ * 指向系列索引页, 避免一次发一批时把首页刷满。/blog 和标签页仍逐篇列出。
+ */
+export const SERIES: Record<string, { index: string; label: string }> = {
+	'hn-books': { index: 'reading/hacker-news-book-list', label: '二十本技术人的书' },
+};
+
+export type FeedItem = { post: Post; seriesCount?: number };
+
+/** 首页用的时间线: 同一系列只保留一条 (以系列索引页代表), 位置取该系列最新一篇。 */
+export function collapseSeries(posts: Post[]): FeedItem[] {
+	const counts = new Map<string, number>();
+	for (const p of posts) {
+		const s = p.data.series;
+		if (s) counts.set(s, (counts.get(s) ?? 0) + 1);
+	}
+	const seen = new Set<string>();
+	const items: FeedItem[] = [];
+	for (const p of posts) {
+		const s = p.data.series;
+		const meta = s ? SERIES[s] : undefined;
+		if (!s || !meta) {
+			items.push({ post: p });
+			continue;
+		}
+		const index = posts.find((x) => x.id === meta.index);
+		// 索引未发布时逐篇列出, 不能折叠到一篇普通成员文章。
+		if (!index) {
+			items.push({ post: p });
+			continue;
+		}
+		if (seen.has(s)) continue;
+		seen.add(s);
+		items.push({ post: index, seriesCount: counts.get(s) });
+	}
+	return items;
+}

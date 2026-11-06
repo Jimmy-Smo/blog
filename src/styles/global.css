@@ -10,7 +10,7 @@
   ------------------------------------------------------------------------- */
 :root {
 	--shell: 960px;
-	--measure: 720px;
+	--measure: 640px;
 	--rail: 200px;
 	--gutter: 1.25rem;
 	--header-h: 3.6rem;
@@ -44,6 +44,10 @@
 		'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif;
 	--font-mono:
 		ui-monospace, 'SF Mono', 'JetBrains Mono', Menlo, Consolas, monospace;
+	/* 代码块与行内代码专用: 自托管的 JetBrains Mono, 中文回落到苹方/雅黑, 与正文同族 */
+	--font-code-stack:
+		var(--font-code), 'JetBrains Mono', ui-monospace, 'SF Mono', Menlo, Consolas, 'PingFang SC',
+		'Microsoft YaHei', monospace;
 	/* 楷体栈用于标题/导语/引用: 霞鹜文楷 (SIL OFL) 由 BaseHead 引入, 分块加载;
 	   缺字/未加载时回落系统楷体。 */
 	--font-kai: 'LXGW WenKai', 'Kaiti SC', 'KaiTi', 'STKaiti', serif;
@@ -504,6 +508,13 @@ main {
 	color: var(--fg-2);
 	letter-spacing: 0.02em;
 }
+/* 主题排在标签前面, 用正文字体和更重的字重区分出层级 */
+.entry-tags .entry-topic {
+	font-family: var(--font-sans);
+	font-weight: 600;
+	color: var(--fg);
+	letter-spacing: 0;
+}
 /* 头条: 多给一段真实正文摘录, 让读者判断文风 */
 .entry--lead {
 	padding-top: 1.6rem;
@@ -646,6 +657,21 @@ html.js .site-header.is-stuck {
 }
 .theme-toggle svg {
 	display: none;
+}
+/* 中英切换: 和图标按钮同一行, 用一个小字号文字块代替图标 */
+.icon-links a.lang-switch {
+	align-items: center;
+	justify-content: center;
+	min-width: 1.9em;
+	height: 1.9em;
+	padding: 0 0.4em;
+	margin-right: 0.2em;
+	border: 1px solid var(--border-2);
+	color: var(--fg-2);
+	font-size: 0.74rem;
+	font-weight: 600;
+	letter-spacing: 0.02em;
+	line-height: 1;
 }
 /* 亮色显示月亮 (点击进入深色), 深色显示太阳 */
 .theme-toggle .icon-moon {

@@ -3,10 +3,11 @@ title: "Spring MVC + Ajax 上传文件失败：jQuery 1.4 还不认 contentType:
 description: "jQuery 1.4 的 $.ajax 不支持 contentType: false，导致 multipart 请求头非法；记录一次用 Fiddler 和 Postman 比对报文的排查过程。"
 date: 2021-07-29
 updated: 2026-09-05
+topic: engineering
 tags:
   - java
-status: versioned
-draft: true
+status: archived
+draft: false
 ---
 
 第一次写文件上传，工程里也没有现成代码可以抄。按网上教程写完，跑起来不是 500 就是 400。500 时后台抛的是：

@@ -3,11 +3,12 @@ title: 《三体》解读：你的对手能读到你的全部计划
 description: 从一个信息完全透明的竞争局面出发，拆解黑暗森林的推理链、智子对监控的极限想象、面壁计划为什么把保密推到认知层，以及黑暗森林为什么不能直接搬进商业。
 date: 2026-11-05
 updated: 2026-11-06
+topic: reading
 tags:
-  - reading
-  - strategy
+  - science-fiction
 status: evergreen
 draft: false
+series: hn-books
 ---
 
 你做战略规划的时候，默认了一个前提：你的计划是保密的。如果这个前提不成立呢？如果对手能实时看到你的每一份文档、每一次会议、每一个决定，你还怎么规划？

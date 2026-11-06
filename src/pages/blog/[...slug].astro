@@ -1,17 +1,25 @@
 ---
 import { render } from 'astro:content';
 import BlogPost from '../../layouts/BlogPost.astro';
-import { getPublishedPosts } from '../../lib/posts';
+import { getPublishedPosts, getTranslatedIds, SERIES } from '../../lib/posts';
 
 export async function getStaticPaths() {
 	const posts = await getPublishedPosts();
-	return posts.map((post) => ({ params: { slug: post.id }, props: post }));
+	const publishedIds = new Set(posts.map((post) => post.id));
+	return posts.map((post) => {
+		const series = post.data.series ? SERIES[post.data.series] : undefined;
+		return {
+			params: { slug: post.id },
+			props: { post, hasSeriesIndex: series ? publishedIds.has(series.index) : false },
+		};
+	});
 }
 
-const post = Astro.props;
+const { post, hasSeriesIndex } = Astro.props;
 const { Content, headings } = await render(post);
+const translated = await getTranslatedIds();
 ---
 
-<BlogPost {...post.data} id={post.id} headings={headings}>
+<BlogPost {...post.data} id={post.id} headings={headings} hasTranslation={translated.has(post.id)} hasSeriesIndex={hasSeriesIndex}>
 	<Content />
 </BlogPost>

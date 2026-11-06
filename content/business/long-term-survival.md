@@ -3,8 +3,8 @@ title: "长期不败：识别操纵、不犯错的偏执，与两种价值投资
 description: 从监管条文、段永平的不为清单和冯柳的弱者体系出发，梳理长期不败的三个侧面，并对比马斯克式豪赌与芒格式复利各自的适用前提。
 date: 2026-09-05
 updated: 2026-09-05
+topic: business
 tags:
-  - business
   - investing
 status: evergreen
 draft: false

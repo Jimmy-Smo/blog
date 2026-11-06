@@ -16,13 +16,23 @@
 - `reading/`：书的解读，一本一篇，索引页是 `hacker-news-book-list`
 - `weekly/`：不定期发布的精选周刊（尚未纳入站点集合）
 
-公开分类用 frontmatter 的 `tags`。站点只认标签，不认目录。
+公开分类分两层，都写在 frontmatter 里。站点只认这两层，不认目录。
 
-默认 2 个：货架 1 个，再加 1 个明年还可能再写的词。只有两件会独立再写的栈才打到 3。不确定就只打货架。不要把章节名、人名、一次性细节做成标签。
+**主题 `topic`**：一级分类，每篇必须有且只有一个，四选一：`engineering`（后端、数据库、构建、网络与交付，Java/JVM 也在这里）、`ai`、`business`、`reading`。主题少而固定，要加新主题，先改 `src/content.config.ts` 的枚举和 `src/lib/posts.ts` 的 `TOPICS`。主题页在 `/topics/<topic>/`。
 
-货架六选一：`engineering` `business` `java` `jvm` `ai-tools` `reading`。
+**标签 `tags`**：二级关键词，英文小写 slug，页面上原样显示。可以比主题多，一般 1 到 2 个，没有合适的就留空（`tags: []`）。只打明年还可能再写的词，不要把章节名、人名、一次性细节做成标签。
 
-现有具体词：`git` `mysql` `gradle` `shopify` `elasticsearch` `mq` `proxy` `kotlin` `spring-boot` `webservice` `kubernetes` `claude-code` `cursor` `agent` `product` `startup` `investing` `macroeconomics` `strategy` `delivery`。新词只在你明确会再写一篇时才加。
+现有标签：`java` `jvm` `kotlin` `spring-boot` `webservice` `git` `mysql` `gradle` `shopify` `elasticsearch` `mq` `proxy` `kubernetes` `delivery` `claude-code` `agent` `product` `startup` `investing` `macroeconomics` `strategy` `programming` `science-fiction`。新词只在你明确会再写一篇时才加。
+
+一次成批发布的系列文章，frontmatter 加 `series: <key>`，并在 `src/lib/posts.ts` 的 `SERIES` 里登记索引页。首页「最新文章」会把整个系列折叠成一条，指向索引页；`/blog/`、主题页和标签页仍逐篇列出。现有系列：`hn-books`（索引页 `reading/hacker-news-book-list`）。
+
+## 英文版
+
+只给挑选过的文章做英文版，不做整站翻译。英文版放在 `content/en/` 下，路径和中文原文一致（例如 `content/en/ai-tools/agents-need-to-talk.md` 对应 `content/ai-tools/agents-need-to-talk.md`），URL 是 `/en/blog/<id>/`。frontmatter 字段和中文一样，`topic`、`tags`、`status`、日期跟原文保持一致。
+
+两边会自动互相链接：中文页的元信息行出现 English 链接，右上角的中英切换按钮指向对应版本；英文页顶部自动注明「AI 辅助翻译，以中文原文为准」。站内链接指向有英文版的文章时用 `/en/blog/...`，没有英文版就链中文原文并注明 in Chinese。中文来源的参考资料在链接文字后加 (in Chinese)。
+
+原文有实质修订时，英文版要同步，或者在英文版里注明落后于原文。
 
 ## 发布标准
 

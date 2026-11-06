@@ -1,19 +1,38 @@
 ---
 import { GITHUB_REPO } from '../consts';
+import type { Lang } from '../lib/i18n';
+
+const { lang = 'zh' } = Astro.props as { lang?: Lang };
 
 const today = new Date();
 ---
 
 <footer class="site-footer" data-pagefind-ignore>
 	<div class="shell">
-		<p>
-			&copy; {today.getFullYear()} Jimmy42X · 拾雾 ·
-			<a href={GITHUB_REPO} target="_blank" rel="noopener noreferrer">源码在 GitHub</a>
-		</p>
-		<div class="footer-legal">
-			<a href="/rss.xml">RSS</a>
-			<a href="/tags/">标签</a>
-			<a href="/about">关于</a>
-		</div>
+		{
+			lang === 'zh' ? (
+				<>
+					<p>
+						&copy; {today.getFullYear()} Jimmy42X · 拾雾 ·
+						<a href={GITHUB_REPO} target="_blank" rel="noopener noreferrer">源码在 GitHub</a>
+					</p>
+					<div class="footer-legal">
+						<a href="/rss.xml">RSS</a>
+						<a href="/tags/">标签</a>
+						<a href="/about">关于</a>
+					</div>
+				</>
+			) : (
+				<>
+					<p>
+						&copy; {today.getFullYear()} Jimmy42X · 拾雾 Shiwu ·
+						<a href={GITHUB_REPO} target="_blank" rel="noopener noreferrer">Source on GitHub</a>
+					</p>
+					<div class="footer-legal">
+						<a href="/" lang="zh-CN">中文站</a>
+					</div>
+				</>
+			)
+		}
 	</div>
 </footer>

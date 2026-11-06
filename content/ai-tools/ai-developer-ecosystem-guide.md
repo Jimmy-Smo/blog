@@ -3,13 +3,15 @@ title: AI 开发者生态的五层
 description: 从模型、工具、编排往下看到网络和账号：上面三层决定能做什么，下面两层决定能不能稳定用。
 date: 2026-07-20
 updated: 2026-09-05
+topic: ai
 tags:
-  - ai-tools
   - agent
-status: versioned
+status: archived
 draft: false
 ---
 
+> 这篇是 2026 年年中的快照，已归档。之后的变化见两篇新文：普通人开始用个人 Agent、Agent 之间怎么联系，见 [Agent 多起来以后，它们得互相说话](/blog/ai-tools/agents-need-to-talk/)；开发者怎么同时管好几个编程 Agent，见 [从一个 Agent 到一组 Agent](/blog/ai-tools/multi-agent-development/)。网络和账号两层的内容仍然适用。
+>
 > 工具名单、接口和订阅档位变化很快。文中产品描述与调查数字最近核验于 2026-09-05，使用前对照官方文档。
 
 网页能打开 ChatGPT，终端里的 CLI 却连不上；换个出口能注册，过两天又开始人机验证。这类情况很容易被当成模型或工具坏了。更常见的原因在下面：出口 IP 质量、DNS 是否泄露、账号是不是干净。
@@ -32,7 +34,7 @@ Chat、CLI、Agent 的核心差别是**执行权在谁手里**。CLI 已经进�
 
 CLI 和 Agent 能进开发流程，主要是三件事叠在一起。网页 Chat 经常要手动粘贴文件和错误信息，CLI 可以在授权范围内按需读仓库；它们还能直接跑命令、测试和检查工具，少一层复制粘贴，结果仍要人审；CLI 能进脚本、进 CI、被其他程序调用，网页 Chat 是交互终点，不好组合。
 
-三种形态都值得了解。优先练的是：给足上下文、收紧权限，并用测试或其他可观察结果验证输出。具体怎么把 Claude Code 接进工作流，我另写过 [AI 编程工具选型与工作流](https://jimmy42x.com/blog/ai-tools/ai-coding-workflow/)。
+三种形态都值得了解。优先练的是：给足上下文、收紧权限，并用测试或其他可观察结果验证输出。具体怎么把 Claude Code 这类 CLI 接进工作流，我另写过 [AI 编程工作流：一份指令文件，几个终端 Agent](/blog/ai-tools/ai-coding-workflow/)。
 
 ## 五层：上面是生产力，下面是可用性
 
@@ -152,4 +154,4 @@ Hermes Agent、Pi、DeepSeek Harness 都还没实际跑过。DeepSeek Harness �
 - [CC Switch](https://ccswitch.io/)
 - [Stack Overflow 2025 Developer Survey · AI](https://survey.stackoverflow.co/2025/ai)（数字核验日期 2026-09-05）
 - [DORA 2025: State of AI-assisted Software Development](https://dora.dev/research/2025/dora-report/)
-- [AI 编程工具选型与工作流](https://jimmy42x.com/blog/ai-tools/ai-coding-workflow/)
+- [AI 编程工作流：一份指令文件，几个终端 Agent](https://jimmy42x.com/blog/ai-tools/ai-coding-workflow/)

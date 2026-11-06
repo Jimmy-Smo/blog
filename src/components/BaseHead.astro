@@ -14,11 +14,13 @@ interface Props {
 	title: string;
 	description: string;
 	image?: ImageMetadata;
+	/** 有另一种语言版本时, 两个 URL 都给出来, 输出 hreflang。 */
+	alternates?: { zh: string; en: string };
 }
 
 const canonicalURL = new URL(Astro.url.pathname, Astro.site);
 
-const { title, description, image = FallbackImage } = Astro.props;
+const { title, description, image = FallbackImage, alternates } = Astro.props;
 ---
 
 <!-- Global Metadata -->
@@ -39,9 +41,18 @@ const { title, description, image = FallbackImage } = Astro.props;
 <meta name="generator" content={Astro.generator} />
 
 <Font cssVariable="--font-atkinson" preload />
+<Font cssVariable="--font-code" />
 
 <!-- Canonical URL -->
 <link rel="canonical" href={canonicalURL} />
+{
+	alternates && (
+		<>
+			<link rel="alternate" hreflang="zh-CN" href={new URL(alternates.zh, Astro.site)} />
+			<link rel="alternate" hreflang="en" href={new URL(alternates.en, Astro.site)} />
+		</>
+	)
+}
 
 <!-- Primary Meta Tags -->
 <title>{title}</title>

@@ -1,80 +1,116 @@
 ---
-title: AI 编程工具选型与工作流：Cursor、Claude Code、Copilot 组合实践
-description: 帮助 Java/Kotlin 后端开发者选择并组合 AI 编程工具，覆盖选型维度、无头模式、子代理、MCP 配置与安全边界
+title: AI 编程工作流：一份指令文件，几个终端 Agent
+description: 从 IDE 插件各占一格，到几个终端 Agent 共用一份 AGENTS.md：指令文件怎么写一次到处用，无头模式怎么进脚本和 CI，权限边界划在哪。
 date: 2026-07-15
-updated: 2026-08-29
+updated: 2026-11-06
+topic: ai
 tags:
-  - ai-tools
   - claude-code
-  - cursor
 status: versioned
 draft: false
 ---
 
-> 整理自 2025-06 至 2025-10 的学习笔记。工具能力与价格变化极快，本文事实核验日期为笔记记录当时（2025 年下半年），使用前应重新核对官方文档。
+> 2026-11-06 重写。命令、参数和文件约定核验于 2026-11-06 的官方文档：Claude Code 2.1.x、Codex CLI、Cursor、GitHub Copilot。这类工具几个月就变一轮，照抄前先对一遍文档。
 
-AI 编程工具数量多、迭代快，追着每个新功能跑是跑不过来的。我的做法是先把三件事想清楚：按什么维度评估一个工具、它在现有工作流里占哪个位置、以及怎么把它接进 CI 和脚本这类非交互场景并守住安全边界。这三条线定了，新工具出现时只需要重新填格子。
+这篇的上一版写于 2025 年下半年，思路是给每个工具找一个不重叠的生态位：Cursor 管本地上下文和多轮改写，Claude Code 管长上下文和终端，Copilot 管行内补全，ChatGPT 管讨论和一次性脚本。一年后回头看，「各占一格」这个思路还成立，格子却变了。
 
-## 选型先看五个维度
+主力从 IDE 插件挪到了终端。我现在机器上装着 Claude Code、Codex、Grok Build 和 Pi，没再装 Cursor。工具多了以后，真正要维护的不再是每个工具各自的设置，而是一份它们都认的指令文件。
 
-评估一个工具，我固定看五个维度：IDE/Terminal 的集成方式、团队协作能力（Code Review、子代理）、隐私与日志留存、速度与推理质量、成本。2025 年下半年的记录里，主流工具定价大致是每人每月 $20 到 100；各家模型的消息条数上限等配额在年内多次调整，比较时以官方帮助页当日内容为准。
+## 选型还是看那五个维度
 
-## 四个工具各占一个生态位
+评估一个新工具，我仍然看五件事：怎么接进现有环境（IDE 还是终端），能不能分派子任务和做代码审查，日志和数据留在哪，速度和推理质量，成本。
 
-组合的价值不在工具多，而在各占一个不重叠的生态位。我在 Java/Kotlin & Spring Boot 后端场景下的分工是：
+这一年多出来一个维度：它认不认仓库里已有的指令文件。认的话，换工具几乎没有迁移成本；不认，就得为它单独再写一套规矩，而且迟早和别的那几套对不上。
 
-- Cursor：本地上下文、语义搜索、多轮改写；
-- Claude Code：长上下文、子代理（代码审查、文档重写）、终端与结构化指令链；
-- Copilot：行内补全与测试样例骨架；
-- ChatGPT：架构讨论、脚本/SQL/正则的一次性生成与核对。
+## 指令只写一份：AGENTS.md
 
-工具一多，任务、笔记、复盘就容易碎片化。与其为每个工具单独维护一套记录，不如把它们整合进统一的流程。
+`AGENTS.md` 现在是几家共同的约定。Codex 构建项目指令时直接读它。Cursor 支持项目根目录和子目录里的 `AGENTS.md`。GitHub Copilot 也认，目录树里离当前文件最近的那份优先。Claude Code 的主文件是 `CLAUDE.md`，但可以用 `@路径` 把别的文件导入进来，文档里也写明了可以直接用现成的 `AGENTS.md`。
 
-## 上下文掌控力是本质差异
+所以这个博客仓库的 `CLAUDE.md` 基本是空的，正文只有一行导入：
 
-我在 2025 年使用“Copilot + ChatGPT 对话式生成”时，项目上下文主要靠手动粘贴；Cursor、Claude Code 这类工具可以直接导航文件树、跨文件修改并执行结构化指令链，操作连贯性更好。上下文工程（Context Engineering）处理的也是这些问题：怎样裁剪上下文、接入检索与工具、管理记忆窗口，这些选择会影响幻觉率与任务稳定性。
+```markdown
+Project instructions are shared with other agents and live in AGENTS.md:
 
-## 子代理与无头模式
+@AGENTS.md
+```
 
-Claude Code 的子代理把一个专业子任务（如代码审查、文档翻译）派发给独立的代理执行，主对话保持干净上下文，适合“任务目标明确、产出可验收”的场景。
+规则全写在 `AGENTS.md` 里：常用命令、目录结构、哪些不变量不能动、提交信息格式。Claude Code 通过导入读到，Codex 和其他工具直接读到，改一处全部生效。
 
-无头模式解决的是非交互场景：用 `-p` 参数进入，适用于 CI、pre-commit 钩子、构建脚本；配合 `--output-format stream-json` 可获得流式 JSON 输出，便于程序消费。
+全局层也是同一个办法。`~/.claude/CLAUDE.md` 只有一行 `@~/.codex/AGENTS.md`，个人偏好（比如搜索用 `rg`、JSON 用 `jq`）只维护在 Codex 那份文件里。Skills 放在 `~/.agents/skills/`，再用软链接挂到 `~/.claude/skills/` 下面，两边看到的是同一批文件。
 
-## 配置落地：项目规则、安装与 MCP
+指令文件里写什么，标准很简单：写读代码读不出来的东西。项目命令、踩过的坑、「这个配置不要随手改」。目录树、依赖列表这类模型自己能查到的，不用抄进去。Claude Code 的文档建议单个 `CLAUDE.md` 控制在 200 行以内，太长会占上下文，遵循度反而下降。导入只是方便拆文件，被导入的内容一样会全部加载。
 
-Cursor 的项目规则放在 `.cursor/rules`，本来就是供团队共享和版本控制的；`CLAUDE.md` 如果记录项目命令与团队约定，也应该提交。用户级偏好留在各自的设置里，含密钥、账号或内部信息的内容不要写进规则文件。`.cursorignore` 控制哪些文件不进入 Cursor 上下文，不等同于 Git 的 `.gitignore`。
+工具专属的格式还在，适合放只对它有意义的配置：Cursor 的 `.cursor/rules/*.mdc` 可以按文件类型限定规则的生效范围，Copilot 有 `.github/copilot-instructions.md`。通用规则放 `AGENTS.md`，专属规则放各自的位置，不要两边各抄一份。
 
-Claude Code 安装：
+## 子代理和无头模式
+
+子代理的用法没变：把一个目标明确、结果能验收的子任务（审一段 diff、在一堆文件里定位某个调用）派给独立的上下文去做，主对话只拿回结论。它省的是主对话的上下文，不是时间。
+
+无头模式是 AI 工具真正进入工程流程的入口。Claude Code 用 `-p` 跑非交互模式，退出码表示成败，可以直接放进脚本：
 
 ```bash
-npm install -g @anthropic-ai/claude-code
-claude doctor
+# 把 diff 喂进去做一次拼写检查, 不需要给它 Bash 权限
+git diff main | claude -p "找出这段 diff 里的拼写错误，每条输出 文件名:行号 和问题"
+
+# 要给程序消费时用 JSON, 结果在 .result 字段
+claude -p "总结这个项目的模块划分" --output-format json | jq -r '.result'
 ```
 
-Node 环境建议用 nvm 管理（`nvm install --lts`），安装路径统一在用户级 Node 下，避免权限问题。
+`--output-format` 有 `text`、`json`、`stream-json` 三种。需要固定结构的输出，可以加 `--json-schema`，结果会放在 `structured_output` 字段里。
 
-Codex 的 MCP 服务用 TOML 分段表写法，避免在内联表里换行：
+放进 CI 时我会加两样东西。一是 `--bare`：它跳过本机和仓库里的 hooks、skills、MCP 配置和 `CLAUDE.md` 的自动加载，每台机器跑出来的行为一致。文档说它以后会成为 `-p` 的默认行为。代价是它不读订阅登录，要配 `ANTHROPIC_API_KEY`。二是显式的权限：用 `--allowedTools` 只放行需要的工具，Bash 命令按前缀放行。
+
+```bash
+claude -p "看一下暂存区的改动，写一条合适的提交信息并提交" \
+  --allowedTools "Bash(git diff *),Bash(git log *),Bash(git status *),Bash(git commit *)"
+```
+
+`Bash(git diff *)` 里星号前面的空格不能省，没有它，`git diff-index` 这类命令也会被匹配上。
+
+## 安装与 MCP
+
+Claude Code 现在推荐用原生安装器，装完会在后台自动更新：
+
+```bash
+curl -fsSL https://claude.ai/install.sh | bash
+claude --version
+claude doctor   # 只读诊断：安装状态、设置文件校验、自动更新结果
+```
+
+也可以用 `brew install --cask claude-code`。npm 包还能用（需要 Node.js 22 以上），装下来的是同一个原生二进制。上一版写的「用 nvm 管 Node、npm 全局安装」现在不必了。不管用哪种方式，都不要 `sudo` 安装，否则它没法自己更新。
+
+Codex 的 MCP 配置写在 `~/.codex/config.toml`，每个服务一个 `[mcp_servers.<名字>]` 表。远程 HTTP 服务只写 `url`，本地 stdio 服务写 `command` 和 `args`：
 
 ```toml
-[mcp_servers.deepwiki]
-url = "https://mcp.deepwiki.com/mcp"
+[mcp_servers.context7]
+url = "https://mcp.context7.com/mcp"
+
+[mcp_servers.local-tool]
+command = "/usr/local/bin/some-mcp-server"
+args = ["--stdio"]
 ```
 
-远程 HTTP 服务只配置 `url`；本地 stdio 服务才使用 `command`，并要确保启动命令在 PATH 中，必要时改用绝对路径。
+stdio 服务的启动命令要确保在 PATH 里，拿不准就写绝对路径。Claude Code 这边，项目级的 MCP 服务放在仓库根目录的 `.mcp.json`，可以提交，团队共用。
 
-## coding agents 的安全边界
+## 安全边界
 
-把代理接进工作流之前，先过一遍安全清单。风险面集中在四处：供应链注入、工具权限边界、提示注入、数据外泄。对策是**最小权限工具链**加**沙箱隔离**，配全链路审计。落地动作有两件：为代理梳理允许调用的工具白名单；敏感操作（推送、删除、外发）保留人工确认。
+风险还是那四处：供应链注入、工具权限过宽、提示注入、数据外泄。这一年变的是，工具开始给出具体的开关，不用只靠自觉。
+
+有一点容易被忽略：Claude Code 在 `-p` 模式下没有工作区信任确认，会照常执行仓库 `.claude/settings.json` 里的 hooks，连上 `.mcp.json` 里的服务器，哪怕这个目录你从来没信任过。在 CI 里跑别人提交的代码，就是在跑别人写的 hooks。`--bare` 能挡住这一层。
+
+剩下的照旧：给 Agent 的工具列白名单；推送、删除、往外发内容这类操作保留人工确认；CI 里用 `--permission-mode dontAsk`，没有明确放行的操作一律拒绝，不要等一个永远不会来的确认。指令文件里也别写密钥、账号和内部地址，它要提交进仓库，公开仓库更是谁都能看。
 
 ## 适用范围
 
-组合建议针对 Java/Kotlin 后端加 macOS/WSL 开发环境，前端或数据科学场景的权重会不同。子代理和无头模式的能力以 Claude Code 当前版本文档为准。
+组合方式针对 Java/Kotlin 后端加 macOS 开发环境，IDE 是 IntelliJ IDEA，AI 主要跑在终端里。这篇只讲单个 Agent 怎么配；同时跑好几个 Agent、用 worktree 隔离并行任务，见 [从一个 Agent 到一组 Agent](/blog/ai-tools/multi-agent-development/)。前端或数据场景，IDE 内的工具权重会更高。各家 CLI 的参数以当前版本文档为准，本文只核验了上面列出的那些。
 
 ## 参考资料
 
+- [Claude Code：高级安装与更新](https://code.claude.com/docs/en/setup)
+- [Claude Code：以编程方式运行（`-p`、`--bare`、权限）](https://code.claude.com/docs/en/headless)
+- [Claude Code：CLAUDE.md、导入与 AGENTS.md](https://code.claude.com/docs/en/memory)
+- [Codex 配置参考](https://learn.chatgpt.com/docs/config-file/config-reference)
+- [Cursor：Rules 与 AGENTS.md](https://cursor.com/docs/context/rules)
+- [GitHub Copilot：仓库自定义指令](https://docs.github.com/en/copilot/how-tos/configure-custom-instructions/add-repository-instructions)
 - [Context Engineering for AI Agents（Manus）](https://manus.im/blog/Context-Engineering-for-AI-Agents-Lessons-from-Building-Manus)
 - [Coding Agents 安全（宝玉译）](https://baoyu.io/translations/llms-coding-agents-security-nightmare)
-- [Cursor Project Rules](https://docs.cursor.com/context/rules-for-ai)
-- [Claude Code CLI reference](https://docs.anthropic.com/en/docs/claude-code/cli-usage)
-- [Codex configuration reference](https://developers.openai.com/codex/config-file/config-reference)
-- [Using Codex with your ChatGPT plan - OpenAI Help](https://help.openai.com/en/articles/11369540-using-codex-with-your-chatgpt-plan)

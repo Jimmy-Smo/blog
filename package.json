@@ -25,6 +25,7 @@
 		"@astrojs/mdx": "^7.0.8",
 		"@astrojs/rss": "^4.0.19",
 		"@astrojs/sitemap": "^3.7.3",
+		"@fontsource-variable/jetbrains-mono": "5.3.0",
 		"@tailwindcss/vite": "^4.3.3",
 		"astro": "^7.2.8",
 		"astro-mermaid": "^2.1.0",

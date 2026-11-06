@@ -3,8 +3,8 @@ title: macOS 代理工具栈：Surge + AdGuard 组合与网络排错
 description: 在 macOS 上搭建稳定的代理与广告过滤组合，理解代理链路冲突的成因，并掌握一套网络诊断命令
 date: 2026-07-15
 updated: 2026-08-29
+topic: engineering
 tags:
-  - engineering
   - proxy
 status: versioned
 draft: false

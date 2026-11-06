@@ -3,8 +3,8 @@ title: 交付协作方法论：排期、风险暴露与联调清单
 description: 一套可直接复用的开发、提测和验收协作准则：怎么拆排期、什么时候报风险、联调前检查什么
 date: 2026-07-16
 updated: 2026-08-29
+topic: engineering
 tags:
-  - engineering
   - delivery
 status: evergreen
 draft: false

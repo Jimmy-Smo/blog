@@ -3,10 +3,12 @@ title: 《C 程序设计语言》解读：写了十年 Python，一碰指针就�
 description: 从一次看不懂的段错误出发，拆解 K&R 为什么把 C 写成对机器的诚实映射、数组指针字符串为什么是同一个东西、未定义行为意味着什么，以及它没教的那部分工程。
 date: 2026-11-05
 updated: 2026-11-06
+topic: reading
 tags:
-  - reading
+  - programming
 status: evergreen
 draft: false
+series: hn-books
 ---
 
 你写 Python 写了十年，自认对计算机很懂。直到某天要改一段 C 扩展，编译器报了个段错误，你盯着指针看了半小时，不知道它指向哪，也不知道那块内存还在不在。你意识到自己一直在用一层很厚的壳，壳底下的事你从没真正处理过。

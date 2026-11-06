@@ -3,10 +3,12 @@ title: 《雪崩》解读：平台把虚拟世界做成了收费站
 description: 从一次「元宇宙」发布会出发，拆解这本书怎么造出 metaverse、怎么把 avatar 带进日常、语言作为病毒的设定、特许经营国家，以及它预言的是商业模式而不是技术。
 date: 2026-11-05
 updated: 2026-11-06
+topic: reading
 tags:
-  - reading
+  - science-fiction
 status: evergreen
 draft: false
+series: hn-books
 ---
 
 某场发布会宣布「元宇宙」是下一代互联网。你看着台上那个戴着头显的人，想起这个词其实已经被发明过两次，第一次是三十年前的一本小说，而那次想象的结局并不好。

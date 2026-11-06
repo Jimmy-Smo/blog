@@ -3,6 +3,7 @@ title: Kotlin + Spring Boot 后端工程实践清单
 description: Kotlin 写 Spring Boot 业务代码的高频陷阱与既定做法：校验注解、可见性、ORM 空值、分布式锁与配置外部化
 date: 2026-07-15
 updated: 2026-08-29
+topic: engineering
 tags:
   - java
   - kotlin
