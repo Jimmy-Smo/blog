@@ -1,0 +1,4 @@
+{
+  "request": { "method": "GET", "urlPath": "/shipping-fee" },
+  "response": { "status": 500 }
+}
