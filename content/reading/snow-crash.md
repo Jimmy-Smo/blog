@@ -6,7 +6,7 @@ updated: 2026-11-06
 tags:
   - reading
 status: evergreen
-draft: true
+draft: false
 ---
 
 某场发布会宣布「元宇宙」是下一代互联网。你看着台上那个戴着头显的人，想起这个词其实已经被发明过两次，第一次是三十年前的一本小说，而那次想象的结局并不好。

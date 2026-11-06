@@ -6,7 +6,7 @@ updated: 2026-11-06
 tags:
   - reading
 status: evergreen
-draft: true
+draft: false
 ---
 
 你追一个 bug 追了三个小时。每次以为找到了，跑一遍，换了个地方错。你开始烦躁，手上的动作变粗，螺丝拧花了一颗，情绪更差。最后你没有修好它，你合上电脑，去阳台站了一会儿。

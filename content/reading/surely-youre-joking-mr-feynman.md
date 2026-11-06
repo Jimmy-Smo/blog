@@ -6,7 +6,7 @@ updated: 2026-11-06
 tags:
   - reading
 status: evergreen
-draft: true
+draft: false
 ---
 
 一次严重事故之后，调查报告写了三百页，措辞严谨，责任分散，结论是「多重因素叠加」。没有人被指名，没有机制被改掉。半年后，同类事故再来一次。

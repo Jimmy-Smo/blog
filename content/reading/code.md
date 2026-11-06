@@ -6,7 +6,7 @@ updated: 2026-11-06
 tags:
   - reading
 status: evergreen
-draft: true
+draft: false
 ---
 
 有人问你：「中断发生的时候，CPU 到底在做什么？」你张嘴想说「保存现场，跳转到处理程序」，但再往下问一层，你就卡住了。保存到哪？谁保存？返回地址怎么知道？你发现自己背的是结论，不是过程。

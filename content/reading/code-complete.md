@@ -6,7 +6,7 @@ updated: 2026-11-06
 tags:
   - reading
 status: evergreen
-draft: true
+draft: false
 ---
 
 评审一段代码，你看完，皱眉，说：「感觉不对，但我说不上来。」作者问哪里不对，你说可能是命名，可能是太长，可能是嵌套太深。会议就在这种模糊里结束了，代码照原样合了进去。
