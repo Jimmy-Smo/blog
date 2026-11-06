@@ -8,23 +8,13 @@
 import { readFileSync, writeFileSync, mkdirSync, existsSync, readdirSync, statSync } from 'node:fs';
 import { join, dirname, relative, resolve, isAbsolute } from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { comparePostDates, postTimestamp } from '../src/lib/post-dates.mjs';
 
 const ROOT = fileURLToPath(new URL('..', import.meta.url));
 const CONTENT = join(ROOT, 'content');
 const TEMPLATE = join(CONTENT, '_template.md');
 
 const ARTICLE_ID = /^[a-z0-9]+(?:-[a-z0-9]+)*(?:\/[a-z0-9]+(?:-[a-z0-9]+)*)+$/;
-
-const today = () => {
-	const parts = new Intl.DateTimeFormat('en-US', {
-		timeZone: 'Asia/Taipei',
-		year: 'numeric',
-		month: '2-digit',
-		day: '2-digit',
-	}).formatToParts(new Date());
-	const value = Object.fromEntries(parts.map(({ type, value }) => [type, value]));
-	return `${value.year}-${value.month}-${value.day}`;
-};
 
 function articlePath(id) {
 	if (!ARTICLE_ID.test(id)) {
@@ -56,6 +46,8 @@ function collect(dir = CONTENT, out = []) {
 
 const field = (src, key) => src.match(new RegExp(`^${key}:\\s*(.+)$`, 'm'))?.[1]?.trim() ?? '';
 
+const bareDate = (value) => value.replace(/^(['"])(.*)\1$/, '$2');
+
 function list() {
 	const rows = collect()
 		.map((p) => {
@@ -68,7 +60,7 @@ function list() {
 				title: field(src, 'title'),
 			};
 		})
-		.sort((a, b) => Number(b.draft) - Number(a.draft) || b.date.localeCompare(a.date));
+		.sort((a, b) => Number(b.draft) - Number(a.draft) || comparePostDates(new Date(bareDate(a.date)), new Date(bareDate(b.date)), a.id, b.id));
 
 	const pub = rows.filter((r) => !r.draft).length;
 	console.log(`\n${rows.length} 篇 · 已发布 ${pub} · 草稿 ${rows.length - pub}\n`);
@@ -94,7 +86,7 @@ function create(id, title) {
 	}
 	mkdirSync(dirname(dest), { recursive: true });
 
-	const d = today();
+	const d = postTimestamp();
 	const src = readFileSync(TEMPLATE, 'utf8')
 		.replace(/^title:.*$/m, `title: ${title}`)
 		.replace(/^date:.*$/m, `date: ${d}`)

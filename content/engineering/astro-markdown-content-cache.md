@@ -1,7 +1,7 @@
 ---
 title: Markdown 插件改了，为什么旧文章没更新
 description: 一次参考区样式调整中，英文页仍输出旧 HTML。沿着页面源码、Astro 内容存储和 glob loader 排查，最后用热缓存与清缓存构建做对照。
-date: 2026-11-06
+date: 2026-11-06T23:25:49+08:00
 updated: 2026-11-06
 topic: engineering
 tags: []

@@ -1,4 +1,6 @@
 ---
+import { SITE_TIME_ZONE } from '../lib/post-dates.mjs';
+
 interface Props {
 	date: Date;
 	lang?: 'zh' | 'en';
@@ -10,6 +12,7 @@ const { date, lang = 'zh' } = Astro.props;
 <time datetime={date.toISOString()}>
 	{
 		date.toLocaleDateString(lang === 'en' ? 'en-US' : 'zh-CN', {
+			timeZone: SITE_TIME_ZONE,
 			year: 'numeric',
 			month: 'long',
 			day: 'numeric',

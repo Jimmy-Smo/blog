@@ -1,7 +1,7 @@
 ---
 title: "From one agent to a group of agents: how developers manage parallel coding agents"
 description: The developer's problem has shifted from using one agent well to running several at once. Worktree isolation, who does the scheduling, when an orchestrator like Orca is worth it, and why review has become the new bottleneck.
-date: 2026-11-06
+date: 2026-11-06T19:38:14+08:00
 topic: ai
 tags:
   - agent

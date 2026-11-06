@@ -1,7 +1,7 @@
 ---
 title: API 调试：从调通一次，到留下可重复的回归
 description: 用本地报价接口和 WireMock 跑通请求、关联号、上游超时与错误映射，把临时 curl 请求变成能反复执行的故障回归。
-date: 2026-11-06
+date: 2026-11-06T21:02:19+08:00
 updated: 2026-11-06
 topic: engineering
 tags:
