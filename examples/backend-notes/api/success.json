@@ -1,0 +1,8 @@
+{
+  "request": { "method": "GET", "urlPath": "/shipping-fee" },
+  "response": {
+    "status": 200,
+    "headers": { "Content-Type": "text/plain" },
+    "body": "1299"
+  }
+}

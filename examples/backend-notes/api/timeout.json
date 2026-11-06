@@ -1,0 +1,8 @@
+{
+  "request": { "method": "GET", "urlPath": "/shipping-fee" },
+  "response": {
+    "status": 200,
+    "body": "1299",
+    "fixedDelayMilliseconds": 1500
+  }
+}
