@@ -45,7 +45,7 @@ From `content/README.md` and `README.md`. Follow these when creating or editing 
 
 - Start from `content/_template.md` (prefer `npm run post:new`). Title comes from frontmatter; never write an H1 in the body. Organize with H2/H3 (TOC uses those, shown only when there are ≥2).
 - `date` is the article date, maintained by hand and never bumped on publish. `updated` = last substantive revision.
-- Tags: default 2. One "shelf" tag from `engineering` `business` `java` `jvm` `ai-tools`, plus at most one recurring topic word from the existing list in `content/README.md`. Only add a new tag word if another post on it is clearly coming. No one-off, chapter-name, or person tags.
+- Tags: default 2. One "shelf" tag from `engineering` `business` `java` `jvm` `ai-tools` `reading`, plus at most one recurring topic word from the existing list in `content/README.md`. Only add a new tag word if another post on it is clearly coming. No one-off, chapter-name, or person tags.
 - Version-sensitive content (versions, products, prices, policy) must state the version or verification date; use `status: versioned` where appropriate.
 - Images: upload with `npm run img`, reference the returned `https://img.jimmy42x.com/...` absolute URL. Never commit large images or reference local/desktop paths. Commit the updated `src/data/image-sizes.json`.
 - The repo is public, and drafts are public as source files. Never add internal work-project details, real accounts, keys, unredacted data, raw personal retrospectives, or large binaries.
